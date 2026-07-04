@@ -22,8 +22,8 @@ file_size_limit = "50MiB"
 
 [auth]
 enabled = true
-site_url = "https://admin.angkorgo.ai"
-additional_redirect_urls = ["angkorgo://auth/callback", "https://admin.angkorgo.ai/auth/callback"]
+site_url = "https://www.angkorgo.app"
+additional_redirect_urls = ["angkorgo://auth/callback", "https://www.angkorgo.app/auth/callback", "https://angkorgo.app/auth/callback"]
 jwt_expiry = 3600
 enable_signup = true
 
