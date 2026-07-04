@@ -1,0 +1,58 @@
+# Supabase project config. `supabase link --project-ref <ref>` then `supabase db push`.
+project_id = "angkorgo-rescue"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "https://admin.angkorgo.ai"
+additional_redirect_urls = ["angkorgo://auth/callback", "https://admin.angkorgo.ai/auth/callback"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false   # passwordless OTP flow
+otp_length = 6
+otp_expiry = 3600
+
+# Configure secrets in the dashboard or via `supabase secrets set`.
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
+
+[auth.external.apple]
+enabled = true
+client_id = "env(APPLE_CLIENT_ID)"
+secret = "env(APPLE_SECRET)"
+
+# Edge Functions (verify_jwt=false for gateway/cron callbacks).
+[functions.dispatch-sweep]
+verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false
+
+[functions.create-payment]
+verify_jwt = true
+
+[functions.payment-webhook]
+verify_jwt = false

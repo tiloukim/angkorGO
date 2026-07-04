@@ -1,0 +1,27 @@
+node_modules/
+.next/
+.expo/
+dist/
+build/
+*.log
+
+# env
+.env
+.env.local
+.env*.local
+apps/*/.env
+apps/*/.env.local
+
+# supabase
+supabase/.branches/
+supabase/.temp/
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/
+
+# mobile
+apps/mobile/ios/
+apps/mobile/android/
+*.keystore
