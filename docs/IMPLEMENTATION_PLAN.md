@@ -1,4 +1,4 @@
-# AngkorGo Rescue — MVP Implementation Plan
+# AngkorGo — MVP Implementation Plan
 
 Status legend: ✅ done · 🚧 in progress · ⬜ not started
 

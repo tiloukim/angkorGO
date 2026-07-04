@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0001 Extensions & Enums
+-- AngkorGo — 0001 Extensions & Enums
 -- Phase 1: Database Design
 -- =============================================================
 

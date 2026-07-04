@@ -1,4 +1,4 @@
-# AngkorGo Rescue 🚨
+# AngkorGo 🚨
 
 **"Help is on the way."**
 
@@ -10,7 +10,7 @@ in-app payments, and a 90/10 provider/platform commission split.
 ## Monorepo layout
 
 ```
-angkorgo-rescue/
+angkorgo/
 ├── apps/
 │   ├── web/                 # Next.js 16 — Admin dashboard + provider onboarding + KHQR pay pages
 │   └── mobile/              # Expo (React Native) — Customer & Provider apps (role-switched)

@@ -1,25 +1,25 @@
 {
   "expo": {
-    "name": "AngkorGo Rescue",
-    "slug": "angkorgo-rescue",
+    "name": "AngkorGo",
+    "slug": "angkorgo",
     "scheme": "angkorgo",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "ios": {
-      "bundleIdentifier": "ai.angkorgo.rescue",
+      "bundleIdentifier": "ai.angkorgo.app",
       "supportsTablet": false,
       "usesAppleSignIn": true,
       "config": {
         "googleMapsApiKey": "GOOGLE_MAPS_IOS_KEY"
       },
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "AngkorGo Rescue uses your location to find nearby providers and share your position during a rescue.",
+        "NSLocationWhenInUseUsageDescription": "AngkorGo uses your location to find nearby providers and share your position during a rescue.",
         "NSCameraUsageDescription": "Add photos of your vehicle and the problem to your request."
       }
     },
     "android": {
-      "package": "ai.angkorgo.rescue",
+      "package": "ai.angkorgo.app",
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "CAMERA"],
       "config": {
         "googleMaps": { "apiKey": "GOOGLE_MAPS_ANDROID_KEY" }
@@ -29,7 +29,7 @@
       "expo-router",
       "expo-secure-store",
       "expo-apple-authentication",
-      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Allow AngkorGo Rescue to use your location." }]
+      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Allow AngkorGo to use your location." }]
     ],
     "extra": { "eas": { "projectId": "" } }
   }

@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0006 Seed (dev only)
+-- AngkorGo — 0006 Seed (dev only)
 -- Reference data + Phnom Penh sample geometry for local testing.
 -- Run AFTER creating auth users; replace the UUIDs below with real auth ids.
 -- =============================================================

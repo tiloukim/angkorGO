@@ -1,4 +1,4 @@
-// Shared domain constants for AngkorGo Rescue.
+// Shared domain constants for AngkorGo.
 
 export const SERVICE_CATEGORIES = [
   'flat_tire',

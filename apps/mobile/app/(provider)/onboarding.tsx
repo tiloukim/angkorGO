@@ -76,7 +76,7 @@ export default function OnboardingScreen() {
 
       <Text style={styles.label}>Business name</Text>
       <TextInput
-        style={styles.input} placeholder="e.g. Sok's Roadside Rescue" placeholderTextColor="#5B6B84"
+        style={styles.input} placeholder="e.g. Sok's Roadside Service" placeholderTextColor="#5B6B84"
         value={businessName} onChangeText={setBusinessName}
       />
 

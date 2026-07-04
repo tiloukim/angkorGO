@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0011 Payments
+-- AngkorGo — 0011 Payments
 -- Phase 6: invoice → escrow (held) → release → wallet credit → payout
 -- Money-moving transitions go through SECURITY DEFINER RPCs with explicit
 -- role guards (RLS on payments/withdrawals stays read-only for participants).

@@ -19,7 +19,7 @@ const COPY: Partial<Record<RequestStatus, { title: string; sub: string }>> = {
   en_route:    { title: 'On the way', sub: 'Your provider is driving to you' },
   arrived:     { title: 'Provider has arrived', sub: 'Meet them at your vehicle' },
   in_progress: { title: 'Work in progress', sub: 'Your provider is helping now' },
-  completed:   { title: 'Completed', sub: 'Thanks for using AngkorGo Rescue' },
+  completed:   { title: 'Completed', sub: 'Thanks for using AngkorGo' },
   expired:     { title: 'No provider available', sub: 'Nobody accepted in time — please try again' },
   cancelled:   { title: 'Cancelled', sub: 'This request was cancelled' },
 };

@@ -24,7 +24,7 @@ export default function EmergencyScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.brand}>AngkorGo Rescue</Text>
+        <Text style={styles.brand}>AngkorGo</Text>
         <Text style={styles.tagline}>{t(lang, 'tagline')}</Text>
         <Pressable onPress={() => setLang(lang === 'en' ? 'km' : 'en')} hitSlop={12}>
           <Text style={styles.langToggle}>{lang === 'en' ? 'ភាសាខ្មែរ' : 'English'}</Text>

@@ -1,4 +1,4 @@
-# AngkorGo Rescue — Tests
+# AngkorGo — Tests
 
 ## Database tests (pgTAP)
 

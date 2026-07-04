@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0009 Dispatch Engine wiring
+-- AngkorGo — 0009 Dispatch Engine wiring
 -- Phase 4: offer inbox, reject, TTL widen/expire sweep, push + notifications
 -- =============================================================
 

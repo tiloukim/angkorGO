@@ -1,5 +1,5 @@
 # Supabase project config. `supabase link --project-ref <ref>` then `supabase db push`.
-project_id = "angkorgo-rescue"
+project_id = "angkorgo"
 
 [api]
 enabled = true

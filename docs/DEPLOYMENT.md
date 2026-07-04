@@ -1,4 +1,4 @@
-# AngkorGo Rescue — Deployment Runbook (Phase 10)
+# AngkorGo — Deployment Runbook (Phase 10)
 
 Deploy order: **Supabase → Edge Functions → automation → Vercel (web) → Expo (mobile)**.
 Everything below is a real command or dashboard step; nothing here runs automatically.

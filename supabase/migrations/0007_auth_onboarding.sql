@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0007 Auth / Onboarding
+-- AngkorGo — 0007 Auth / Onboarding
 -- Phase 2: distinguishes brand-new accounts (must pick a role) from
 -- returning users, and provisions a provider row when role = provider.
 -- =============================================================

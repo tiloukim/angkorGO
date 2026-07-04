@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0008 Request creation RPC + Storage
+-- AngkorGo — 0008 Request creation RPC + Storage
 -- Phase 3: Emergency Request System
 -- =============================================================
 

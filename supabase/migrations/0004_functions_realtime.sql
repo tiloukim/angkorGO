@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0004 Dispatch Functions & Realtime
+-- AngkorGo — 0004 Dispatch Functions & Realtime
 -- =============================================================
 
 -- ---------- Nearest-provider search (core of dispatch engine) ----------

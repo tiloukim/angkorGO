@@ -31,7 +31,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.brand}>AngkorGo Rescue</Text>
+      <Text style={styles.brand}>AngkorGo</Text>
       <Text style={styles.tagline}>Help is on the way.</Text>
 
       <TextInput

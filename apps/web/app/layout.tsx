@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AngkorGo Rescue — Admin',
+  title: 'AngkorGo — Admin',
   description: 'Help is on the way.',
 };
 

@@ -1,4 +1,4 @@
-# AngkorGo Rescue — System Architecture
+# AngkorGo — System Architecture
 
 ## 1. High-level
 

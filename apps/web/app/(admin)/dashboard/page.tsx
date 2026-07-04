@@ -40,7 +40,7 @@ export default async function AdminDashboard() {
 
   return (
     <main className="p-8">
-      <h1 className="text-2xl font-bold mb-6">AngkorGo Rescue — Admin</h1>
+      <h1 className="text-2xl font-bold mb-6">AngkorGo — Admin</h1>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {cards.map((c) => (
           <div key={c.label} className="rounded-xl border bg-card p-5">

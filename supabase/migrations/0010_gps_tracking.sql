@@ -1,5 +1,5 @@
 -- =============================================================
--- AngkorGo Rescue — 0010 GPS Tracking
+-- AngkorGo — 0010 GPS Tracking
 -- Phase 5: provider heartbeat upsert (validated) + realtime-friendly coords
 -- =============================================================
 

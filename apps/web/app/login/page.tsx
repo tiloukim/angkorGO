@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen grid place-items-center bg-[#0B1220] text-white p-6">
       <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-extrabold text-center">AngkorGo Rescue</h1>
+        <h1 className="text-3xl font-extrabold text-center">AngkorGo</h1>
         <p className="text-center text-[#8FA3BF] mt-1 mb-8">Admin Console</p>
 
         {notAdmin && (
