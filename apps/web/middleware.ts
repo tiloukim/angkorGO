@@ -4,6 +4,10 @@ import { createServerClient } from '@supabase/ssr';
 // Protects the admin dashboard: requires a session AND profiles.role = 'admin'.
 // Also refreshes the auth cookie on every request (Supabase SSR pattern).
 export async function middleware(request: NextRequest) {
+  // Public marketing landing needs no auth context — skip Supabase entirely so it
+  // renders even before backend env is configured.
+  if (request.nextUrl.pathname === '/') return NextResponse.next();
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -25,7 +29,9 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   const isLogin = path === '/login' || path.startsWith('/auth');
-  const isProtected = path.startsWith('/dashboard') || path === '/';
+  // Public: landing page (/) and login/auth. Everything else is the admin console.
+  const isPublic = path === '/' || isLogin;
+  const isProtected = !isPublic;
 
   if (!user && isProtected) {
     return NextResponse.redirect(new URL('/login', request.url));
