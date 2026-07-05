@@ -1,0 +1,1280 @@
+-- ====== supabase/migrations/0001_extensions_enums.sql ======
+-- =============================================================
+-- AngkorGo — 0001 Extensions & Enums
+-- Phase 1: Database Design
+-- =============================================================
+
+-- Geospatial (nearest-provider search, ST_DWithin radius dispatch)
+create extension if not exists postgis;
+-- gen_random_uuid(), crypto helpers
+create extension if not exists pgcrypto;
+
+-- ---------- Enum types ----------
+
+-- Role of a platform account. auth.users is the identity table;
+-- public.profiles.role drives RBAC across RLS policies.
+create type user_role as enum ('customer', 'provider', 'admin');
+
+create type provider_status as enum ('pending', 'approved', 'suspended', 'rejected');
+
+-- Lifecycle of a rescue request (see docs/ARCHITECTURE.md state machine)
+create type request_status as enum (
+  'pending',      -- created, not yet dispatched
+  'dispatching',  -- offers being sent, expanding radius
+  'accepted',     -- a provider accepted
+  'en_route',     -- provider driving to customer
+  'arrived',      -- provider on scene
+  'in_progress',  -- work happening
+  'completed',    -- customer approved + paid
+  'cancelled',    -- cancelled by customer/admin
+  'expired'       -- no provider accepted in time
+);
+
+-- One offer to a single provider inside a request's dispatch fan-out
+create type assignment_status as enum ('offered', 'accepted', 'rejected', 'expired', 'cancelled');
+
+create type payment_status as enum ('pending', 'held', 'released', 'refunded', 'failed');
+
+create type payment_method as enum ('aba_payway', 'khqr', 'stripe', 'wing', 'acleda', 'cash');
+
+create type document_type as enum (
+  'national_id', 'drivers_license', 'business_license', 'vehicle_photo', 'profile_photo'
+);
+
+create type withdrawal_status as enum ('pending', 'processing', 'paid', 'rejected');
+
+create type service_category as enum (
+  'flat_tire',
+  'battery_jump_start',
+  'battery_replacement',
+  'fuel_delivery',
+  'lockout_service',
+  'tow_truck',
+  'engine_diagnosis',
+  'emergency_repair',
+  'motorcycle_repair',
+  'car_repair',
+  'van_repair',
+  'truck_repair'
+);
+
+create type image_kind as enum ('vehicle', 'problem', 'before', 'after', 'invoice');
+
+-- ====== supabase/migrations/0002_tables.sql ======
+-- =============================================================
+-- AngkorGo — 0002 Core Tables
+-- =============================================================
+
+-- ---------- profiles ----------
+-- Extends auth.users (the "users" table). One row per account.
+create table public.profiles (
+  id                 uuid primary key references auth.users(id) on delete cascade,
+  role               user_role   not null default 'customer',
+  full_name          text,
+  phone              text,
+  avatar_url         text,
+  preferred_language text        not null default 'en' check (preferred_language in ('en', 'km')),
+  is_suspended       boolean     not null default false,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
+);
+
+-- ---------- providers ----------
+create table public.providers (
+  id              uuid primary key default gen_random_uuid(),
+  user_id         uuid not null unique references public.profiles(id) on delete cascade,
+  business_name   text,
+  bio             text,
+  status          provider_status not null default 'pending',
+  is_online       boolean not null default false,
+  rating          numeric(2,1) not null default 0.0,
+  total_jobs      integer not null default 0,
+  commission_rate numeric(4,3) not null default 0.100 check (commission_rate >= 0 and commission_rate <= 1),
+  approved_at     timestamptz,
+  approved_by     uuid references public.profiles(id),
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+-- ---------- provider_documents ----------
+create table public.provider_documents (
+  id          uuid primary key default gen_random_uuid(),
+  provider_id uuid not null references public.providers(id) on delete cascade,
+  type        document_type not null,
+  file_url    text not null,        -- Supabase Storage path
+  verified    boolean not null default false,
+  verified_by uuid references public.profiles(id),
+  uploaded_at timestamptz not null default now()
+);
+
+-- ---------- provider_services ----------
+create table public.provider_services (
+  id          uuid primary key default gen_random_uuid(),
+  provider_id uuid not null references public.providers(id) on delete cascade,
+  category    service_category not null,
+  base_price  numeric(10,2),
+  active      boolean not null default true,
+  unique (provider_id, category)
+);
+
+-- ---------- provider_locations ----------
+-- Single current location per provider (upserted on heartbeat).
+create table public.provider_locations (
+  provider_id uuid primary key references public.providers(id) on delete cascade,
+  location    geography(Point, 4326) not null,
+  heading     numeric,        -- degrees 0-360
+  speed       numeric,        -- m/s
+  updated_at  timestamptz not null default now()
+);
+
+-- ---------- service_requests ----------
+create table public.service_requests (
+  id              uuid primary key default gen_random_uuid(),
+  customer_id     uuid not null references public.profiles(id) on delete cascade,
+  category        service_category not null,
+  status          request_status not null default 'pending',
+  pickup_location geography(Point, 4326) not null,
+  address         text,
+  vehicle_type    text,
+  notes           text,
+  current_radius_km integer not null default 5,
+  assigned_provider_id uuid references public.providers(id),
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  expires_at      timestamptz not null default (now() + interval '30 minutes')
+);
+
+-- ---------- service_request_images ----------
+create table public.service_request_images (
+  id          uuid primary key default gen_random_uuid(),
+  request_id  uuid not null references public.service_requests(id) on delete cascade,
+  image_url   text not null,
+  kind        image_kind not null default 'problem',
+  uploaded_by uuid references public.profiles(id),
+  created_at  timestamptz not null default now()
+);
+
+-- ---------- service_assignments ----------
+-- One row per (request, provider) offer during dispatch fan-out.
+create table public.service_assignments (
+  id           uuid primary key default gen_random_uuid(),
+  request_id   uuid not null references public.service_requests(id) on delete cascade,
+  provider_id  uuid not null references public.providers(id) on delete cascade,
+  status       assignment_status not null default 'offered',
+  distance_km  numeric(6,2),
+  eta_minutes  integer,
+  offered_at   timestamptz not null default now(),
+  responded_at timestamptz,
+  unique (request_id, provider_id)
+);
+
+-- ---------- service_status_history ----------
+create table public.service_status_history (
+  id         uuid primary key default gen_random_uuid(),
+  request_id uuid not null references public.service_requests(id) on delete cascade,
+  status     request_status not null,
+  changed_by uuid references public.profiles(id),
+  note       text,
+  created_at timestamptz not null default now()
+);
+
+-- ---------- chat_messages ----------
+create table public.chat_messages (
+  id         uuid primary key default gen_random_uuid(),
+  request_id uuid not null references public.service_requests(id) on delete cascade,
+  sender_id  uuid not null references public.profiles(id) on delete cascade,
+  content    text not null,
+  read_at    timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- ---------- payments ----------
+create table public.payments (
+  id              uuid primary key default gen_random_uuid(),
+  request_id      uuid not null unique references public.service_requests(id) on delete cascade,
+  customer_id     uuid not null references public.profiles(id),
+  provider_id     uuid not null references public.providers(id),
+  amount          numeric(10,2) not null check (amount >= 0),
+  currency        text not null default 'USD',
+  method          payment_method,
+  status          payment_status not null default 'pending',
+  provider_rate   numeric(4,3) not null default 0.900,   -- share to provider
+  provider_amount numeric(10,2) not null default 0,
+  commission_amount numeric(10,2) not null default 0,
+  invoice_url     text,
+  external_txn_id text,
+  created_at      timestamptz not null default now(),
+  paid_at         timestamptz
+);
+
+-- ---------- wallets ----------
+create table public.wallets (
+  id          uuid primary key default gen_random_uuid(),
+  provider_id uuid not null unique references public.providers(id) on delete cascade,
+  balance     numeric(12,2) not null default 0,
+  currency    text not null default 'USD',
+  updated_at  timestamptz not null default now()
+);
+
+-- ---------- withdrawals ----------
+create table public.withdrawals (
+  id           uuid primary key default gen_random_uuid(),
+  provider_id  uuid not null references public.providers(id) on delete cascade,
+  amount       numeric(12,2) not null check (amount > 0),
+  status       withdrawal_status not null default 'pending',
+  method       payment_method,
+  destination  text,           -- account/phone number
+  requested_at timestamptz not null default now(),
+  processed_at timestamptz,
+  processed_by uuid references public.profiles(id)
+);
+
+-- ---------- reviews ----------
+create table public.reviews (
+  id          uuid primary key default gen_random_uuid(),
+  request_id  uuid not null unique references public.service_requests(id) on delete cascade,
+  customer_id uuid not null references public.profiles(id),
+  provider_id uuid not null references public.providers(id) on delete cascade,
+  rating      integer not null check (rating between 1 and 5),
+  comment     text,
+  created_at  timestamptz not null default now()
+);
+
+-- ---------- notifications ----------
+create table public.notifications (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references public.profiles(id) on delete cascade,
+  title      text not null,
+  body       text,
+  type       text,           -- e.g. 'request_offer', 'accepted', 'payment'
+  data       jsonb not null default '{}'::jsonb,
+  read_at    timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- ---------- audit_logs ----------
+create table public.audit_logs (
+  id          uuid primary key default gen_random_uuid(),
+  actor_id    uuid references public.profiles(id),
+  action      text not null,
+  entity_type text,
+  entity_id   uuid,
+  metadata    jsonb not null default '{}'::jsonb,
+  created_at  timestamptz not null default now()
+);
+
+-- ====== supabase/migrations/0003_indexes_triggers.sql ======
+-- =============================================================
+-- AngkorGo — 0003 Indexes & Triggers
+-- =============================================================
+
+-- ---------- Indexes ----------
+
+-- Geospatial: nearest-provider dispatch + live tracking bounding queries
+create index idx_provider_locations_geo on public.provider_locations using gist (location);
+create index idx_service_requests_geo   on public.service_requests   using gist (pickup_location);
+
+-- Dispatch hot paths
+create index idx_providers_online_status on public.providers (is_online, status);
+create index idx_provider_services_cat   on public.provider_services (category, active);
+
+-- Foreign-key / lookup indexes
+create index idx_requests_customer   on public.service_requests (customer_id);
+create index idx_requests_status     on public.service_requests (status);
+create index idx_requests_provider   on public.service_requests (assigned_provider_id);
+create index idx_assignments_request on public.service_assignments (request_id);
+create index idx_assignments_provider on public.service_assignments (provider_id, status);
+create index idx_req_images_request  on public.service_request_images (request_id);
+create index idx_status_hist_request on public.service_status_history (request_id, created_at);
+create index idx_chat_request        on public.chat_messages (request_id, created_at);
+create index idx_payments_provider   on public.payments (provider_id);
+create index idx_withdrawals_provider on public.withdrawals (provider_id, status);
+create index idx_reviews_provider    on public.reviews (provider_id);
+create index idx_notifications_user  on public.notifications (user_id, read_at);
+create index idx_audit_entity        on public.audit_logs (entity_type, entity_id);
+
+-- ---------- updated_at maintenance ----------
+create or replace function public.set_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger trg_profiles_updated   before update on public.profiles
+  for each row execute function public.set_updated_at();
+create trigger trg_providers_updated  before update on public.providers
+  for each row execute function public.set_updated_at();
+create trigger trg_requests_updated   before update on public.service_requests
+  for each row execute function public.set_updated_at();
+create trigger trg_wallets_updated    before update on public.wallets
+  for each row execute function public.set_updated_at();
+
+-- ---------- Auto-create profile on signup ----------
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles (id, full_name, phone, preferred_language, role)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.phone,
+    coalesce(new.raw_user_meta_data->>'preferred_language', 'en'),
+    coalesce((new.raw_user_meta_data->>'role')::user_role, 'customer')
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+create trigger trg_on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- ---------- Record every request status change ----------
+create or replace function public.log_request_status()
+returns trigger language plpgsql as $$
+begin
+  if tg_op = 'INSERT' or new.status is distinct from old.status then
+    insert into public.service_status_history (request_id, status, changed_by)
+    values (new.id, new.status, auth.uid());
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_request_status_history
+  after insert or update on public.service_requests
+  for each row execute function public.log_request_status();
+
+-- ---------- Recompute provider rating on new review ----------
+create or replace function public.recompute_provider_rating()
+returns trigger language plpgsql as $$
+begin
+  update public.providers p
+  set rating = coalesce((
+    select round(avg(rating)::numeric, 1) from public.reviews where provider_id = new.provider_id
+  ), 0)
+  where p.id = new.provider_id;
+  return new;
+end;
+$$;
+
+create trigger trg_review_rating
+  after insert on public.reviews
+  for each row execute function public.recompute_provider_rating();
+
+-- ---------- Compute commission split on payment write ----------
+create or replace function public.compute_payment_split()
+returns trigger language plpgsql as $$
+begin
+  new.provider_amount   := round(new.amount * new.provider_rate, 2);
+  new.commission_amount := round(new.amount - new.provider_amount, 2);
+  return new;
+end;
+$$;
+
+create trigger trg_payment_split
+  before insert or update of amount, provider_rate on public.payments
+  for each row execute function public.compute_payment_split();
+
+-- ---------- Credit provider wallet when payment is released ----------
+create or replace function public.credit_wallet_on_release()
+returns trigger language plpgsql as $$
+begin
+  if new.status = 'released' and old.status is distinct from 'released' then
+    insert into public.wallets (provider_id, balance)
+    values (new.provider_id, new.provider_amount)
+    on conflict (provider_id)
+    do update set balance = public.wallets.balance + new.provider_amount,
+                  updated_at = now();
+    update public.providers set total_jobs = total_jobs + 1 where id = new.provider_id;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_wallet_credit
+  after update on public.payments
+  for each row execute function public.credit_wallet_on_release();
+
+-- ====== supabase/migrations/0004_functions_realtime.sql ======
+-- =============================================================
+-- AngkorGo — 0004 Dispatch Functions & Realtime
+-- =============================================================
+
+-- ---------- Nearest-provider search (core of dispatch engine) ----------
+-- Returns approved + online providers offering `p_category`, within
+-- `p_radius_km` of the request pickup point, ordered by distance.
+create or replace function public.find_nearby_providers(
+  p_request_id uuid,
+  p_radius_km  numeric default 5
+)
+returns table (
+  provider_id uuid,
+  distance_km numeric,
+  eta_minutes integer,
+  rating      numeric
+)
+language sql stable security definer set search_path = public as $$
+  with req as (
+    select pickup_location, category from public.service_requests where id = p_request_id
+  )
+  select
+    pr.id,
+    round((st_distance(pl.location, req.pickup_location) / 1000.0)::numeric, 2) as distance_km,
+    -- crude ETA: assume 25 km/h average urban speed, +2 min dispatch overhead
+    greatest(1, ceil((st_distance(pl.location, req.pickup_location) / 1000.0) / 25.0 * 60.0) + 2)::int as eta_minutes,
+    pr.rating
+  from req
+  join public.provider_locations pl
+    on st_dwithin(pl.location, req.pickup_location, p_radius_km * 1000)
+  join public.providers pr on pr.id = pl.provider_id
+  join public.provider_services ps
+    on ps.provider_id = pr.id and ps.category = req.category and ps.active
+  where pr.is_online = true
+    and pr.status = 'approved'
+    -- exclude providers already offered/rejected this request
+    and not exists (
+      select 1 from public.service_assignments sa
+      where sa.request_id = p_request_id and sa.provider_id = pr.id
+    )
+    -- exclude providers currently on an active job
+    and not exists (
+      select 1 from public.service_requests sr
+      where sr.assigned_provider_id = pr.id
+        and sr.status in ('accepted','en_route','arrived','in_progress')
+    )
+  order by distance_km asc, pr.rating desc
+  limit 20;
+$$;
+
+-- ---------- Dispatch fan-out step ----------
+-- Creates offers for all matching providers at the current radius and marks
+-- the request 'dispatching'. Called by the app/edge fn on request creation and
+-- re-called with a widened radius if nobody accepts. Returns offers created.
+create or replace function public.dispatch_request(p_request_id uuid)
+returns integer
+language plpgsql security definer set search_path = public as $$
+declare
+  v_radius integer;
+  v_created integer := 0;
+begin
+  select current_radius_km into v_radius from public.service_requests where id = p_request_id;
+
+  insert into public.service_assignments (request_id, provider_id, distance_km, eta_minutes)
+  select p_request_id, np.provider_id, np.distance_km, np.eta_minutes
+  from public.find_nearby_providers(p_request_id, v_radius) np
+  on conflict (request_id, provider_id) do nothing;
+
+  get diagnostics v_created = row_count;
+
+  update public.service_requests
+    set status = 'dispatching'
+    where id = p_request_id and status in ('pending','dispatching');
+
+  return v_created;
+end;
+$$;
+
+-- ---------- Widen radius (5 -> 10 -> 20) ----------
+create or replace function public.widen_dispatch(p_request_id uuid)
+returns integer
+language plpgsql security definer set search_path = public as $$
+declare v_next integer;
+begin
+  update public.service_requests
+    set current_radius_km = case current_radius_km
+                              when 5 then 10
+                              when 10 then 20
+                              else 20 end
+    where id = p_request_id
+    returning current_radius_km into v_next;
+  return public.dispatch_request(p_request_id);
+end;
+$$;
+
+-- ---------- Provider accepts an offer (atomic, first-wins) ----------
+create or replace function public.accept_assignment(p_assignment_id uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare
+  v_request uuid;
+  v_provider uuid;
+begin
+  select request_id, provider_id into v_request, v_provider
+  from public.service_assignments where id = p_assignment_id for update;
+
+  -- Only accept if request is still open. Row lock prevents double-accept race.
+  update public.service_requests
+    set status = 'accepted', assigned_provider_id = v_provider
+    where id = v_request and status in ('pending','dispatching');
+
+  if not found then
+    raise exception 'Request no longer available';
+  end if;
+
+  update public.service_assignments
+    set status = 'accepted', responded_at = now()
+    where id = p_assignment_id;
+
+  -- Expire all other outstanding offers for this request
+  update public.service_assignments
+    set status = 'expired'
+    where request_id = v_request and id <> p_assignment_id and status = 'offered';
+end;
+$$;
+
+-- ---------- Realtime publication ----------
+-- Client subscribes to these tables for live UX.
+alter publication supabase_realtime add table public.service_requests;
+alter publication supabase_realtime add table public.service_assignments;
+alter publication supabase_realtime add table public.provider_locations;
+alter publication supabase_realtime add table public.chat_messages;
+alter publication supabase_realtime add table public.service_status_history;
+alter publication supabase_realtime add table public.payments;
+alter publication supabase_realtime add table public.notifications;
+
+-- ====== supabase/migrations/0005_rls_policies.sql ======
+-- =============================================================
+-- AngkorGo — 0005 Row Level Security
+-- =============================================================
+
+-- ---------- Helper: role checks ----------
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
+$$;
+
+-- Provider row id owned by the current user (or null)
+create or replace function public.my_provider_id()
+returns uuid language sql stable security definer set search_path = public as $$
+  select id from public.providers where user_id = auth.uid();
+$$;
+
+-- Is the current user a participant (customer or assigned provider) of a request?
+create or replace function public.can_access_request(p_request_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.service_requests sr
+    where sr.id = p_request_id
+      and (
+        sr.customer_id = auth.uid()
+        or sr.assigned_provider_id = public.my_provider_id()
+        or exists (select 1 from public.service_assignments sa
+                   where sa.request_id = sr.id and sa.provider_id = public.my_provider_id())
+      )
+  ) or public.is_admin();
+$$;
+
+-- ---------- Enable RLS on all tables ----------
+alter table public.profiles               enable row level security;
+alter table public.providers              enable row level security;
+alter table public.provider_documents     enable row level security;
+alter table public.provider_services      enable row level security;
+alter table public.provider_locations     enable row level security;
+alter table public.service_requests       enable row level security;
+alter table public.service_request_images enable row level security;
+alter table public.service_assignments    enable row level security;
+alter table public.service_status_history enable row level security;
+alter table public.chat_messages          enable row level security;
+alter table public.payments               enable row level security;
+alter table public.wallets                enable row level security;
+alter table public.withdrawals            enable row level security;
+alter table public.reviews                enable row level security;
+alter table public.notifications          enable row level security;
+alter table public.audit_logs             enable row level security;
+
+-- ---------- profiles ----------
+create policy "profiles: read own or admin" on public.profiles
+  for select using (id = auth.uid() or public.is_admin());
+create policy "profiles: update own" on public.profiles
+  for update using (id = auth.uid()) with check (id = auth.uid());
+create policy "profiles: admin all" on public.profiles
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- providers ----------
+-- Approved providers are publicly discoverable (name, rating) for the map.
+create policy "providers: public read approved" on public.providers
+  for select using (status = 'approved' or user_id = auth.uid() or public.is_admin());
+create policy "providers: insert self" on public.providers
+  for insert with check (user_id = auth.uid());
+create policy "providers: update own or admin" on public.providers
+  for update using (user_id = auth.uid() or public.is_admin())
+  with check (user_id = auth.uid() or public.is_admin());
+
+-- ---------- provider_documents ----------
+create policy "docs: owner or admin" on public.provider_documents
+  for all using (provider_id = public.my_provider_id() or public.is_admin())
+  with check (provider_id = public.my_provider_id() or public.is_admin());
+
+-- ---------- provider_services ----------
+create policy "services: public read" on public.provider_services
+  for select using (true);
+create policy "services: owner write" on public.provider_services
+  for all using (provider_id = public.my_provider_id() or public.is_admin())
+  with check (provider_id = public.my_provider_id() or public.is_admin());
+
+-- ---------- provider_locations ----------
+-- Owner upserts own; participants of an active request can read the provider's
+-- position (enforced in app via subscription filter); admins read all.
+create policy "locations: owner write" on public.provider_locations
+  for all using (provider_id = public.my_provider_id())
+  with check (provider_id = public.my_provider_id());
+create policy "locations: read" on public.provider_locations
+  for select using (
+    provider_id = public.my_provider_id()
+    or public.is_admin()
+    or exists (select 1 from public.service_requests sr
+               where sr.assigned_provider_id = provider_locations.provider_id
+                 and sr.customer_id = auth.uid()
+                 and sr.status in ('accepted','en_route','arrived','in_progress'))
+  );
+
+-- ---------- service_requests ----------
+create policy "requests: participant read" on public.service_requests
+  for select using (
+    customer_id = auth.uid()
+    or assigned_provider_id = public.my_provider_id()
+    or exists (select 1 from public.service_assignments sa
+               where sa.request_id = service_requests.id and sa.provider_id = public.my_provider_id())
+    or public.is_admin()
+  );
+create policy "requests: customer create" on public.service_requests
+  for insert with check (customer_id = auth.uid());
+create policy "requests: participant update" on public.service_requests
+  for update using (
+    customer_id = auth.uid()
+    or assigned_provider_id = public.my_provider_id()
+    or public.is_admin()
+  );
+
+-- ---------- service_request_images ----------
+create policy "req images: access" on public.service_request_images
+  for select using (public.can_access_request(request_id));
+create policy "req images: participant write" on public.service_request_images
+  for insert with check (public.can_access_request(request_id) and uploaded_by = auth.uid());
+
+-- ---------- service_assignments ----------
+create policy "assignments: participant read" on public.service_assignments
+  for select using (
+    provider_id = public.my_provider_id()
+    or public.can_access_request(request_id)
+  );
+-- Accept/reject flows through accept_assignment() (security definer); direct
+-- updates limited to the offered provider marking a rejection.
+create policy "assignments: provider respond" on public.service_assignments
+  for update using (provider_id = public.my_provider_id())
+  with check (provider_id = public.my_provider_id());
+
+-- ---------- service_status_history ----------
+create policy "status history: access" on public.service_status_history
+  for select using (public.can_access_request(request_id));
+
+-- ---------- chat_messages ----------
+create policy "chat: access read" on public.chat_messages
+  for select using (public.can_access_request(request_id));
+create policy "chat: participant send" on public.chat_messages
+  for insert with check (public.can_access_request(request_id) and sender_id = auth.uid());
+
+-- ---------- payments ----------
+create policy "payments: participant read" on public.payments
+  for select using (
+    customer_id = auth.uid()
+    or provider_id = public.my_provider_id()
+    or public.is_admin()
+  );
+create policy "payments: admin write" on public.payments
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- wallets ----------
+create policy "wallets: owner read" on public.wallets
+  for select using (provider_id = public.my_provider_id() or public.is_admin());
+
+-- ---------- withdrawals ----------
+create policy "withdrawals: owner read" on public.withdrawals
+  for select using (provider_id = public.my_provider_id() or public.is_admin());
+create policy "withdrawals: owner request" on public.withdrawals
+  for insert with check (provider_id = public.my_provider_id());
+create policy "withdrawals: admin manage" on public.withdrawals
+  for update using (public.is_admin()) with check (public.is_admin());
+
+-- ---------- reviews ----------
+create policy "reviews: public read" on public.reviews
+  for select using (true);
+create policy "reviews: customer create" on public.reviews
+  for insert with check (customer_id = auth.uid() and public.can_access_request(request_id));
+
+-- ---------- notifications ----------
+create policy "notifications: owner read" on public.notifications
+  for select using (user_id = auth.uid());
+create policy "notifications: owner update" on public.notifications
+  for update using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- ---------- audit_logs ----------
+create policy "audit: admin read" on public.audit_logs
+  for select using (public.is_admin());
+
+-- ====== supabase/migrations/0006_seed.sql ======
+-- =============================================================
+-- AngkorGo — 0006 Seed (dev only)
+-- Reference data + Phnom Penh sample geometry for local testing.
+-- Run AFTER creating auth users; replace the UUIDs below with real auth ids.
+-- =============================================================
+
+-- Platform config: default commission (mirrors payments.provider_rate default)
+create table if not exists public.platform_config (
+  key   text primary key,
+  value jsonb not null
+);
+insert into public.platform_config (key, value) values
+  ('commission_rate', '0.10'),
+  ('dispatch_radii_km', '[5,10,20]'),
+  ('offer_ttl_seconds', '45')
+on conflict (key) do nothing;
+
+-- Service category catalogue with EN/KM labels for the emergency screen.
+create table if not exists public.service_catalog (
+  category  service_category primary key,
+  label_en  text not null,
+  label_km  text not null,
+  icon      text
+);
+insert into public.service_catalog (category, label_en, label_km, icon) values
+  ('flat_tire',          'Flat Tire',          'កង់​បែក',            'tire'),
+  ('battery_jump_start', 'Battery Jump Start', 'ជម្រុញ​ថ្ម',          'battery-charging'),
+  ('battery_replacement','Battery Replacement','ប្តូរ​ថ្ម',           'battery'),
+  ('fuel_delivery',      'Out of Fuel',        'អស់​ប្រេង',          'fuel'),
+  ('lockout_service',    'Lockout',            'ចាក់​សោ​ជាប់',        'lock'),
+  ('tow_truck',          'Tow Truck',          'រថ​អូស',             'truck'),
+  ('engine_diagnosis',   'Engine Trouble',     'បញ្ហា​ម៉ាស៊ីន',       'engine'),
+  ('emergency_repair',   'Emergency Repair',   'ជួសជុល​បន្ទាន់',      'wrench'),
+  ('motorcycle_repair',  'Motorcycle Repair',  'ជួសជុល​ម៉ូតូ',        'motorcycle'),
+  ('car_repair',         'Car Repair',         'ជួសជុល​ឡាន',         'car'),
+  ('van_repair',         'Van Repair',         'ជួសជុល​រថយន្ត​ដឹក',   'van'),
+  ('truck_repair',       'Truck Repair',       'ជួសជុល​ឡាន​ធំ',       'truck')
+on conflict (category) do nothing;
+
+-- NOTE: sample provider/customer rows require real auth.users ids.
+-- Example (Phnom Penh, Independence Monument ≈ 104.9219, 11.5564):
+--   update public.provider_locations
+--     set location = st_point(104.9219, 11.5564)::geography
+--     where provider_id = '<provider-uuid>';
+
+-- ====== supabase/migrations/0007_auth_onboarding.sql ======
+-- =============================================================
+-- AngkorGo — 0007 Auth / Onboarding
+-- Phase 2: distinguishes brand-new accounts (must pick a role) from
+-- returning users, and provisions a provider row when role = provider.
+-- =============================================================
+
+alter table public.profiles
+  add column if not exists onboarded boolean not null default false;
+
+-- Recreate the signup handler: mark onboarded=true only when the client
+-- explicitly supplied a role (email-OTP flow passes it; OAuth may not).
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_role user_role := coalesce((new.raw_user_meta_data->>'role')::user_role, 'customer');
+  v_had_role boolean := (new.raw_user_meta_data ? 'role');
+begin
+  insert into public.profiles (id, full_name, phone, preferred_language, role, onboarded)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.phone,
+    coalesce(new.raw_user_meta_data->>'preferred_language', 'en'),
+    v_role,
+    v_had_role
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+-- When a profile becomes a provider, ensure a providers row exists (pending).
+create or replace function public.ensure_provider_row()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.role = 'provider' then
+    insert into public.providers (user_id) values (new.id)
+    on conflict (user_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_ensure_provider on public.profiles;
+create trigger trg_ensure_provider
+  after insert or update of role on public.profiles
+  for each row execute function public.ensure_provider_row();
+
+-- ====== supabase/migrations/0008_requests_storage.sql ======
+-- =============================================================
+-- AngkorGo — 0008 Request creation RPC + Storage
+-- Phase 3: Emergency Request System
+-- =============================================================
+
+-- ---------- Create a request (geography from lng/lat) ----------
+-- supabase-js can't build a geography literal directly, so requests are
+-- created through this RPC. Runs as invoker → the "requests: customer create"
+-- RLS policy still applies (customer_id must equal auth.uid()).
+create or replace function public.create_service_request(
+  p_category     service_category,
+  p_lng          double precision,
+  p_lat          double precision,
+  p_address      text default null,
+  p_vehicle_type text default null,
+  p_notes        text default null
+)
+returns uuid
+language plpgsql security invoker set search_path = public as $$
+declare
+  v_id uuid;
+begin
+  insert into public.service_requests
+    (customer_id, category, pickup_location, address, vehicle_type, notes)
+  values
+    (auth.uid(), p_category, st_point(p_lng, p_lat)::geography, p_address, p_vehicle_type, p_notes)
+  returning id into v_id;
+  return v_id;
+end;
+$$;
+
+-- Read a request with its pickup point as GeoJSON (for map re-hydration).
+create or replace function public.get_request(p_request_id uuid)
+returns table (
+  id uuid, category service_category, status request_status,
+  lng double precision, lat double precision, address text,
+  assigned_provider_id uuid, created_at timestamptz
+)
+language sql stable security invoker set search_path = public as $$
+  select sr.id, sr.category, sr.status,
+         st_x(sr.pickup_location::geometry), st_y(sr.pickup_location::geometry),
+         sr.address, sr.assigned_provider_id, sr.created_at
+  from public.service_requests sr
+  where sr.id = p_request_id;   -- RLS restricts to participants/admin
+$$;
+
+-- ---------- Storage buckets ----------
+insert into storage.buckets (id, name, public)
+values
+  ('request-images', 'request-images', false),
+  ('provider-docs',  'provider-docs',  false)
+on conflict (id) do nothing;
+
+-- request-images: path convention  {request_id}/{uuid}.jpg
+-- Participants of the request may read; participants may upload.
+create policy "req-img read" on storage.objects for select
+  using (
+    bucket_id = 'request-images'
+    and public.can_access_request(((storage.foldername(name))[1])::uuid)
+  );
+
+create policy "req-img write" on storage.objects for insert
+  with check (
+    bucket_id = 'request-images'
+    and public.can_access_request(((storage.foldername(name))[1])::uuid)
+  );
+
+-- provider-docs: path convention {provider_id}/{type}.jpg — owner + admin only.
+create policy "prov-doc owner rw" on storage.objects for all
+  using (
+    bucket_id = 'provider-docs'
+    and (((storage.foldername(name))[1])::uuid = public.my_provider_id() or public.is_admin())
+  )
+  with check (
+    bucket_id = 'provider-docs'
+    and (((storage.foldername(name))[1])::uuid = public.my_provider_id() or public.is_admin())
+  );
+
+-- ====== supabase/migrations/0009_dispatch_engine.sql ======
+-- =============================================================
+-- AngkorGo — 0009 Dispatch Engine wiring
+-- Phase 4: offer inbox, reject, TTL widen/expire sweep, push + notifications
+-- =============================================================
+
+-- ---------- Track when a request last fanned out (for TTL widening) ----------
+alter table public.service_requests
+  add column if not exists last_dispatch_at timestamptz;
+
+-- Re-create dispatch RPCs to stamp last_dispatch_at.
+create or replace function public.dispatch_request(p_request_id uuid)
+returns integer
+language plpgsql security definer set search_path = public as $$
+declare
+  v_radius integer;
+  v_created integer := 0;
+begin
+  select current_radius_km into v_radius from public.service_requests where id = p_request_id;
+
+  insert into public.service_assignments (request_id, provider_id, distance_km, eta_minutes)
+  select p_request_id, np.provider_id, np.distance_km, np.eta_minutes
+  from public.find_nearby_providers(p_request_id, v_radius) np
+  on conflict (request_id, provider_id) do nothing;
+
+  get diagnostics v_created = row_count;
+
+  update public.service_requests
+    set status = 'dispatching', last_dispatch_at = now()
+    where id = p_request_id and status in ('pending','dispatching');
+
+  return v_created;
+end;
+$$;
+
+create or replace function public.widen_dispatch(p_request_id uuid)
+returns integer
+language plpgsql security definer set search_path = public as $$
+begin
+  update public.service_requests
+    set current_radius_km = case current_radius_km when 5 then 10 when 10 then 20 else 20 end
+    where id = p_request_id;
+  return public.dispatch_request(p_request_id);
+end;
+$$;
+
+-- ---------- Provider rejects/declines an offer ----------
+create or replace function public.reject_assignment(p_assignment_id uuid)
+returns void
+language plpgsql security invoker set search_path = public as $$
+begin
+  update public.service_assignments
+    set status = 'rejected', responded_at = now()
+    where id = p_assignment_id
+      and provider_id = public.my_provider_id()   -- RLS-aligned guard
+      and status = 'offered';
+end;
+$$;
+
+-- ---------- Push tokens (Expo) ----------
+create table if not exists public.push_tokens (
+  user_id    uuid not null references public.profiles(id) on delete cascade,
+  token      text not null,
+  platform   text,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, token)
+);
+alter table public.push_tokens enable row level security;
+create policy "push: owner rw" on public.push_tokens
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- ---------- In-app notification helper ----------
+create or replace function public.notify_user(
+  p_user_id uuid, p_title text, p_body text, p_type text, p_data jsonb default '{}'::jsonb
+)
+returns void
+language sql security definer set search_path = public as $$
+  insert into public.notifications (user_id, title, body, type, data)
+  values (p_user_id, p_title, p_body, p_type, p_data);
+$$;
+
+-- New offer → notify the provider's user.
+create or replace function public.on_offer_created()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare v_user uuid; v_cat service_category;
+begin
+  select user_id into v_user from public.providers where id = new.provider_id;
+  select category into v_cat from public.service_requests where id = new.request_id;
+  perform public.notify_user(
+    v_user, 'New rescue request', concat('A ', v_cat, ' job is ', new.distance_km, ' km away'),
+    'request_offer', jsonb_build_object('request_id', new.request_id, 'assignment_id', new.id)
+  );
+  return new;
+end;
+$$;
+create trigger trg_offer_notify
+  after insert on public.service_assignments
+  for each row execute function public.on_offer_created();
+
+-- Request accepted → notify the customer.
+create or replace function public.on_request_accepted()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'accepted' and old.status is distinct from 'accepted' then
+    perform public.notify_user(
+      new.customer_id, 'Help is on the way!', 'A provider accepted your request',
+      'accepted', jsonb_build_object('request_id', new.id)
+    );
+  end if;
+  return new;
+end;
+$$;
+create trigger trg_request_accepted_notify
+  after update on public.service_requests
+  for each row execute function public.on_request_accepted();
+
+alter publication supabase_realtime add table public.push_tokens;
+
+-- ---------- TTL sweep: widen radius or expire (called by Edge cron) ----------
+create or replace function public.run_dispatch_sweep()
+returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_ttl integer;
+  v_expired integer := 0;
+  v_widened integer := 0;
+  r record;
+begin
+  select coalesce((value)::text::integer, 45) into v_ttl
+  from public.platform_config where key = 'offer_ttl_seconds';
+  v_ttl := coalesce(v_ttl, 45);
+
+  -- 1) Expire requests past their hard deadline.
+  with e as (
+    update public.service_requests
+      set status = 'expired'
+      where status in ('pending','dispatching') and expires_at < now()
+      returning id
+  )
+  select count(*) into v_expired from e;
+  update public.service_assignments set status = 'expired'
+    where status = 'offered'
+      and request_id in (select id from public.service_requests where status = 'expired');
+
+  -- 2) Widen requests whose current radius has gone stale without acceptance.
+  for r in
+    select id from public.service_requests
+    where status = 'dispatching'
+      and current_radius_km < 20
+      and last_dispatch_at < now() - make_interval(secs => v_ttl)
+  loop
+    perform public.widen_dispatch(r.id);
+    v_widened := v_widened + 1;
+  end loop;
+
+  return jsonb_build_object('expired', v_expired, 'widened', v_widened);
+end;
+$$;
+
+-- Optional: schedule the sweep every minute with pg_cron (enable extension first).
+--   select cron.schedule('dispatch-sweep', '* * * * *', $$ select public.run_dispatch_sweep(); $$);
+-- Or invoke the Edge Function supabase/functions/dispatch-sweep on a 15s external cron.
+
+-- ====== supabase/migrations/0010_gps_tracking.sql ======
+-- =============================================================
+-- AngkorGo — 0010 GPS Tracking
+-- Phase 5: provider heartbeat upsert (validated) + realtime-friendly coords
+-- =============================================================
+
+-- Keep plain lat/lng alongside the geography so Realtime payloads carry
+-- readable coordinates (geography streams as opaque WKB otherwise).
+alter table public.provider_locations
+  add column if not exists lat double precision,
+  add column if not exists lng double precision;
+
+-- ---------- Validated location heartbeat ----------
+-- Called by the provider app every ~5s. Runs as invoker so the
+-- "locations: owner write" RLS policy applies (provider_id = my_provider_id()).
+-- Rejects out-of-range coordinates and implausible GPS jumps (>300 km/h).
+create or replace function public.update_provider_location(
+  p_lng     double precision,
+  p_lat     double precision,
+  p_heading numeric default null,
+  p_speed   numeric default null
+)
+returns boolean
+language plpgsql security invoker set search_path = public as $$
+declare
+  v_provider uuid := public.my_provider_id();
+  v_prev     public.provider_locations%rowtype;
+  v_dist_m   double precision;
+  v_dt       double precision;
+begin
+  if v_provider is null then
+    return false;                         -- not a provider
+  end if;
+  if p_lat < -90 or p_lat > 90 or p_lng < -180 or p_lng > 180 then
+    return false;                         -- invalid coordinates
+  end if;
+
+  select * into v_prev from public.provider_locations where provider_id = v_provider;
+
+  -- Reject teleports: if the implied speed since the last fix is absurd, drop it.
+  if found then
+    v_dist_m := st_distance(v_prev.location, st_point(p_lng, p_lat)::geography);
+    v_dt     := greatest(extract(epoch from (now() - v_prev.updated_at)), 1);
+    if v_dist_m / v_dt > 83 then          -- ~300 km/h
+      return false;
+    end if;
+  end if;
+
+  insert into public.provider_locations (provider_id, location, lat, lng, heading, speed, updated_at)
+  values (v_provider, st_point(p_lng, p_lat)::geography, p_lat, p_lng, p_heading, p_speed, now())
+  on conflict (provider_id) do update
+    set location = excluded.location, lat = excluded.lat, lng = excluded.lng,
+        heading = excluded.heading, speed = excluded.speed, updated_at = now();
+
+  return true;
+end;
+$$;
+
+-- ====== supabase/migrations/0011_payments.sql ======
+-- =============================================================
+-- AngkorGo — 0011 Payments
+-- Phase 6: invoice → escrow (held) → release → wallet credit → payout
+-- Money-moving transitions go through SECURITY DEFINER RPCs with explicit
+-- role guards (RLS on payments/withdrawals stays read-only for participants).
+-- =============================================================
+
+-- ---------- Provider issues an invoice for a job ----------
+create or replace function public.create_invoice(
+  p_request_id uuid,
+  p_amount     numeric,
+  p_currency   text default 'USD',
+  p_invoice_url text default null
+)
+returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_provider uuid := public.my_provider_id();
+  v_customer uuid;
+  v_rate     numeric;
+  v_id       uuid;
+begin
+  select customer_id into v_customer
+  from public.service_requests
+  where id = p_request_id
+    and assigned_provider_id = v_provider
+    and status in ('arrived', 'in_progress');
+  if v_customer is null then
+    raise exception 'Not authorized to invoice this request';
+  end if;
+
+  -- provider keeps (1 - commission); default 0.90.
+  select 1 - commission_rate into v_rate from public.providers where id = v_provider;
+
+  insert into public.payments (request_id, customer_id, provider_id, amount, currency, provider_rate, invoice_url, status)
+  values (p_request_id, v_customer, v_provider, p_amount, p_currency, coalesce(v_rate, 0.9), p_invoice_url, 'pending')
+  on conflict (request_id) do update
+    set amount = excluded.amount, currency = excluded.currency,
+        provider_rate = excluded.provider_rate, invoice_url = excluded.invoice_url,
+        status = 'pending'
+    where public.payments.status = 'pending'
+  returning id into v_id;
+  return v_id;
+end;
+$$;
+
+-- ---------- Gateway confirmed capture → escrow (held) ----------
+-- Called by the payment-webhook Edge Function (service role) after ABA PayWay /
+-- Stripe / KHQR confirms funds. Idempotent on external_txn_id.
+create or replace function public.confirm_payment(
+  p_payment_id uuid,
+  p_method     payment_method,
+  p_txn        text default null
+)
+returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  update public.payments
+    set status = 'held', method = p_method, external_txn_id = p_txn, paid_at = now()
+    where id = p_payment_id and status = 'pending';
+end;
+$$;
+
+-- ---------- Release escrow → credit provider + complete request ----------
+-- Customer confirms the work is done (or admin releases). The wallet credit +
+-- total_jobs bump happen via the credit_wallet_on_release trigger (0003).
+create or replace function public.release_payment(p_payment_id uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare v_customer uuid; v_request uuid;
+begin
+  select customer_id, request_id into v_customer, v_request
+  from public.payments where id = p_payment_id and status = 'held';
+  if v_request is null then
+    raise exception 'Payment not in a releasable state';
+  end if;
+  if v_customer <> auth.uid() and not public.is_admin() then
+    raise exception 'Only the customer or an admin may release payment';
+  end if;
+
+  update public.payments set status = 'released' where id = p_payment_id;
+  update public.service_requests set status = 'completed' where id = v_request;
+end;
+$$;
+
+-- ---------- Service-role release (used by the payment webhook) ----------
+-- No auth.uid() guard — restricted to service_role via GRANTs below so it can
+-- never be called from a client session.
+create or replace function public.release_payment_admin(p_payment_id uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare v_request uuid;
+begin
+  select request_id into v_request from public.payments
+  where id = p_payment_id and status = 'held';
+  if v_request is null then return; end if;
+  update public.payments set status = 'released' where id = p_payment_id;
+  update public.service_requests set status = 'completed' where id = v_request;
+end;
+$$;
+
+-- Lock the webhook-only RPCs down to service_role.
+revoke execute on function public.confirm_payment(uuid, payment_method, text) from anon, authenticated;
+revoke execute on function public.release_payment_admin(uuid) from public, anon, authenticated;
+grant execute on function public.confirm_payment(uuid, payment_method, text) to service_role;
+grant execute on function public.release_payment_admin(uuid) to service_role;
+
+-- ---------- Provider requests a payout (debits wallet, holds funds) ----------
+create or replace function public.request_withdrawal(
+  p_amount      numeric,
+  p_method      payment_method,
+  p_destination text
+)
+returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_provider uuid := public.my_provider_id();
+  v_balance  numeric;
+  v_id       uuid;
+begin
+  if v_provider is null then raise exception 'Not a provider'; end if;
+
+  select balance into v_balance from public.wallets where provider_id = v_provider for update;
+  if coalesce(v_balance, 0) < p_amount then
+    raise exception 'Insufficient wallet balance';
+  end if;
+
+  update public.wallets set balance = balance - p_amount, updated_at = now()
+    where provider_id = v_provider;
+
+  insert into public.withdrawals (provider_id, amount, method, destination)
+  values (v_provider, p_amount, p_method, p_destination)
+  returning id into v_id;
+  return v_id;
+end;
+$$;
+
+-- ---------- Admin processes a payout (refunds wallet on rejection) ----------
+create or replace function public.process_withdrawal(
+  p_withdrawal_id uuid,
+  p_status        withdrawal_status
+)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare v_provider uuid; v_amount numeric; v_current withdrawal_status;
+begin
+  if not public.is_admin() then raise exception 'Admin only'; end if;
+
+  select provider_id, amount, status into v_provider, v_amount, v_current
+  from public.withdrawals where id = p_withdrawal_id for update;
+
+  update public.withdrawals
+    set status = p_status, processed_at = now(), processed_by = auth.uid()
+    where id = p_withdrawal_id;
+
+  -- Refund the held funds if the payout is rejected.
+  if p_status = 'rejected' and v_current <> 'rejected' then
+    update public.wallets set balance = balance + v_amount, updated_at = now()
+      where provider_id = v_provider;
+  end if;
+end;
+$$;
+
+alter publication supabase_realtime add table public.wallets;
+alter publication supabase_realtime add table public.withdrawals;
+
