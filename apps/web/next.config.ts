@@ -2,7 +2,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Compile the shared workspace package.
+  // Compile the shared workspace package (installed via pnpm workspace).
   transpilePackages: ['@angkorgo/shared'],
 };
 
