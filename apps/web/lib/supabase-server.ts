@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+
+type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 // Cookie-based SSR client for the admin dashboard (Next.js 16 server components).
 export async function createClient() {
@@ -10,7 +12,8 @@ export async function createClient() {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (list) => list.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (list: CookieToSet[]) =>
+          list.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },
   );
