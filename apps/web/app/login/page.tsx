@@ -1,11 +1,20 @@
 'use client';
 // Admin login — email OTP + Google. Role is enforced by middleware; a
 // non-admin who authenticates is redirected back here with ?error=not_admin.
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 
+// useSearchParams() requires a Suspense boundary for static export.
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const params = useSearchParams();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
