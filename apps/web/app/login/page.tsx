@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 
 export default function LoginPage() {
-  const supabase = createClient();
   const params = useSearchParams();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -15,10 +14,12 @@ export default function LoginPage() {
 
   const notAdmin = params.get('error') === 'not_admin';
 
+  // Create the client inside handlers (client-side only) so the page never
+  // instantiates Supabase during the build-time prerender.
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
     setMsg('');
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await createClient().auth.signInWithOtp({
       email,
       options: { shouldCreateUser: false }, // admins are provisioned, not self-signup
     });
@@ -28,13 +29,13 @@ export default function LoginPage() {
 
   async function verify(e: React.FormEvent) {
     e.preventDefault();
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
+    const { error } = await createClient().auth.verifyOtp({ email, token: code, type: 'email' });
     if (error) setMsg(error.message);
     else window.location.href = '/dashboard';
   }
 
   async function google() {
-    await supabase.auth.signInWithOAuth({
+    await createClient().auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
