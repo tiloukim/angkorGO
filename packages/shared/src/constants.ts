@@ -53,6 +53,26 @@ export type UserRole = 'customer' | 'provider' | 'admin';
 export type Language = 'en' | 'km';
 export type ImageKind = 'vehicle' | 'problem' | 'before' | 'after' | 'invoice';
 
+// ---- AngkorGo Ride (ride-hailing vertical) ----
+export const VEHICLE_CLASSES = ['moto', 'tuktuk', 'car'] as const;
+export type VehicleClass = (typeof VEHICLE_CLASSES)[number];
+
+export const VEHICLE_LABELS: Record<Language, Record<VehicleClass, string>> = {
+  en: { moto: 'Moto', tuktuk: 'Tuk-tuk', car: 'Car' },
+  km: { moto: 'ម៉ូតូ', tuktuk: 'តុកតុក', car: 'ឡាន' },
+};
+
+export const TRIP_STATUSES = [
+  'requested', 'searching', 'matched', 'driver_arriving', 'driver_arrived',
+  'in_progress', 'completed', 'cancelled', 'expired', 'no_drivers',
+] as const;
+export type TripStatus = (typeof TRIP_STATUSES)[number];
+
+// Ride dispatch radius is tighter than rescue (urban density).
+export const RIDE_DISPATCH_RADII_KM = [2, 3, 5] as const;
+// KHR per USD, for dual-currency display.
+export const KHR_PER_USD = 4100;
+
 export type PaymentMethod = 'aba_payway' | 'khqr' | 'stripe' | 'wing' | 'acleda' | 'cash';
 
 // Payment options shown to the customer, in display order.
