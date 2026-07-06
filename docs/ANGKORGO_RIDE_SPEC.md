@@ -264,7 +264,7 @@ This keeps the 90/10 economics whether the fare is paid by card/KHQR (escrow) or
 | **R5** ✅ | Live tracking (migration `0019`): rider reads driver location (RLS policy) + `get_trip_driver` RPC; rider `ride/[id]` shows tracking map (driver→pickup, then driver→dropoff) + driver card (name/rating/vehicle/plate/fare) via `TrackingMap` + `useProviderLocation`. Driver broadcasts from R4. |
 | **R6** ✅ | Fare settlement (migration `0020`): `settle_trip` on trip end — cash → `driver_ledger` commission debit; cashless → pending `payments` row → escrow → release credits driver 90% (reuses payments engine). Driver "End trip" → `settle_trip`; rider `PaymentSheet` on completed cashless trip; `driver_ledger_balance` shown on wallet. |
 | **R7** ✅ | Driver vehicle onboarding: `(provider)/vehicles` (register/list, photo upload, pending→verified) + admin **Vehicle Approvals** page (`setVehicleVerified`). Driver active-trip flow shipped in R4. |
-| **R8** | Admin: fare/surge config, vehicle approvals, live trips, disputes |
+| **R8** ✅ | Admin **Ride Operations** page: ride KPIs (active/completed/GMV/avg fare), **fare-config editor** (per-class), **global surge** control (migration `0021` secures `platform_config`), recent-trips table. Vehicle approvals in R7. Rider app applies admin surge to quotes. |
 | **R9** | Testing: fare math, dispatch race, cash-ledger accounting, e2e trip |
 | **R10** | Launch: Google Places/Distance APIs, pricing per city, EAS build |
 

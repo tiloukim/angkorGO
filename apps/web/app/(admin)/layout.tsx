@@ -6,6 +6,7 @@ const NAV = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/providers', label: 'Provider Approvals' },
   { href: '/vehicles', label: 'Vehicle Approvals' },
+  { href: '/rides', label: 'Ride Operations' },
   { href: '/users', label: 'Users' },
   { href: '/payouts', label: 'Payout Queue' },
   { href: '/disputes', label: 'Dispute Center' },

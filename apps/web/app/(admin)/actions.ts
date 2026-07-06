@@ -50,3 +50,24 @@ export async function setVehicleVerified(vehicleId: string, verified: boolean) {
     .eq('id', vehicleId);
   revalidatePath('/vehicles');
 }
+
+export async function updateFareConfig(formData: FormData) {
+  const supabase = await createClient();
+  const cls = String(formData.get('class'));
+  await supabase.from('fare_config').update({
+    base_fare: Number(formData.get('base_fare')),
+    per_km: Number(formData.get('per_km')),
+    per_min: Number(formData.get('per_min')),
+    minimum_fare: Number(formData.get('minimum_fare')),
+    cancellation_fee: Number(formData.get('cancellation_fee')),
+    updated_at: new Date().toISOString(),
+  }).eq('class', cls);
+  revalidatePath('/rides');
+}
+
+export async function setSurge(formData: FormData) {
+  const supabase = await createClient();
+  const v = Math.max(1, Number(formData.get('surge')) || 1);
+  await supabase.from('platform_config').update({ value: v }).eq('key', 'surge_multiplier');
+  revalidatePath('/rides');
+}

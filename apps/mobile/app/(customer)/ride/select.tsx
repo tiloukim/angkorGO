@@ -22,6 +22,7 @@ export default function RideSelect() {
   const [method, setMethod] = useState<'cash' | 'khqr'>('cash');
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [surge, setSurge] = useState(1);
 
   useEffect(() => {
     (async () => {
@@ -30,8 +31,12 @@ export default function RideSelect() {
       // Fallback distance/ETA if Directions is unavailable (haversine ~ +30% for roads).
       const distance = r?.distanceKm ?? haversine(pickup, dropoff);
       const duration = r?.etaMinutes ?? Math.max(3, Math.round(distance / 25 * 60));
+      // Global surge set by admin (platform_config).
+      const { data: cfg } = await supabase.from('platform_config').select('value').eq('key', 'surge_multiplier').maybeSingle();
+      const s = Math.max(1, Number(cfg?.value ?? 1));
+      setSurge(s);
       const { data } = await supabase.rpc('estimate_all_fares', {
-        p_distance_km: distance, p_duration_min: duration, p_surge: 1.0,
+        p_distance_km: distance, p_duration_min: duration, p_surge: s,
       });
       setFares((data ?? []) as Fare[]);
       setLoading(false);
@@ -50,7 +55,7 @@ export default function RideSelect() {
       p_pickup_lng: pickup.lng, p_pickup_lat: pickup.lat, p_pickup_address: p.paddr ?? null,
       p_dropoff_lng: dropoff.lng, p_dropoff_lat: dropoff.lat, p_dropoff_address: p.daddr ?? null,
       p_est_distance_km: distance, p_est_duration_min: duration, p_est_fare: selected.fare,
-      p_surge: 1.0, p_payment_method: method, p_polyline: route?.polyline ?? null,
+      p_surge: surge, p_payment_method: method, p_polyline: route?.polyline ?? null,
     });
     if (error || !tripId) { setBusy(false); return Alert.alert('Could not request ride', error?.message ?? ''); }
     // Fan out offers to nearby drivers.
