@@ -1,11 +1,13 @@
--- AngkorGo — apply ALL remaining migrations (0022, 0023, 0024) to a live DB on 0021.
--- = Vehicle Rental + Food Delivery. Run ONCE in the Supabase SQL Editor.
--- Guards below let a partial re-run past the storage/trigger steps.
+-- AngkorGo — apply ALL remaining migrations (0022, 0023, 0024) to a live DB.
+-- = Vehicle Rental + Food Delivery. Fully RE-RUNNABLE (resets partial Food objects first).
 
+-- ---- reset any partially-applied objects (Food tables are new / hold no data) ----
 drop policy  if exists "listings img read"  on storage.objects;
 drop policy  if exists "listings img write" on storage.objects;
-drop trigger if exists trg_orders_updated on public.orders;
-drop trigger if exists trg_order_placed   on public.orders;
+alter table if exists public.payments drop constraint if exists payments_one_source;
+alter table if exists public.payments drop column if exists order_id;
+drop table if exists public.courier_offers, public.order_items, public.orders, public.menu_items, public.restaurants cascade;
+drop type  if exists order_status;
 
 -- ============================================================
 -- 0022_rental_bookings
