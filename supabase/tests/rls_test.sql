@@ -31,7 +31,7 @@ select is((select count(*)::int from public.service_requests
 select throws_ok($$
   insert into public.service_requests (customer_id, category, pickup_location)
   values ('30000000-0000-0000-0000-000000000002', 'tow_truck', st_point(104.9,11.5)::geography)
-$$, '42501', 'customer A cannot create a request as customer B');
+$$, '42501', NULL::text, 'customer A cannot create a request as customer B');
 
 reset role;
 select finish();
