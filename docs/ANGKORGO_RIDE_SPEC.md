@@ -262,7 +262,7 @@ This keeps the 90/10 economics whether the fare is paid by card/KHQR (escrow) or
 | **R3** ✅ | Rider booking flow: where-to (Places search), class picker w/ live fares (USD+KHR) + ETA, create trip (migration `0017` `create_trip`/`get_trip`); status screen. Dispatch/matching = R4 |
 | **R4** ✅ | Dispatch (migration `0018`): `find_nearby_drivers`, `dispatch_trip`, `widen_dispatch_trip` (2→3→5), atomic `accept_trip` + `reject_trip_offer`, offer notify + matched notify, trip TTL in `run_dispatch_sweep`; driver ride-offer inbox + active-trip screen; rider sees "matched" |
 | **R5** ✅ | Live tracking (migration `0019`): rider reads driver location (RLS policy) + `get_trip_driver` RPC; rider `ride/[id]` shows tracking map (driver→pickup, then driver→dropoff) + driver card (name/rating/vehicle/plate/fare) via `TrackingMap` + `useProviderLocation`. Driver broadcasts from R4. |
-| **R6** | Payments: card/KHQR escrow + **cash ledger** + commission netting |
+| **R6** ✅ | Fare settlement (migration `0020`): `settle_trip` on trip end — cash → `driver_ledger` commission debit; cashless → pending `payments` row → escrow → release credits driver 90% (reuses payments engine). Driver "End trip" → `settle_trip`; rider `PaymentSheet` on completed cashless trip; `driver_ledger_balance` shown on wallet. |
 | **R7** ✅ | Driver vehicle onboarding: `(provider)/vehicles` (register/list, photo upload, pending→verified) + admin **Vehicle Approvals** page (`setVehicleVerified`). Driver active-trip flow shipped in R4. |
 | **R8** | Admin: fare/surge config, vehicle approvals, live trips, disputes |
 | **R9** | Testing: fare math, dispatch race, cash-ledger accounting, e2e trip |

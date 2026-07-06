@@ -9,15 +9,18 @@ interface Withdrawal { id: string; amount: number; status: string; requested_at:
 export default function WalletScreen() {
   const router = useRouter();
   const [balance, setBalance] = useState(0);
+  const [ledger, setLedger] = useState(0);
   const [amount, setAmount] = useState('');
   const [rows, setRows] = useState<Withdrawal[]>([]);
 
   const load = useCallback(async () => {
-    const [{ data: w }, { data: wd }] = await Promise.all([
+    const [{ data: w }, { data: wd }, { data: lb }] = await Promise.all([
       supabase.from('wallets').select('balance').maybeSingle(),
       supabase.from('withdrawals').select('id, amount, status, requested_at').order('requested_at', { ascending: false }),
+      supabase.rpc('driver_ledger_balance'),
     ]);
     setBalance(Number(w?.balance ?? 0));
+    setLedger(Number(lb ?? 0));
     setRows((wd ?? []) as Withdrawal[]);
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -40,6 +43,9 @@ export default function WalletScreen() {
       <View style={styles.balanceCard}>
         <Text style={styles.balanceLabel}>Available balance</Text>
         <Text style={styles.balance}>${balance.toFixed(2)}</Text>
+        {ledger < 0 && (
+          <Text style={styles.owed}>Cash commission owed: ${Math.abs(ledger).toFixed(2)}</Text>
+        )}
       </View>
 
       <View style={styles.form}>
@@ -78,6 +84,7 @@ const styles = StyleSheet.create({
   balanceCard: { backgroundColor: '#151E30', borderRadius: 16, padding: 24, marginTop: 16, borderWidth: 1, borderColor: '#1F2A40' },
   balanceLabel: { color: '#8FA3BF', fontSize: 14 },
   balance: { color: '#10B981', fontSize: 40, fontWeight: '800', marginTop: 4 },
+  owed: { color: '#F5A524', fontSize: 13, marginTop: 8 },
   form: { gap: 10, marginTop: 20 },
   input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40' },
   primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },

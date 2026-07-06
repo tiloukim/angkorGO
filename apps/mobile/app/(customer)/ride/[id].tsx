@@ -7,7 +7,9 @@ import type { TripStatus, VehicleClass } from '@angkorgo/shared';
 import { VEHICLE_LABELS } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useProviderLocation } from '@/hooks/useProviderLocation';
+import { useTripPayment } from '@/hooks/usePayment';
 import { TrackingMap } from '@/components/TrackingMap';
+import { PaymentSheet } from '@/components/PaymentSheet';
 import type { Coords } from '@/lib/location';
 
 const COPY: Partial<Record<TripStatus, { title: string; sub: string }>> = {
@@ -40,6 +42,7 @@ export default function RideStatus() {
 
   const tracking = TO_PICKUP.includes(status) || status === 'in_progress';
   const driverCoords = useProviderLocation(tracking ? driverId : null);
+  const payment = useTripPayment(id);
 
   async function load() {
     const { data } = await supabase.rpc('get_trip', { p_trip_id: id });
@@ -120,7 +123,11 @@ export default function RideStatus() {
           <Text style={styles.cancelText}>Cancel</Text>
         </Pressable>
       )}
-      {terminal && (
+      {status === 'completed' && payment && payment.status !== 'released' && (
+        <PaymentSheet payment={payment} />
+      )}
+
+      {terminal && !(status === 'completed' && payment && payment.status !== 'released') && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
           <Text style={styles.primaryText}>Back to home</Text>
         </Pressable>

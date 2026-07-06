@@ -49,12 +49,17 @@ export default function DriverTrip() {
   async function advance() {
     const step = NEXT[status];
     if (!step) return;
+    if (step.to === 'completed') {
+      // Settle the fare (cash → ledger, cashless → pending payment) + complete.
+      const { error } = await supabase.rpc('settle_trip', { p_trip_id: id });
+      if (error) return Alert.alert('Could not end trip', error.message);
+      Alert.alert('Trip completed', 'Fare settled. Cashless rides are paid by the rider in-app.');
+      return router.replace('/(provider)');
+    }
     const patch: Record<string, unknown> = { status: step.to };
     if (step.to === 'in_progress') patch.started_at = new Date().toISOString();
-    if (step.to === 'completed') { patch.completed_at = new Date().toISOString(); patch.final_fare = fare; }
     const { error } = await supabase.from('trips').update(patch).eq('id', id);
     if (error) return Alert.alert('Update failed', error.message);
-    if (step.to === 'completed') router.replace('/(provider)');
   }
 
   function navigateTo() {
