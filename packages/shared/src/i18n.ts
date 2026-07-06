@@ -32,6 +32,20 @@ export const CATEGORY_LABELS: Record<Language, Record<ServiceCategory, string>> 
     van_repair: 'ជួសជុល​រថយន្ត​ដឹក',
     truck_repair: 'ជួសជុល​ឡាន​ធំ',
   },
+  zh: {
+    flat_tire: '轮胎漏气',
+    battery_jump_start: '电瓶没电',
+    battery_replacement: '更换电瓶',
+    fuel_delivery: '燃油耗尽',
+    lockout_service: '开锁服务',
+    tow_truck: '拖车',
+    engine_diagnosis: '发动机故障',
+    emergency_repair: '紧急维修',
+    motorcycle_repair: '摩托车维修',
+    car_repair: '汽车维修',
+    van_repair: '面包车维修',
+    truck_repair: '卡车维修',
+  },
 };
 
 export const UI: Record<Language, Dict> = {
@@ -62,6 +76,20 @@ export const UI: Record<Language, Dict> = {
     call: 'ហៅ',
     pay_now: 'បង់​ប្រាក់',
     rate_provider: 'វាយ​តម្លៃ​អ្នក​ផ្តល់​សេវា',
+  },
+  zh: {
+    tagline: '帮助即将到达。',
+    whats_wrong: '出了什么问题？',
+    confirm_location: '确认您的位置',
+    add_photos: '添加照片',
+    request_help: '请求帮助',
+    finding_help: '正在附近寻找帮助…',
+    provider_on_the_way: '您的服务商正在赶来',
+    eta: '预计到达时间',
+    chat: '聊天',
+    call: '拨打',
+    pay_now: '立即支付',
+    rate_provider: '评价服务商',
   },
 };
 

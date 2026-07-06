@@ -50,7 +50,13 @@ export const REQUEST_STATUSES = [
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 export type UserRole = 'customer' | 'provider' | 'admin';
-export type Language = 'en' | 'km';
+// Trilingual: English, Khmer, Chinese (Simplified).
+export type Language = 'en' | 'km' | 'zh';
+export const LANGUAGES: { code: Language; label: string }[] = [
+  { code: 'en', label: 'English' },
+  { code: 'km', label: 'ភាសាខ្មែរ' },
+  { code: 'zh', label: '中文' },
+];
 export type ImageKind = 'vehicle' | 'problem' | 'before' | 'after' | 'invoice';
 
 // ---- AngkorGo Ride (ride-hailing vertical) ----
@@ -60,6 +66,7 @@ export type VehicleClass = (typeof VEHICLE_CLASSES)[number];
 export const VEHICLE_LABELS: Record<Language, Record<VehicleClass, string>> = {
   en: { moto: 'Moto', tuktuk: 'Tuk-tuk', car: 'Car' },
   km: { moto: 'ម៉ូតូ', tuktuk: 'តុកតុក', car: 'ឡាន' },
+  zh: { moto: '摩托车', tuktuk: '嘟嘟车', car: '汽车' },
 };
 
 export const TRIP_STATUSES = [
