@@ -32,8 +32,11 @@ function LoginForm() {
       email,
       options: { shouldCreateUser: false }, // admins are provisioned, not self-signup
     });
-    if (error) setMsg(error.message);
-    else setSent(true);
+    if (error) {
+      // Surface full detail (status/code) — a 500 with empty body renders as "{}".
+      console.error('signInWithOtp error', error);
+      setMsg(`${error.status ?? ''} ${error.code ?? error.name ?? ''}: ${error.message || '(no message)'}`.trim());
+    } else setSent(true);
   }
 
   async function verify(e: React.FormEvent) {
