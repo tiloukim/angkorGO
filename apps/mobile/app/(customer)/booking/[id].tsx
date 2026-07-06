@@ -1,4 +1,4 @@
-// Vehicle Rental — booking status + payment (once the host confirms).
+// Generic booking status + payment — shared by Vehicle Rental and Stay.
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -12,7 +12,7 @@ const COPY: Partial<Record<BookingStatus, { title: string; sub: string }>> = {
   confirmed:   { title: 'Confirmed!', sub: 'Complete payment to lock in your booking' },
   declined:    { title: 'Declined', sub: 'The host declined this request' },
   cancelled:   { title: 'Cancelled', sub: 'This booking was cancelled' },
-  in_progress: { title: 'Rental active', sub: 'Enjoy your trip' },
+  in_progress: { title: 'Booking active', sub: 'Enjoy your stay' },
   completed:   { title: 'Completed', sub: 'Thanks for booking with AngkorGo' },
 };
 

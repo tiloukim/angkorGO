@@ -121,7 +121,7 @@ Each vertical plugs into this; it doesn't rebuild it.
 | Mobile Auto Repair (#3) | ✅ Built & live (the "Rescue" MVP) — re-badged as a vertical |
 | Ride (#1) | 🚧 R1 schema done; R2–R10 next |
 | Vehicle Rental (#2) | ✅ MVP built on booking core (migration `0022`): host listing creation + browse/book + confirm/decline + payment (host provisioned a provider record for wallet payout) |
-| Stay (#5) | ⬜ pending Booking core |
+| Stay (#5) | ✅ MVP built on booking core (reuses `create_booking`/`confirm_booking` — type-agnostic; no new migration). Browse/detail/book places + host place listings (shared host form w/ vehicle/place toggle). |
 | Food (#4) | ⬜ future; `service_type` reserved so it slots in |
 | Trilingual EN/KH/ZH | ✅ shared i18n + DB updated |
 

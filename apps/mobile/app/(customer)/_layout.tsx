@@ -10,7 +10,9 @@ export default function CustomerLayout() {
       <Stack.Screen name="ride/[id]" />
       <Stack.Screen name="rentals/index" />
       <Stack.Screen name="rentals/[id]" />
-      <Stack.Screen name="rentals/booking/[id]" />
+      <Stack.Screen name="stays/index" />
+      <Stack.Screen name="stays/[id]" />
+      <Stack.Screen name="booking/[id]" />
       <Stack.Screen name="host/index" />
       <Stack.Screen name="host/new" />
       <Stack.Screen name="request/location" />

@@ -1,4 +1,4 @@
-// Vehicle Rental — listing detail + date range → book.
+// Stay — place detail + check-in/out dates → book.
 import { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -11,28 +11,29 @@ interface Listing {
 
 const isDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
 
-export default function ListingDetail() {
+export default function StayDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [l, setL] = useState<Listing | null>(null);
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [guests, setGuests] = useState('1');
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     supabase.from('listings').select('*').eq('id', id).single().then(({ data }) => setL(data as Listing));
   }, [id]);
 
-  const days = isDate(start) && isDate(end) ? Math.round((Date.parse(end) - Date.parse(start)) / 86400000) : 0;
-  const subtotal = l && days > 0 ? l.price_per_unit * days : 0;
+  const nights = isDate(checkIn) && isDate(checkOut) ? Math.round((Date.parse(checkOut) - Date.parse(checkIn)) / 86400000) : 0;
+  const subtotal = l && nights > 0 ? l.price_per_unit * nights : 0;
   const total = l ? subtotal + Number(l.cleaning_fee) + Number(l.deposit) : 0;
 
   async function book() {
     if (!l) return;
-    if (days < 1) return Alert.alert('Pick valid dates', 'Use YYYY-MM-DD; end must be after start.');
+    if (nights < 1) return Alert.alert('Pick valid dates', 'Use YYYY-MM-DD; check-out after check-in.');
     setBusy(true);
     const { data: bookingId, error } = await supabase.rpc('create_booking', {
-      p_listing: l.id, p_start: start, p_end: end, p_guests: 1,
+      p_listing: l.id, p_start: checkIn, p_end: checkOut, p_guests: Number(guests) || 1,
     });
     setBusy(false);
     if (error || !bookingId) return Alert.alert('Could not book', error?.message ?? '');
@@ -46,19 +47,23 @@ export default function ListingDetail() {
       {l.photos?.[0] && <Image source={{ uri: l.photos[0] }} style={styles.photo} />}
       <Text style={styles.title}>{l.title}</Text>
       {l.address ? <Text style={styles.addr}>{l.address}</Text> : null}
-      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} / day</Text>
+      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} / night</Text>
+      {l.attributes?.beds ? <Text style={styles.attr}>{l.attributes.beds} beds · {l.attributes.baths ?? '?'} baths · up to {l.attributes.max_guests ?? '?'} guests</Text> : null}
       {l.description ? <Text style={styles.desc}>{l.description}</Text> : null}
-      {l.attributes?.seats ? <Text style={styles.attr}>{l.attributes.seats} seats · {l.attributes.transmission ?? ''} · {l.attributes.year ?? ''}</Text> : null}
+      {Array.isArray(l.attributes?.amenities) && l.attributes.amenities.length > 0 && (
+        <Text style={styles.attr}>Amenities: {l.attributes.amenities.join(', ')}</Text>
+      )}
 
-      <Text style={styles.label}>Dates</Text>
+      <Text style={styles.label}>Dates & guests</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder="Start YYYY-MM-DD" placeholderTextColor="#5B6B84" value={start} onChangeText={setStart} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="End YYYY-MM-DD" placeholderTextColor="#5B6B84" value={end} onChangeText={setEnd} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder="Check-in YYYY-MM-DD" placeholderTextColor="#5B6B84" value={checkIn} onChangeText={setCheckIn} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder="Check-out YYYY-MM-DD" placeholderTextColor="#5B6B84" value={checkOut} onChangeText={setCheckOut} autoCapitalize="none" />
       </View>
+      <TextInput style={[styles.input, { marginHorizontal: 24, marginTop: 10 }]} placeholder="Guests" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
 
-      {days > 0 && (
+      {nights > 0 && (
         <View style={styles.summary}>
-          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${days} days`} value={`$${subtotal.toFixed(2)}`} />
+          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${nights} nights`} value={`$${subtotal.toFixed(2)}`} />
           {Number(l.cleaning_fee) > 0 && <Row label="Cleaning fee" value={`$${Number(l.cleaning_fee).toFixed(2)}`} />}
           {Number(l.deposit) > 0 && <Row label="Deposit (refundable)" value={`$${Number(l.deposit).toFixed(2)}`} />}
           <Row label="Total" value={`$${total.toFixed(2)}`} bold />
@@ -90,8 +95,8 @@ const styles = StyleSheet.create({
   title: { color: '#fff', fontSize: 24, fontWeight: '800', paddingHorizontal: 24, marginTop: 20 },
   addr: { color: '#8FA3BF', paddingHorizontal: 24, marginTop: 4 },
   price: { color: '#10B981', fontSize: 20, fontWeight: '800', paddingHorizontal: 24, marginTop: 10 },
-  desc: { color: '#C7D0DE', paddingHorizontal: 24, marginTop: 12, lineHeight: 20 },
   attr: { color: '#8FA3BF', paddingHorizontal: 24, marginTop: 10 },
+  desc: { color: '#C7D0DE', paddingHorizontal: 24, marginTop: 12, lineHeight: 20 },
   label: { color: '#fff', fontSize: 15, fontWeight: '700', paddingHorizontal: 24, marginTop: 24, marginBottom: 10 },
   dates: { flexDirection: 'row', gap: 10, paddingHorizontal: 24 },
   input: { flex: 1, backgroundColor: '#151E30', borderRadius: 12, padding: 14, color: '#fff', borderWidth: 1, borderColor: '#1F2A40' },
