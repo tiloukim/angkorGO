@@ -77,9 +77,10 @@ function LoginForm() {
         ) : (
           <form onSubmit={verify} className="space-y-3">
             <input
-              inputMode="numeric" maxLength={6} placeholder="000000" value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="w-full rounded-xl bg-[#151E30] border border-[#1F2A40] p-4 text-center text-2xl tracking-[0.5em] outline-none"
+              inputMode="numeric" maxLength={10} placeholder="Enter code" value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\s/g, ''))}
+              autoFocus
+              className="w-full rounded-xl bg-[#151E30] border border-[#1F2A40] p-4 text-center text-2xl tracking-[0.3em] outline-none"
             />
             <button className="w-full rounded-xl bg-[#F04438] p-4 font-bold">Verify</button>
           </form>

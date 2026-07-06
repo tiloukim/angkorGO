@@ -31,10 +31,10 @@ export default function VerifyScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="000000"
+        placeholder="Enter code"
         placeholderTextColor="#5B6B84"
         keyboardType="number-pad"
-        maxLength={6}
+        maxLength={10}
         value={code}
         onChangeText={setCode}
         autoFocus
