@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Switch, StyleSheet, Pressable, FlatList, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { categoryLabel } from '@angkorgo/shared';
+import { categoryLabel, VEHICLE_LABELS } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { registerPushToken } from '@/lib/push';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
+import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
 import type { Provider } from '@angkorgo/shared';
 
 export default function ProviderDashboard() {
@@ -15,6 +16,7 @@ export default function ProviderDashboard() {
   const { signOut } = useAuth();
   const [provider, setProvider] = useState<Provider | null>(null);
   const { offers, refresh } = useProviderOffers(provider?.id);
+  const { offers: rideOffers, refresh: refreshRides } = useTripOffers(provider?.id);
 
   async function load() {
     const { data } = await supabase.from('providers').select('*').single();
@@ -37,6 +39,17 @@ export default function ProviderDashboard() {
   async function reject(o: Offer) {
     await supabase.rpc('reject_assignment', { p_assignment_id: o.assignment_id });
     refresh();
+  }
+
+  async function acceptRide(o: TripOffer) {
+    const { error } = await supabase.rpc('accept_trip', { p_offer_id: o.offer_id });
+    if (error) { Alert.alert('Too late', 'This ride was taken by another driver.'); refreshRides(); return; }
+    router.push({ pathname: '/(provider)/trip/[id]', params: { id: o.trip_id } });
+  }
+
+  async function rejectRide(o: TripOffer) {
+    await supabase.rpc('reject_trip_offer', { p_offer_id: o.offer_id });
+    refreshRides();
   }
 
   const approved = provider?.status === 'approved';
@@ -66,9 +79,30 @@ export default function ProviderDashboard() {
         <Text style={styles.hint}>Go online to start receiving nearby rescue requests.</Text>
       )}
 
+      {approved && provider?.is_online && rideOffers.length > 0 && (
+        <>
+          <Text style={styles.section}>Ride requests ({rideOffers.length})</Text>
+          {rideOffers.map((item) => (
+            <View key={item.offer_id} style={styles.offer}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.offerCat}>🛺 {VEHICLE_LABELS.en[item.class]} · ${Number(item.est_fare ?? 0).toFixed(2)}</Text>
+                <Text style={styles.offerMeta}>{item.distance_km ?? '?'} km to pickup · ~{item.eta_minutes ?? '?'} min</Text>
+                {item.dropoff_address ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff_address}</Text> : null}
+              </View>
+              <Pressable style={styles.reject} onPress={() => rejectRide(item)}>
+                <Text style={styles.rejectText}>Skip</Text>
+              </Pressable>
+              <Pressable style={styles.accept} onPress={() => acceptRide(item)}>
+                <Text style={styles.acceptText}>Accept</Text>
+              </Pressable>
+            </View>
+          ))}
+        </>
+      )}
+
       {approved && provider?.is_online && (
         <>
-          <Text style={styles.section}>Incoming requests ({offers.length})</Text>
+          <Text style={styles.section}>Roadside requests ({offers.length})</Text>
           <FlatList
             data={offers}
             keyExtractor={(o) => o.assignment_id}

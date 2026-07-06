@@ -9,6 +9,7 @@ export default function ProviderLayout() {
       <Stack.Screen name="wallet" />
       <Stack.Screen name="profile" />
       <Stack.Screen name="job/[id]" />
+      <Stack.Screen name="trip/[id]" />
     </Stack>
   );
 }

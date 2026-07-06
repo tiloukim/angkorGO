@@ -53,6 +53,8 @@ export default function RideSelect() {
       p_surge: 1.0, p_payment_method: method, p_polyline: route?.polyline ?? null,
     });
     if (error || !tripId) { setBusy(false); return Alert.alert('Could not request ride', error?.message ?? ''); }
+    // Fan out offers to nearby drivers.
+    await supabase.rpc('dispatch_trip', { p_trip_id: tripId });
     router.replace({ pathname: '/(customer)/ride/[id]', params: { id: tripId as string } });
   }
 
