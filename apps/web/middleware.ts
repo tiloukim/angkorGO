@@ -29,28 +29,28 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
-
+  // /login and /auth/* are the only non-static public routes; everything else is admin.
   const isLogin = path === '/login' || path.startsWith('/auth');
-  // Public: landing page (/) and login/auth. Everything else is the admin console.
-  const isPublic = path === '/' || isLogin;
-  const isProtected = !isPublic;
 
-  if (!user && isProtected) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // Not signed in → only the login/auth pages are reachable.
+  if (!user) {
+    if (!isLogin) return NextResponse.redirect(new URL('/login', request.url));
+    return response;
   }
 
-  if (user && isProtected) {
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-    if (profile?.role !== 'admin') {
-      // Signed in but not an admin — bounce to login with an error flag.
-      return NextResponse.redirect(new URL('/login?error=not_admin', request.url));
-    }
+  // Signed in → is this user an admin?
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  const isAdmin = profile?.role === 'admin';
+
+  if (!isAdmin) {
+    // Non-admin (e.g. a customer who signed in with Google): show the login page
+    // with the error — do NOT redirect it back to /dashboard (that caused a loop).
+    if (isLogin) return response;
+    return NextResponse.redirect(new URL('/login?error=not_admin', request.url));
   }
 
-  if (user && isLogin) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
+  // Admin → keep them out of the login page.
+  if (isLogin) return NextResponse.redirect(new URL('/dashboard', request.url));
   return response;
 }
 
