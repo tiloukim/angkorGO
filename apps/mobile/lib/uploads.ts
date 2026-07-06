@@ -43,6 +43,16 @@ export async function uploadVehiclePhoto(providerId: string, localUri: string): 
   return path;
 }
 
+// Upload a listing photo to the public `listings` bucket → returns a public URL.
+export async function uploadListingPhoto(userId: string, localUri: string): Promise<string> {
+  const path = `${userId}/${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from('listings')
+    .upload(path, await readBytes(localUri), { contentType: 'image/jpeg', upsert: true });
+  if (error) throw error;
+  return supabase.storage.from('listings').getPublicUrl(path).data.publicUrl;
+}
+
 export const MAX_REQUEST_IMAGES = 10;
 
 // Uploads one local file URI into request-images/{requestId}/{name}.jpg and

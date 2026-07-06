@@ -16,6 +16,9 @@ export default function AccountScreen() {
         <Text style={styles.sub}>{profile?.phone ?? ''}</Text>
       </View>
 
+      <Pressable style={styles.row} onPress={() => router.push('/(customer)/host')}>
+        <Text style={styles.rowText}>Host a vehicle →</Text>
+      </Pressable>
       <Pressable style={styles.row} onPress={signOut}>
         <Text style={styles.rowText}>Sign out</Text>
       </Pressable>
