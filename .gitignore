@@ -25,3 +25,8 @@ supabase/.temp/
 apps/mobile/ios/
 apps/mobile/android/
 *.keystore
+
+# store submission secrets
+**/google-play-service-account.json
+*.p8
+*.mobileprovision

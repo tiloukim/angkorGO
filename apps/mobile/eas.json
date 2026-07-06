@@ -3,19 +3,30 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "env": { "EXPO_PUBLIC_SUPABASE_URL": "https://YOUR-PROJECT.supabase.co" }
+      "distribution": "internal"
     },
     "preview": {
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "android": { "buildType": "apk" }
     },
     "production": {
       "channel": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "android": { "buildType": "app-bundle" }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "YOUR_APPLE_ID_EMAIL",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
+        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "internal"
+      }
+    }
   }
 }

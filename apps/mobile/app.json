@@ -3,24 +3,39 @@
     "name": "AngkorGo",
     "slug": "angkorgo",
     "scheme": "angkorgo",
-    "version": "0.1.0",
+    "version": "1.0.0",
+    "description": "Cambodia's everyday super-app — rides, mobile auto repair, vehicle rentals, stays, and food delivery, all in one. English, ភាសាខ្មែរ, 中文.",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "primaryColor": "#F04438",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1220"
+    },
     "ios": {
       "bundleIdentifier": "ai.angkorgo.app",
+      "buildNumber": "1",
       "supportsTablet": false,
       "usesAppleSignIn": true,
       "config": {
         "googleMapsApiKey": "GOOGLE_MAPS_IOS_KEY"
       },
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "AngkorGo uses your location to find nearby providers and share your position during a rescue.",
-        "NSCameraUsageDescription": "Add photos of your vehicle and the problem to your request."
+        "NSLocationWhenInUseUsageDescription": "AngkorGo uses your location to match you with nearby drivers, mechanics, and couriers, and to show live tracking during a trip or delivery.",
+        "NSCameraUsageDescription": "Take photos of your vehicle, a problem, or a listing for your request.",
+        "NSPhotoLibraryUsageDescription": "Attach photos to your request or listing."
       }
     },
     "android": {
       "package": "ai.angkorgo.app",
+      "versionCode": 1,
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION", "CAMERA"],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B1220"
+      },
       "config": {
         "googleMaps": { "apiKey": "GOOGLE_MAPS_ANDROID_KEY" }
       }
@@ -29,7 +44,7 @@
       "expo-router",
       "expo-secure-store",
       "expo-apple-authentication",
-      ["expo-location", { "locationAlwaysAndWhenInUsePermission": "Allow AngkorGo to use your location." }]
+      ["expo-location", { "locationWhenInUsePermission": "Allow AngkorGo to use your location to match and track your trips and deliveries." }]
     ],
     "extra": { "eas": { "projectId": "" } }
   }
