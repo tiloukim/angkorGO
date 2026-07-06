@@ -80,6 +80,33 @@ export const RIDE_DISPATCH_RADII_KM = [2, 3, 5] as const;
 // KHR per USD, for dual-currency display.
 export const KHR_PER_USD = 4100;
 
+export interface FareConfigRow {
+  class: VehicleClass;
+  base_fare: number;
+  per_km: number;
+  per_min: number;
+  minimum_fare: number;
+  cancellation_fee: number;
+  currency: string;
+}
+
+// Mirrors the SQL estimate_fare() — use for instant client-side display; the
+// server RPC remains authoritative at booking time.
+export function estimateFare(fc: FareConfigRow, distanceKm: number, durationMin: number, surge = 1): number {
+  const raw = (fc.base_fare + fc.per_km * distanceKm + fc.per_min * durationMin) * surge;
+  return Math.round(Math.max(fc.minimum_fare, raw) * 100) / 100;
+}
+
+export function usdToKhr(usd: number): number {
+  return Math.round(usd * KHR_PER_USD);
+}
+
+// Booking core (Vehicle Rental + Stay)
+export type ListingType = 'vehicle' | 'place';
+export type ListingStatus = 'draft' | 'active' | 'paused' | 'removed';
+export type BookingStatus =
+  | 'requested' | 'confirmed' | 'declined' | 'cancelled' | 'in_progress' | 'completed';
+
 export type PaymentMethod = 'aba_payway' | 'khqr' | 'stripe' | 'wing' | 'acleda' | 'cash';
 
 // Payment options shown to the customer, in display order.

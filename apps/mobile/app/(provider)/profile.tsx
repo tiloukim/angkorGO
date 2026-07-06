@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { DeleteAccountButton } from '@/components/DeleteAccountButton';
 import type { Provider } from '@angkorgo/shared';
 
 export default function ProviderProfile() {
@@ -49,6 +50,7 @@ export default function ProviderProfile() {
       <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}>
         <Text style={styles.backText}>Back</Text>
       </Pressable>
+      <DeleteAccountButton />
     </View>
   );
 }

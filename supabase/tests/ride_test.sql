@@ -1,6 +1,6 @@
 -- pgTAP: AngkorGo Ride (R1) schema — fare seed, trip defaults, status history.
 begin;
-select plan(4);
+select plan(6);
 
 -- Fare config seeded for the three launch classes.
 select is((select count(*)::int from public.fare_config), 3, 'three fare classes seeded');
@@ -21,6 +21,10 @@ select is((select status from public.trips where id = '40000000-0000-0000-0000-0
 select is((select count(*)::int from public.trip_status_history
            where trip_id = '40000000-0000-0000-0000-0000000000AA'),
           1, 'trip status history row auto-created');
+
+-- Fare engine (R2): moto 5 km / 10 min = 0.50 + 0.20*5 + 0.03*10 = 1.80.
+select is(public.estimate_fare('moto', 5, 10, 1.0), 1.80, 'moto fare estimate = 1.80');
+select is((select count(*)::int from public.estimate_all_fares(5, 10, 1.0)), 3, 'all-class estimates returned');
 
 select finish();
 rollback;

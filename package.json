@@ -10,7 +10,7 @@
     "db:reset": "supabase db reset",
     "db:push": "supabase db push",
     "db:test": "supabase test db",
-    "functions:deploy": "supabase functions deploy dispatch-sweep send-push create-payment payment-webhook",
+    "functions:deploy": "supabase functions deploy dispatch-sweep send-push create-payment payment-webhook delete-account",
     "e2e": "node supabase/tests/e2e/happy-path.mjs"
   }
 }

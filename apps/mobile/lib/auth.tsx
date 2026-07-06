@@ -21,6 +21,7 @@ type AuthState = {
   signInWithApple: () => Promise<void>;
   setRole: (role: UserRole) => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -116,9 +117,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   }
 
+  // Permanently delete the account (Edge Function → cascades all user data).
+  async function deleteAccount() {
+    const { error } = await supabase.functions.invoke('delete-account', { method: 'POST' });
+    if (error) throw error;
+    await supabase.auth.signOut();
+  }
+
   return (
     <AuthContext.Provider
-      value={{ session, profile, loading, sendEmailOtp, verifyEmailOtp, signInWithGoogle, signInWithApple, setRole, signOut }}
+      value={{ session, profile, loading, sendEmailOtp, verifyEmailOtp, signInWithGoogle, signInWithApple, setRole, signOut, deleteAccount }}
     >
       {children}
     </AuthContext.Provider>

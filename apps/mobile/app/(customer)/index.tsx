@@ -6,6 +6,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   SERVICE_CATEGORIES,
+  LANGUAGES,
   categoryLabel,
   t,
   type Language,
@@ -16,6 +17,10 @@ export default function EmergencyScreen() {
   const router = useRouter();
   const [lang, setLang] = useState<Language>('en');
 
+  // Cycle English → Khmer → Chinese; the toggle shows the language you'll switch to.
+  const nextIndex = (LANGUAGES.findIndex((l) => l.code === lang) + 1) % LANGUAGES.length;
+  const nextLang = () => setLang(LANGUAGES[nextIndex].code);
+
   const onSelect = (category: ServiceCategory) => {
     // Next step: location capture screen carries the chosen category forward.
     router.push({ pathname: '/(customer)/request/location', params: { category } });
@@ -24,10 +29,15 @@ export default function EmergencyScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.brand}>AngkorGo</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.brand}>AngkorGo</Text>
+          <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={12}>
+            <Text style={styles.account}>Account</Text>
+          </Pressable>
+        </View>
         <Text style={styles.tagline}>{t(lang, 'tagline')}</Text>
-        <Pressable onPress={() => setLang(lang === 'en' ? 'km' : 'en')} hitSlop={12}>
-          <Text style={styles.langToggle}>{lang === 'en' ? 'ភាសាខ្មែរ' : 'English'}</Text>
+        <Pressable onPress={nextLang} hitSlop={12}>
+          <Text style={styles.langToggle}>{LANGUAGES[nextIndex].label}</Text>
         </Pressable>
       </View>
 
@@ -47,6 +57,8 @@ export default function EmergencyScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0B1220', paddingTop: 64, paddingHorizontal: 16 },
   header: { marginBottom: 24 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  account: { color: '#8FA3BF', fontSize: 14, fontWeight: '600' },
   brand: { color: '#fff', fontSize: 26, fontWeight: '800' },
   tagline: { color: '#8FA3BF', fontSize: 15, marginTop: 4 },
   langToggle: { color: '#F04438', fontSize: 14, marginTop: 8, fontWeight: '600' },

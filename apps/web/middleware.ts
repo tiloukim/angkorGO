@@ -6,9 +6,9 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 // Protects the admin dashboard: requires a session AND profiles.role = 'admin'.
 // Also refreshes the auth cookie on every request (Supabase SSR pattern).
 export async function middleware(request: NextRequest) {
-  // Public marketing landing needs no auth context — skip Supabase entirely so it
-  // renders even before backend env is configured.
-  if (request.nextUrl.pathname === '/') return NextResponse.next();
+  // Fully public static pages — no auth context needed.
+  const STATIC_PUBLIC = ['/', '/privacy', '/terms'];
+  if (STATIC_PUBLIC.includes(request.nextUrl.pathname)) return NextResponse.next();
 
   let response = NextResponse.next({ request });
 
