@@ -259,7 +259,7 @@ This keeps the 90/10 economics whether the fare is paid by card/KHQR (escrow) or
 |---|---|
 | **R1** ✅ | Schema: `trips`, `driver_vehicles`, `trip_offers`, `fare_config`, `driver_ledger`, enums, RLS, grants, realtime (migration `0013`) — defaults: moto/tuktuk/car, USD+KHR, cash+KHQR, one app, Phnom Penh |
 | **R2** | Fare engine: `estimate_fare` RPC + Google Distance Matrix integration |
-| **R3** | Rider booking flow: where-to, class select + estimates, create trip |
+| **R3** ✅ | Rider booking flow: where-to (Places search), class picker w/ live fares (USD+KHR) + ETA, create trip (migration `0017` `create_trip`/`get_trip`); status screen. Dispatch/matching = R4 |
 | **R4** | Dispatch: `find_nearby_drivers`, `dispatch_trip`, `accept_trip`, offer inbox |
 | **R5** | Live tracking: to-pickup + in-trip (route, ETA, running fare) |
 | **R6** | Payments: card/KHQR escrow + **cash ledger** + commission netting |

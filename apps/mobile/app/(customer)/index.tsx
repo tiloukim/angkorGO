@@ -41,7 +41,16 @@ export default function EmergencyScreen() {
         </Pressable>
       </View>
 
-      <Text style={styles.prompt}>{t(lang, 'whats_wrong')}</Text>
+      <Pressable style={styles.rideCard} onPress={() => router.push('/(customer)/ride')}>
+        <Text style={styles.rideIcon}>🛺</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.rideTitle}>Get a ride</Text>
+          <Text style={styles.rideSub}>Moto · Tuk-tuk · Car</Text>
+        </View>
+        <Text style={styles.rideArrow}>→</Text>
+      </Pressable>
+
+      <Text style={styles.prompt}>Roadside help</Text>
 
       <ScrollView contentContainerStyle={styles.grid}>
         {SERVICE_CATEGORIES.map((c) => (
@@ -62,6 +71,11 @@ const styles = StyleSheet.create({
   brand: { color: '#fff', fontSize: 26, fontWeight: '800' },
   tagline: { color: '#8FA3BF', fontSize: 15, marginTop: 4 },
   langToggle: { color: '#F04438', fontSize: 14, marginTop: 8, fontWeight: '600' },
+  rideCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#F04438', borderRadius: 16, padding: 18, marginBottom: 24 },
+  rideIcon: { fontSize: 30 },
+  rideTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
+  rideSub: { color: '#FFE3E0', fontSize: 13, marginTop: 2 },
+  rideArrow: { color: '#fff', fontSize: 22, fontWeight: '800' },
   prompt: { color: '#fff', fontSize: 20, fontWeight: '700', marginBottom: 16 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
   card: {

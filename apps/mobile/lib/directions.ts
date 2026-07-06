@@ -5,6 +5,7 @@ const KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 export interface Route {
   points: Coords[];       // decoded polyline for the map
+  polyline: string;       // encoded polyline (store on the trip)
   etaMinutes: number;     // duration in traffic-free driving minutes
   distanceKm: number;
 }
@@ -24,6 +25,7 @@ export async function fetchRoute(origin: Coords, dest: Coords): Promise<Route | 
     if (!route || !leg) return null;
     return {
       points: decodePolyline(route.overview_polyline.points),
+      polyline: route.overview_polyline.points,
       etaMinutes: Math.max(1, Math.round(leg.duration.value / 60)),
       distanceKm: Math.round((leg.distance.value / 1000) * 10) / 10,
     };
