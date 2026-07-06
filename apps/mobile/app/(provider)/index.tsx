@@ -130,7 +130,10 @@ export default function ProviderDashboard() {
 
       <View style={styles.navRow}>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/jobs')}>
-          <Text style={styles.navText}>My jobs</Text>
+          <Text style={styles.navText}>Jobs</Text>
+        </Pressable>
+        <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/vehicles')}>
+          <Text style={styles.navText}>Vehicles</Text>
         </Pressable>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/wallet')}>
           <Text style={styles.navText}>Wallet</Text>

@@ -263,7 +263,7 @@ This keeps the 90/10 economics whether the fare is paid by card/KHQR (escrow) or
 | **R4** ✅ | Dispatch (migration `0018`): `find_nearby_drivers`, `dispatch_trip`, `widen_dispatch_trip` (2→3→5), atomic `accept_trip` + `reject_trip_offer`, offer notify + matched notify, trip TTL in `run_dispatch_sweep`; driver ride-offer inbox + active-trip screen; rider sees "matched" |
 | **R5** | Live tracking: to-pickup + in-trip (route, ETA, running fare) |
 | **R6** | Payments: card/KHQR escrow + **cash ledger** + commission netting |
-| **R7** | Driver trip flow + vehicle onboarding |
+| **R7** ✅ | Driver vehicle onboarding: `(provider)/vehicles` (register/list, photo upload, pending→verified) + admin **Vehicle Approvals** page (`setVehicleVerified`). Driver active-trip flow shipped in R4. |
 | **R8** | Admin: fare/surge config, vehicle approvals, live trips, disputes |
 | **R9** | Testing: fare math, dispatch race, cash-ledger accounting, e2e trip |
 | **R10** | Launch: Google Places/Distance APIs, pricing per city, EAS build |

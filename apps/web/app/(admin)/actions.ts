@@ -41,3 +41,12 @@ export async function processPayout(withdrawalId: string, status: 'paid' | 'reje
   await supabase.rpc('process_withdrawal', { p_withdrawal_id: withdrawalId, p_status: status });
   revalidatePath('/payouts');
 }
+
+export async function setVehicleVerified(vehicleId: string, verified: boolean) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.from('driver_vehicles')
+    .update({ verified, verified_by: verified ? user?.id : null })
+    .eq('id', vehicleId);
+  revalidatePath('/vehicles');
+}

@@ -6,6 +6,7 @@ export default function ProviderLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="jobs" />
+      <Stack.Screen name="vehicles" />
       <Stack.Screen name="wallet" />
       <Stack.Screen name="profile" />
       <Stack.Screen name="job/[id]" />

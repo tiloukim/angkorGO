@@ -32,6 +32,17 @@ export async function uploadProviderDocument(
   return path;
 }
 
+// Upload a vehicle photo into provider-docs/{providerId}/… → returns the path
+// (stored on driver_vehicles.photo_url; no provider_documents row).
+export async function uploadVehiclePhoto(providerId: string, localUri: string): Promise<string> {
+  const path = `${providerId}/vehicle_${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from('provider-docs')
+    .upload(path, await readBytes(localUri), { contentType: 'image/jpeg', upsert: true });
+  if (error) throw error;
+  return path;
+}
+
 export const MAX_REQUEST_IMAGES = 10;
 
 // Uploads one local file URI into request-images/{requestId}/{name}.jpg and
