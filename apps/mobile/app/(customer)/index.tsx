@@ -61,6 +61,11 @@ export default function EmergencyScreen() {
           <Text style={styles.serviceTitle}>Stay</Text>
           <Text style={styles.rentSub}>Places to stay</Text>
         </Pressable>
+        <Pressable style={styles.serviceCard} onPress={() => router.push('/(customer)/food')}>
+          <Text style={styles.rideIcon}>🍜</Text>
+          <Text style={styles.serviceTitle}>Food</Text>
+          <Text style={styles.rentSub}>Delivery</Text>
+        </Pressable>
       </View>
 
       <Text style={styles.prompt}>Roadside help</Text>

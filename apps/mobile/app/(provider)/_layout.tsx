@@ -11,6 +11,7 @@ export default function ProviderLayout() {
       <Stack.Screen name="profile" />
       <Stack.Screen name="job/[id]" />
       <Stack.Screen name="trip/[id]" />
+      <Stack.Screen name="delivery/[id]" />
     </Stack>
   );
 }

@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth';
 import { registerPushToken } from '@/lib/push';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
 import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
+import { useCourierOffers, type CourierOffer } from '@/hooks/useCourierOffers';
 import type { Provider } from '@angkorgo/shared';
 
 export default function ProviderDashboard() {
@@ -17,6 +18,7 @@ export default function ProviderDashboard() {
   const [provider, setProvider] = useState<Provider | null>(null);
   const { offers, refresh } = useProviderOffers(provider?.id);
   const { offers: rideOffers, refresh: refreshRides } = useTripOffers(provider?.id);
+  const { offers: foodOffers, refresh: refreshFood } = useCourierOffers(provider?.id);
 
   async function load() {
     const { data } = await supabase.from('providers').select('*').single();
@@ -50,6 +52,17 @@ export default function ProviderDashboard() {
   async function rejectRide(o: TripOffer) {
     await supabase.rpc('reject_trip_offer', { p_offer_id: o.offer_id });
     refreshRides();
+  }
+
+  async function acceptFood(o: CourierOffer) {
+    const { error } = await supabase.rpc('accept_order_offer', { p_offer: o.offer_id });
+    if (error) { Alert.alert('Too late', 'This delivery was taken.'); refreshFood(); return; }
+    router.push({ pathname: '/(provider)/delivery/[id]', params: { id: o.order_id } });
+  }
+
+  async function rejectFood(o: CourierOffer) {
+    await supabase.from('courier_offers').update({ status: 'rejected' }).eq('id', o.offer_id);
+    refreshFood();
   }
 
   const approved = provider?.status === 'approved';
@@ -95,6 +108,23 @@ export default function ProviderDashboard() {
               <Pressable style={styles.accept} onPress={() => acceptRide(item)}>
                 <Text style={styles.acceptText}>Accept</Text>
               </Pressable>
+            </View>
+          ))}
+        </>
+      )}
+
+      {approved && provider?.is_online && foodOffers.length > 0 && (
+        <>
+          <Text style={styles.section}>Delivery requests ({foodOffers.length})</Text>
+          {foodOffers.map((item) => (
+            <View key={item.offer_id} style={styles.offer}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.offerCat}>🍜 {item.restaurant ?? 'Pickup'} · ${Number(item.fee ?? 0).toFixed(2)} fee</Text>
+                <Text style={styles.offerMeta}>{item.distance_km ?? '?'} km to pickup · ~{item.eta_minutes ?? '?'} min</Text>
+                {item.dropoff ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff}</Text> : null}
+              </View>
+              <Pressable style={styles.reject} onPress={() => rejectFood(item)}><Text style={styles.rejectText}>Skip</Text></Pressable>
+              <Pressable style={styles.accept} onPress={() => acceptFood(item)}><Text style={styles.acceptText}>Accept</Text></Pressable>
             </View>
           ))}
         </>

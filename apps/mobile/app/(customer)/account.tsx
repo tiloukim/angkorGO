@@ -17,7 +17,10 @@ export default function AccountScreen() {
       </View>
 
       <Pressable style={styles.row} onPress={() => router.push('/(customer)/host')}>
-        <Text style={styles.rowText}>Host a vehicle →</Text>
+        <Text style={styles.rowText}>Host a vehicle or place →</Text>
+      </Pressable>
+      <Pressable style={styles.row} onPress={() => router.push('/(customer)/restaurant')}>
+        <Text style={styles.rowText}>Manage a restaurant →</Text>
       </Pressable>
       <Pressable style={styles.row} onPress={signOut}>
         <Text style={styles.rowText}>Sign out</Text>

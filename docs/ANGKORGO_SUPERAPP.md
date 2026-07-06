@@ -122,7 +122,7 @@ Each vertical plugs into this; it doesn't rebuild it.
 | Ride (#1) | 🚧 R1 schema done; R2–R10 next |
 | Vehicle Rental (#2) | ✅ MVP built on booking core (migration `0022`): host listing creation + browse/book + confirm/decline + payment (host provisioned a provider record for wallet payout) |
 | Stay (#5) | ✅ MVP built on booking core (reuses `create_booking`/`confirm_booking` — type-agnostic; no new migration). Browse/detail/book places + host place listings (shared host form w/ vehicle/place toggle). |
-| Food (#4) | ⬜ future; `service_type` reserved so it slots in |
+| Food (#4) | ✅ MVP (migrations `0023`+`0024`): restaurants/menu_items/orders/order_items/courier_offers; place_order, restaurant accept/ready→dispatch, courier find/dispatch/accept + deliver (credits fee); customer browse/menu/cart/order, merchant screen, courier offers on provider dashboard + delivery screen |
 | Trilingual EN/KH/ZH | ✅ shared i18n + DB updated |
 
 **Recommendation:** finish **Ride (Phase A)** first — it's started, has the biggest daily
