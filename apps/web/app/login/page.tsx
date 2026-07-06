@@ -1,7 +1,7 @@
 'use client';
 // Admin login — email OTP + Google. Role is enforced by middleware; a
 // non-admin who authenticates is redirected back here with ?error=not_admin.
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 
@@ -20,8 +20,19 @@ function LoginForm() {
   const [code, setCode] = useState('');
   const [sent, setSent] = useState(false);
   const [msg, setMsg] = useState('');
+  const [signedInAs, setSignedInAs] = useState<string | null>(null);
 
   const notAdmin = params.get('error') === 'not_admin';
+
+  // Surface a stale (e.g. non-admin) session so the user can switch accounts.
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => setSignedInAs(data.user?.email ?? null));
+  }, []);
+
+  async function signOut() {
+    await createClient().auth.signOut();
+    window.location.href = '/login';
+  }
 
   // Create the client inside handlers (client-side only) so the page never
   // instantiates Supabase during the build-time prerender.
@@ -92,6 +103,13 @@ function LoginForm() {
         </button>
 
         {msg && <p className="mt-4 text-sm text-red-400 text-center">{msg}</p>}
+
+        {signedInAs && (
+          <p className="mt-6 text-center text-sm text-[#5B6B84]">
+            Signed in as {signedInAs} ·{' '}
+            <button onClick={signOut} className="text-[#F04438] hover:underline">Sign out</button>
+          </p>
+        )}
       </div>
     </main>
   );
