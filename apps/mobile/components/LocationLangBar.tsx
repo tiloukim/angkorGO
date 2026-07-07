@@ -2,17 +2,15 @@
 // on the right. Each opens a picker modal. Styled for a green header.
 import { useState } from 'react';
 import { View, Text, Pressable, Modal, ScrollView, StyleSheet } from 'react-native';
-import { LANGUAGES, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
 import { useLocale } from '@/lib/locale';
+import { LanguagePicker } from '@/components/LanguagePicker';
 
-const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 const CITIES = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville', 'Kampot', 'Kep', 'Kampong Cham'];
 
 export function LocationLangBar({ right }: { right?: React.ReactNode }) {
-  const { lang, setLang, city, setCity } = useLocale();
+  const { city, setCity } = useLocale();
   const [cityOpen, setCityOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
 
   return (
     <View style={styles.row}>
@@ -25,10 +23,7 @@ export function LocationLangBar({ right }: { right?: React.ReactNode }) {
       </Pressable>
 
       <View style={styles.rightWrap}>
-        <Pressable style={styles.flagChip} onPress={() => setLangOpen(true)} hitSlop={8}>
-          <Text style={styles.flag}>{FLAGS[lang]}</Text>
-          <Text style={styles.flagCode}>{lang.toUpperCase()} ▾</Text>
-        </Pressable>
+        <LanguagePicker tone="green" />
         {right}
       </View>
 
@@ -49,20 +44,6 @@ export function LocationLangBar({ right }: { right?: React.ReactNode }) {
         </Pressable>
       </Modal>
 
-      {/* Language picker */}
-      <Modal visible={langOpen} transparent animationType="fade" onRequestClose={() => setLangOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setLangOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
-            <Text style={styles.sheetTitle}>Language</Text>
-            {LANGUAGES.map((l) => (
-              <Pressable key={l.code} style={styles.optRow} onPress={() => { setLang(l.code); setLangOpen(false); }}>
-                <Text style={[styles.optText, l.code === lang && styles.optActive]}>{FLAGS[l.code]}  {l.label}</Text>
-                {l.code === lang && <Text style={styles.check}>✓</Text>}
-              </Pressable>
-            ))}
-          </Pressable>
-        </Pressable>
-      </Modal>
     </View>
   );
 }

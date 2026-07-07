@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { registerPushToken } from '@/lib/push';
 import { TukiTukTuk } from '@/components/TukiTukTuk';
+import { LanguagePicker } from '@/components/LanguagePicker';
+import { useLocale } from '@/lib/locale';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
 import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
 import { useCourierOffers, type CourierOffer } from '@/hooks/useCourierOffers';
@@ -16,6 +18,7 @@ import type { Provider } from '@angkorgo/shared';
 export default function ProviderDashboard() {
   const router = useRouter();
   const { signOut } = useAuth();
+  const { lang } = useLocale();
   const [provider, setProvider] = useState<Provider | null>(null);
   const { offers, refresh } = useProviderOffers(provider?.id);
   const { offers: rideOffers, refresh: refreshRides } = useTripOffers(provider?.id);
@@ -72,12 +75,15 @@ export default function ProviderDashboard() {
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.h1}>Dashboard</Text>
-        {approved && (
-          <View style={styles.onlineWrap}>
-            <Text style={styles.onlineLabel}>{provider?.is_online ? 'Online' : 'Offline'}</Text>
-            <Switch value={provider?.is_online ?? false} onValueChange={toggleOnline} />
-          </View>
-        )}
+        <View style={styles.headerRight}>
+          <LanguagePicker tone="light" />
+          {approved && (
+            <View style={styles.onlineWrap}>
+              <Text style={styles.onlineLabel}>{provider?.is_online ? 'Online' : 'Offline'}</Text>
+              <Switch value={provider?.is_online ?? false} onValueChange={toggleOnline} />
+            </View>
+          )}
+        </View>
       </View>
 
       {!approved && (
@@ -103,7 +109,7 @@ export default function ProviderDashboard() {
           {rideOffers.map((item) => (
             <View key={item.offer_id} style={styles.offer}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.offerCat}>🛺 {VEHICLE_LABELS.en[item.class]} · ${Number(item.est_fare ?? 0).toFixed(2)}</Text>
+                <Text style={styles.offerCat}>🛺 {VEHICLE_LABELS[lang][item.class]} · ${Number(item.est_fare ?? 0).toFixed(2)}</Text>
                 <Text style={styles.offerMeta}>{item.distance_km ?? '?'} km to pickup · ~{item.eta_minutes ?? '?'} min</Text>
                 {item.dropoff_address ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff_address}</Text> : null}
               </View>
@@ -150,7 +156,7 @@ export default function ProviderDashboard() {
             renderItem={({ item }) => (
               <View style={styles.offer}>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.offerCat}>{categoryLabel('en', item.category)}</Text>
+                  <Text style={styles.offerCat}>{categoryLabel(lang, item.category)}</Text>
                   <Text style={styles.offerMeta}>
                     {item.distance_km ?? '?'} km · ~{item.eta_minutes ?? '?'} min
                   </Text>
@@ -193,6 +199,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800' },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   onlineWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   onlineLabel: { color: '#7A7A7A', fontWeight: '600' },
   banner: { backgroundColor: '#FFF4E5', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#FFD8A8', marginTop: 16 },
