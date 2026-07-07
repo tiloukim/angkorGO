@@ -3,12 +3,14 @@
 import { AngkorWat } from './AngkorWat';
 import { Logo } from './Logo';
 
-export type PromoTone = 'green' | 'black' | 'white';
+export type PromoTone = 'green' | 'black' | 'white' | 'gold';
 
 const TONES: Record<PromoTone, { bg: string; ink: string; sub: string; chip: string; chipInk: string; wat: string }> = {
   green: { bg: '#06c167', ink: '#ffffff', sub: 'rgba(255,255,255,0.85)', chip: '#ffffff', chipInk: '#048a49', wat: 'rgba(255,255,255,0.16)' },
   black: { bg: '#000000', ink: '#ffffff', sub: 'rgba(255,255,255,0.72)', chip: '#06c167', chipInk: '#ffffff', wat: 'rgba(255,255,255,0.10)' },
   white: { bg: '#ffffff', ink: '#000000', sub: 'rgba(0,0,0,0.55)', chip: '#000000', chipInk: '#ffffff', wat: 'rgba(0,0,0,0.06)' },
+  // Festive saffron/gold for Khmer New Year (Choul Chnam Thmey).
+  gold: { bg: '#e8a100', ink: '#1c1400', sub: 'rgba(28,20,0,0.72)', chip: '#000000', chipInk: '#ffffff', wat: 'rgba(28,20,0,0.12)' },
 };
 
 export type Promo = {
@@ -35,7 +37,7 @@ export function PromoPoster({ promo }: { promo: Promo }) {
       </div>
 
       <div className="relative flex items-center justify-between">
-        <Logo size={28} tone={promo.tone === 'white' ? 'black' : 'white'} />
+        <Logo size={28} tone={promo.tone === 'black' || promo.tone === 'green' ? 'white' : 'black'} />
         <span
           className="rounded-full px-3 py-1 text-xs font-bold"
           style={{ background: t.chip, color: t.chipInk }}
@@ -91,5 +93,14 @@ export const PROMOS: Promo[] = [
     titleZh: '柬埔寨美食，热腾腾送达。',
     cta: 'Order on AngkorGo',
     foot: 'Angkor Kitchen & more · food delivery in beta',
+  },
+  {
+    tone: 'gold',
+    eyebrow: 'សួស្តីឆ្នាំថ្មី 🎉',
+    titleEn: 'Happy Khmer New Year!',
+    titleKm: 'រីករាយ​ចូល​ឆ្នាំ​ថ្មី​ប្រពៃណី​ជាតិ!',
+    titleZh: '柬埔寨新年快乐！',
+    cta: 'Book your ride home',
+    foot: 'Choul Chnam Thmey · 13–16 April · special holiday fares',
   },
 ];
