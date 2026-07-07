@@ -4,9 +4,13 @@ import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ActivityIndicat
 import { useRouter } from 'expo-router';
 import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { placeAutocomplete, placeCoords, type Prediction } from '@/lib/places';
+import { theme } from '@/lib/theme';
+import { LocationLangBar } from '@/components/LocationLangBar';
+import { type Language } from '@angkorgo/shared';
 
 export default function RideHome() {
   const router = useRouter();
+  const [lang, setLang] = useState<Language>('en');
   const [pickup, setPickup] = useState<Coords | null>(null);
   const [pickupAddr, setPickupAddr] = useState('Locating…');
   const [query, setQuery] = useState('');
@@ -43,6 +47,10 @@ export default function RideHome() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <LocationLangBar lang={lang} onLang={setLang} />
+      </View>
+      <View style={styles.content}>
       <Text style={styles.h1}>Where to?</Text>
 
       <View style={styles.pickup}>
@@ -79,12 +87,15 @@ export default function RideHome() {
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
         <Text style={styles.backText}>Cancel</Text>
       </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
+  header: { backgroundColor: theme.greenDark, paddingTop: 60, paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
+  content: { flex: 1, padding: 24, paddingTop: 20 },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   pickup: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00B14F' },

@@ -3,12 +3,16 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { theme } from '@/lib/theme';
+import { LocationLangBar } from '@/components/LocationLangBar';
+import { type Language } from '@angkorgo/shared';
 
 interface Restaurant { id: string; name: string; cuisine: string | null; photo_url: string | null; rating: number; is_open: boolean }
 
 export default function Food() {
   const router = useRouter();
   const [rows, setRows] = useState<Restaurant[]>([]);
+  const [lang, setLang] = useState<Language>('en');
 
   useEffect(() => {
     supabase.from('restaurants').select('id, name, cuisine, photo_url, rating, is_open')
@@ -18,6 +22,10 @@ export default function Food() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <LocationLangBar lang={lang} onLang={setLang} />
+      </View>
+      <View style={styles.content}>
       <Text style={styles.h1}>Food delivery</Text>
       <FlatList
         data={rows}
@@ -37,12 +45,15 @@ export default function Food() {
         )}
       />
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>Back</Text></Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
+  header: { backgroundColor: theme.greenDark, paddingTop: 60, paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
+  content: { flex: 1, padding: 24, paddingTop: 20 },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   empty: { color: '#9AA0A6', marginTop: 20 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: '#ECECEC', overflow: 'hidden' },
