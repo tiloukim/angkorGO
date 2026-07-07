@@ -109,7 +109,7 @@ export default function RideStatus() {
   }, [id]);
 
   async function cancel() {
-    await supabase.from('trips').update({ status: 'cancelled', cancelled_at: new Date().toISOString() }).eq('id', id);
+    await supabase.rpc('cancel_trip', { p_trip: id, p_reason: 'rider_cancelled' });
     router.replace('/(customer)');
   }
 

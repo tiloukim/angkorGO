@@ -114,7 +114,8 @@ export default function ProviderDashboard() {
 
   async function toggleOnline(v: boolean) {
     if (!provider || provider.status !== 'approved') return;
-    await supabase.from('providers').update({ is_online: v }).eq('id', provider.id);
+    const { error } = await supabase.from('providers').update({ is_online: v }).eq('id', provider.id);
+    if (error) { Alert.alert(error.message); return; } // e.g. commission-cap block
     setProvider({ ...provider, is_online: v });
   }
 
