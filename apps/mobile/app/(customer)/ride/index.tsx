@@ -53,13 +53,13 @@ export default function RideHome() {
       <TextInput
         style={styles.input}
         placeholder="Search destination"
-        placeholderTextColor="#5B6B84"
+        placeholderTextColor="#9AA0A6"
         value={query}
         onChangeText={setQuery}
         autoFocus
       />
 
-      {busy && <ActivityIndicator color="#F04438" style={{ marginTop: 12 }} />}
+      {busy && <ActivityIndicator color="#00B14F" style={{ marginTop: 12 }} />}
 
       <FlatList
         data={preds}
@@ -84,16 +84,16 @@ export default function RideHome() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 16 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   pickup: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
-  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#10B981' },
-  pickupText: { color: '#8FA3BF', flex: 1 },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40' },
-  pred: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#151E30' },
-  predPrimary: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  predSecondary: { color: '#5B6B84', fontSize: 13, marginTop: 2 },
-  empty: { color: '#5B6B84', marginTop: 16 },
+  dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00B14F' },
+  pickupText: { color: '#7A7A7A', flex: 1 },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16, borderWidth: 1, borderColor: '#ECECEC' },
+  pred: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#ECECEC' },
+  predPrimary: { color: '#1C1C1C', fontSize: 16, fontWeight: '600' },
+  predSecondary: { color: '#9AA0A6', fontSize: 13, marginTop: 2 },
+  empty: { color: '#9AA0A6', marginTop: 16 },
   back: { padding: 14, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

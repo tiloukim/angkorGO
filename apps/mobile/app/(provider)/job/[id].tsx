@@ -90,7 +90,7 @@ export default function JobScreen() {
           ) : (
             <View style={styles.invoiceForm}>
               <TextInput
-                style={styles.input} placeholder="Amount (USD)" placeholderTextColor="#5B6B84"
+                style={styles.input} placeholder="Amount (USD)" placeholderTextColor="#9AA0A6"
                 keyboardType="decimal-pad" value={amount} onChangeText={setAmount}
               />
               <Pressable style={styles.primary} onPress={sendInvoice}>
@@ -109,17 +109,17 @@ export default function JobScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 80 },
-  status: { color: '#F04438', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
-  address: { color: '#fff', fontSize: 22, fontWeight: '700', marginTop: 8 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 80 },
+  status: { color: '#00B14F', fontSize: 14, fontWeight: '800', letterSpacing: 1 },
+  address: { color: '#1C1C1C', fontSize: 22, fontWeight: '700', marginTop: 8 },
   actions: { marginTop: 'auto' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   back: { padding: 16, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
   invoiceForm: { gap: 10, marginTop: 12 },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 18, borderWidth: 1, borderColor: '#1F2A40' },
-  invoiceCard: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#1F2A40' },
-  invoiceLabel: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  invoiceStatus: { color: '#8FA3BF', fontSize: 14, marginTop: 4 },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 18, borderWidth: 1, borderColor: '#ECECEC' },
+  invoiceCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#ECECEC' },
+  invoiceLabel: { color: '#1C1C1C', fontSize: 18, fontWeight: '700' },
+  invoiceStatus: { color: '#7A7A7A', fontSize: 14, marginTop: 4 },
 });

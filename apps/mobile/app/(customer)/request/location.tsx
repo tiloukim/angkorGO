@@ -31,7 +31,7 @@ export default function LocationScreen() {
   if (loading || !coords) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color="#F04438" />
+        <ActivityIndicator color="#00B14F" />
         <Text style={styles.loadingText}>Detecting your location…</Text>
       </View>
     );
@@ -71,14 +71,14 @@ export default function LocationScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220' },
-  loadingText: { color: '#8FA3BF', marginTop: 12 },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F6F7' },
+  loadingText: { color: '#7A7A7A', marginTop: 12 },
   map: { flex: 1 },
-  sheet: { backgroundColor: '#0B1220', padding: 24, borderTopLeftRadius: 20, borderTopRightRadius: 20, marginTop: -20 },
-  category: { color: '#F04438', fontWeight: '700', marginBottom: 4 },
-  label: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  address: { color: '#8FA3BF', fontSize: 14, marginTop: 6, marginBottom: 20 },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  sheet: { backgroundColor: '#FFFFFF', padding: 24, borderTopLeftRadius: 20, borderTopRightRadius: 20, marginTop: -20 },
+  category: { color: '#00B14F', fontWeight: '700', marginBottom: 4 },
+  label: { color: '#1C1C1C', fontSize: 20, fontWeight: '800' },
+  address: { color: '#7A7A7A', fontSize: 14, marginTop: 6, marginBottom: 20 },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

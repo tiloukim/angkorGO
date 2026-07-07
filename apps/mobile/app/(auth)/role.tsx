@@ -41,14 +41,14 @@ export default function RoleScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 28, textAlign: 'center' },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, justifyContent: 'center' },
+  title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 28, textAlign: 'center' },
   card: {
-    backgroundColor: '#151E30', borderRadius: 16, padding: 24, marginBottom: 16,
-    borderWidth: 1, borderColor: '#1F2A40',
+    backgroundColor: '#FFFFFF', borderRadius: 16, padding: 24, marginBottom: 16,
+    borderWidth: 1, borderColor: '#ECECEC',
   },
   emoji: { fontSize: 34, marginBottom: 8 },
-  cardTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
-  cardSub: { color: '#8FA3BF', fontSize: 14, marginTop: 4 },
-  note: { color: '#5B6B84', fontSize: 12, textAlign: 'center', marginTop: 16 },
+  cardTitle: { color: '#1C1C1C', fontSize: 20, fontWeight: '700' },
+  cardSub: { color: '#7A7A7A', fontSize: 14, marginTop: 4 },
+  note: { color: '#9AA0A6', fontSize: 12, textAlign: 'center', marginTop: 16 },
 });

@@ -76,7 +76,7 @@ export default function OnboardingScreen() {
 
       <Text style={styles.label}>Business name</Text>
       <TextInput
-        style={styles.input} placeholder="e.g. Sok's Roadside Service" placeholderTextColor="#5B6B84"
+        style={styles.input} placeholder="e.g. Sok's Roadside Service" placeholderTextColor="#9AA0A6"
         value={businessName} onChangeText={setBusinessName}
       />
 
@@ -93,7 +93,7 @@ export default function OnboardingScreen() {
       {DOCS.map((d) => (
         <Pressable key={d.type} style={styles.docRow} onPress={() => pickDoc(d.type)}>
           <Text style={styles.docLabel}>{d.label}</Text>
-          <Text style={[styles.docState, uploaded[d.type] && { color: '#10B981' }]}>
+          <Text style={[styles.docState, uploaded[d.type] && { color: '#00B14F' }]}>
             {uploaded[d.type] ? 'Uploaded ✓' : 'Upload'}
           </Text>
         </Pressable>
@@ -107,18 +107,18 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 8 },
-  label: { color: '#fff', fontSize: 15, fontWeight: '700', marginTop: 24, marginBottom: 10 },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40' },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 8 },
+  label: { color: '#1C1C1C', fontSize: 15, fontWeight: '700', marginTop: 24, marginBottom: 10 },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16, borderWidth: 1, borderColor: '#ECECEC' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { backgroundColor: '#151E30', borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: '#1F2A40' },
-  chipOn: { backgroundColor: '#F04438', borderColor: '#F04438' },
-  chipText: { color: '#8FA3BF', fontWeight: '600' },
+  chip: { backgroundColor: '#FFFFFF', borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: '#ECECEC' },
+  chipOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
+  chipText: { color: '#7A7A7A', fontWeight: '600' },
   chipTextOn: { color: '#fff' },
-  docRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#151E30', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#1F2A40' },
-  docLabel: { color: '#fff', fontSize: 15, fontWeight: '600' },
-  docState: { color: '#8FA3BF', fontWeight: '700' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 28 },
+  docRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#ECECEC' },
+  docLabel: { color: '#1C1C1C', fontSize: 15, fontWeight: '600' },
+  docState: { color: '#7A7A7A', fontWeight: '700' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 28 },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

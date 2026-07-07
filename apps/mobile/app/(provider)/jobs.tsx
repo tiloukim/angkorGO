@@ -47,7 +47,7 @@ export default function JobsScreen() {
               <Text style={styles.rowCat}>{categoryLabel('en', item.category)}</Text>
               {item.address ? <Text style={styles.rowAddr} numberOfLines={1}>{item.address}</Text> : null}
             </View>
-            <Text style={[styles.badge, item.status === 'completed' && { color: '#10B981' }]}>
+            <Text style={[styles.badge, item.status === 'completed' && { color: '#00B14F' }]}>
               {item.status.replace('_', ' ')}
             </Text>
           </Pressable>
@@ -61,14 +61,14 @@ export default function JobsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 12 },
-  section: { color: '#8FA3BF', fontSize: 13, fontWeight: '700', textTransform: 'uppercase', marginTop: 16, marginBottom: 8 },
-  empty: { color: '#5B6B84', marginTop: 20 },
-  row: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#151E30', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#1F2A40' },
-  rowCat: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  rowAddr: { color: '#5B6B84', fontSize: 12, marginTop: 2 },
-  badge: { color: '#8FA3BF', fontWeight: '700', textTransform: 'capitalize' },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 12 },
+  section: { color: '#7A7A7A', fontSize: 13, fontWeight: '700', textTransform: 'uppercase', marginTop: 16, marginBottom: 8 },
+  empty: { color: '#9AA0A6', marginTop: 20 },
+  row: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#ECECEC' },
+  rowCat: { color: '#1C1C1C', fontSize: 16, fontWeight: '700' },
+  rowAddr: { color: '#9AA0A6', fontSize: 12, marginTop: 2 },
+  badge: { color: '#7A7A7A', fontWeight: '700', textTransform: 'capitalize' },
   back: { padding: 16, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

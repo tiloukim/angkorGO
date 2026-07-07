@@ -50,7 +50,7 @@ export default function WalletScreen() {
 
       <View style={styles.form}>
         <TextInput
-          style={styles.input} placeholder="Amount to withdraw" placeholderTextColor="#5B6B84"
+          style={styles.input} placeholder="Amount to withdraw" placeholderTextColor="#9AA0A6"
           keyboardType="decimal-pad" value={amount} onChangeText={setAmount}
         />
         <Pressable style={styles.primary} onPress={withdraw}>
@@ -66,7 +66,7 @@ export default function WalletScreen() {
         renderItem={({ item }) => (
           <View style={styles.row}>
             <Text style={styles.rowAmount}>${Number(item.amount).toFixed(2)}</Text>
-            <Text style={[styles.rowStatus, item.status === 'paid' && { color: '#10B981' }]}>{item.status}</Text>
+            <Text style={[styles.rowStatus, item.status === 'paid' && { color: '#00B14F' }]}>{item.status}</Text>
           </View>
         )}
       />
@@ -79,21 +79,21 @@ export default function WalletScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800' },
-  balanceCard: { backgroundColor: '#151E30', borderRadius: 16, padding: 24, marginTop: 16, borderWidth: 1, borderColor: '#1F2A40' },
-  balanceLabel: { color: '#8FA3BF', fontSize: 14 },
-  balance: { color: '#10B981', fontSize: 40, fontWeight: '800', marginTop: 4 },
-  owed: { color: '#F5A524', fontSize: 13, marginTop: 8 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800' },
+  balanceCard: { backgroundColor: '#00B14F', borderRadius: 16, padding: 24, marginTop: 16, borderWidth: 1, borderColor: '#00B14F' },
+  balanceLabel: { color: '#DDF3E6', fontSize: 14 },
+  balance: { color: '#fff', fontSize: 40, fontWeight: '800', marginTop: 4 },
+  owed: { color: '#FF6D00', fontSize: 13, marginTop: 8 },
   form: { gap: 10, marginTop: 20 },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16, borderWidth: 1, borderColor: '#ECECEC' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
-  section: { color: '#fff', fontSize: 16, fontWeight: '700', marginTop: 24, marginBottom: 8 },
-  empty: { color: '#5B6B84', marginTop: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#151E30' },
-  rowAmount: { color: '#fff', fontWeight: '700' },
-  rowStatus: { color: '#8FA3BF', textTransform: 'capitalize' },
+  section: { color: '#1C1C1C', fontSize: 16, fontWeight: '700', marginTop: 24, marginBottom: 8 },
+  empty: { color: '#9AA0A6', marginTop: 12 },
+  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#ECECEC' },
+  rowAmount: { color: '#1C1C1C', fontWeight: '700' },
+  rowStatus: { color: '#7A7A7A', textTransform: 'capitalize' },
   back: { padding: 16, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

@@ -42,7 +42,7 @@ export default function OrderStatus() {
     return () => { supabase.removeChannel(channel); };
   }, [id]);
 
-  if (loading) return <View style={styles.container}><ActivityIndicator color="#F04438" style={{ marginTop: 80 }} /></View>;
+  if (loading) return <View style={styles.container}><ActivityIndicator color="#00B14F" style={{ marginTop: 80 }} /></View>;
 
   const copy = COPY[status];
   const active = !['delivered', 'cancelled'].includes(status);
@@ -51,7 +51,7 @@ export default function OrderStatus() {
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-        {active && status !== 'delivered' && <ActivityIndicator size="large" color="#F04438" style={{ marginBottom: 24 }} />}
+        {active && status !== 'delivered' && <ActivityIndicator size="large" color="#00B14F" style={{ marginBottom: 24 }} />}
         <Text style={styles.title}>{copy.title}</Text>
         <Text style={styles.sub}>{copy.sub}</Text>
         {total != null && <Text style={styles.total}>${total.toFixed(2)}</Text>}
@@ -68,11 +68,11 @@ export default function OrderStatus() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800', textAlign: 'center' },
-  sub: { color: '#8FA3BF', fontSize: 15, textAlign: 'center', marginTop: 8 },
-  total: { color: '#10B981', fontSize: 30, fontWeight: '800', marginTop: 16 },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', textAlign: 'center' },
+  sub: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 8 },
+  total: { color: '#00B14F', fontSize: 30, fontWeight: '800', marginTop: 16 },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
 });

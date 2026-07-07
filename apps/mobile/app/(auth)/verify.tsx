@@ -32,7 +32,7 @@ export default function VerifyScreen() {
       <TextInput
         style={styles.input}
         placeholder="Enter code"
-        placeholderTextColor="#5B6B84"
+        placeholderTextColor="#9AA0A6"
         keyboardType="number-pad"
         maxLength={10}
         value={code}
@@ -52,15 +52,15 @@ export default function VerifyScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 26, fontWeight: '800', textAlign: 'center' },
-  sub: { color: '#8FA3BF', fontSize: 15, textAlign: 'center', marginTop: 8, marginBottom: 32 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, justifyContent: 'center' },
+  title: { color: '#1C1C1C', fontSize: 26, fontWeight: '800', textAlign: 'center' },
+  sub: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 8, marginBottom: 32 },
   input: {
-    backgroundColor: '#151E30', borderRadius: 12, padding: 18, color: '#fff', fontSize: 28,
-    letterSpacing: 12, textAlign: 'center', borderWidth: 1, borderColor: '#1F2A40', marginBottom: 16,
+    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 18, color: '#1C1C1C', fontSize: 28,
+    letterSpacing: 12, textAlign: 'center', borderWidth: 1, borderColor: '#ECECEC', marginBottom: 16,
   },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   disabled: { opacity: 0.5 },
-  resend: { color: '#F04438', textAlign: 'center', fontWeight: '600' },
+  resend: { color: '#00B14F', textAlign: 'center', fontWeight: '600' },
 });

@@ -74,33 +74,33 @@ export default function NewListing() {
         ))}
       </View>
 
-      <TextInput style={styles.input} placeholder="Title" placeholderTextColor="#5B6B84" value={title} onChangeText={setTitle} />
-      <TextInput style={[styles.input, styles.multiline]} placeholder="Description" placeholderTextColor="#5B6B84" value={desc} onChangeText={setDesc} multiline />
+      <TextInput style={styles.input} placeholder="Title" placeholderTextColor="#9AA0A6" value={title} onChangeText={setTitle} />
+      <TextInput style={[styles.input, styles.multiline]} placeholder="Description" placeholderTextColor="#9AA0A6" value={desc} onChangeText={setDesc} multiline />
       <View style={styles.row2}>
-        <TextInput style={[styles.input, styles.half]} placeholder={isPlace ? 'Nightly rate $' : 'Daily rate $'} placeholderTextColor="#5B6B84" keyboardType="decimal-pad" value={rate} onChangeText={setRate} />
-        <TextInput style={[styles.input, styles.half]} placeholder="Deposit $" placeholderTextColor="#5B6B84" keyboardType="decimal-pad" value={deposit} onChangeText={setDeposit} />
+        <TextInput style={[styles.input, styles.half]} placeholder={isPlace ? 'Nightly rate $' : 'Daily rate $'} placeholderTextColor="#9AA0A6" keyboardType="decimal-pad" value={rate} onChangeText={setRate} />
+        <TextInput style={[styles.input, styles.half]} placeholder="Deposit $" placeholderTextColor="#9AA0A6" keyboardType="decimal-pad" value={deposit} onChangeText={setDeposit} />
       </View>
 
       {isPlace ? (
         <>
           <View style={styles.row2}>
-            <TextInput style={[styles.input, styles.half]} placeholder="Beds" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={beds} onChangeText={setBeds} />
-            <TextInput style={[styles.input, styles.half]} placeholder="Baths" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={baths} onChangeText={setBaths} />
+            <TextInput style={[styles.input, styles.half]} placeholder="Beds" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={beds} onChangeText={setBeds} />
+            <TextInput style={[styles.input, styles.half]} placeholder="Baths" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={baths} onChangeText={setBaths} />
           </View>
-          <TextInput style={styles.input} placeholder="Max guests" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
-          <TextInput style={styles.input} placeholder="Amenities (comma separated)" placeholderTextColor="#5B6B84" value={amenities} onChangeText={setAmenities} />
+          <TextInput style={styles.input} placeholder="Max guests" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
+          <TextInput style={styles.input} placeholder="Amenities (comma separated)" placeholderTextColor="#9AA0A6" value={amenities} onChangeText={setAmenities} />
         </>
       ) : (
         <>
           <View style={styles.row2}>
-            <TextInput style={[styles.input, styles.half]} placeholder="Seats" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={seats} onChangeText={setSeats} />
-            <TextInput style={[styles.input, styles.half]} placeholder="Year" placeholderTextColor="#5B6B84" keyboardType="number-pad" value={year} onChangeText={setYear} />
+            <TextInput style={[styles.input, styles.half]} placeholder="Seats" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={seats} onChangeText={setSeats} />
+            <TextInput style={[styles.input, styles.half]} placeholder="Year" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={year} onChangeText={setYear} />
           </View>
-          <TextInput style={styles.input} placeholder="Transmission (auto/manual)" placeholderTextColor="#5B6B84" value={transmission} onChangeText={setTransmission} autoCapitalize="none" />
+          <TextInput style={styles.input} placeholder="Transmission (auto/manual)" placeholderTextColor="#9AA0A6" value={transmission} onChangeText={setTransmission} autoCapitalize="none" />
         </>
       )}
 
-      <TextInput style={styles.input} placeholder="Location / address" placeholderTextColor="#5B6B84" value={address} onChangeText={setAddress} />
+      <TextInput style={styles.input} placeholder="Location / address" placeholderTextColor="#9AA0A6" value={address} onChangeText={setAddress} />
 
       <Pressable style={styles.photoBtn} onPress={pickPhoto}>
         {photo ? <Image source={{ uri: photo }} style={styles.photo} /> : <Text style={styles.photoText}>Add photo</Text>}
@@ -117,21 +117,21 @@ export default function NewListing() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 16 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   toggle: { flexDirection: 'row', gap: 10, marginBottom: 16 },
-  toggleBtn: { flex: 1, backgroundColor: '#151E30', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1F2A40' },
-  toggleOn: { backgroundColor: '#F04438', borderColor: '#F04438' },
-  toggleText: { color: '#8FA3BF', fontWeight: '700' },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40', marginBottom: 10 },
+  toggleBtn: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#ECECEC' },
+  toggleOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
+  toggleText: { color: '#7A7A7A', fontWeight: '700' },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16, borderWidth: 1, borderColor: '#ECECEC', marginBottom: 10 },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   row2: { flexDirection: 'row', gap: 10 },
   half: { flex: 1 },
-  photoBtn: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#1F2A40', marginBottom: 16 },
-  photoText: { color: '#8FA3BF' },
+  photoBtn: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#ECECEC', marginBottom: 16 },
+  photoText: { color: '#7A7A7A' },
   photo: { width: 160, height: 110, borderRadius: 8 },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
   back: { padding: 14, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

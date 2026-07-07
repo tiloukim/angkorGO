@@ -78,8 +78,8 @@ export default function Restaurant() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
         <Text style={styles.h1}>Open a restaurant</Text>
-        <TextInput style={styles.input} placeholder="Restaurant name" placeholderTextColor="#5B6B84" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Cuisine (e.g. Khmer, BBQ)" placeholderTextColor="#5B6B84" value={cuisine} onChangeText={setCuisine} />
+        <TextInput style={styles.input} placeholder="Restaurant name" placeholderTextColor="#9AA0A6" value={name} onChangeText={setName} />
+        <TextInput style={styles.input} placeholder="Cuisine (e.g. Khmer, BBQ)" placeholderTextColor="#9AA0A6" value={cuisine} onChangeText={setCuisine} />
         <Pressable style={styles.primary} onPress={createRestaurant}><Text style={styles.primaryText}>Create (uses your current location)</Text></Pressable>
         <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>Back</Text></Pressable>
       </ScrollView>
@@ -111,8 +111,8 @@ export default function Restaurant() {
         <View key={m.id} style={styles.menuRow}><Text style={styles.menuName}>{m.name}</Text><Text style={styles.menuPrice}>${Number(m.price).toFixed(2)}</Text></View>
       ))}
       <View style={styles.addRow}>
-        <TextInput style={[styles.input, { flex: 2, marginBottom: 0 }]} placeholder="Item name" placeholderTextColor="#5B6B84" value={itemName} onChangeText={setItemName} />
-        <TextInput style={[styles.input, { flex: 1, marginBottom: 0 }]} placeholder="$" placeholderTextColor="#5B6B84" keyboardType="decimal-pad" value={itemPrice} onChangeText={setItemPrice} />
+        <TextInput style={[styles.input, { flex: 2, marginBottom: 0 }]} placeholder="Item name" placeholderTextColor="#9AA0A6" value={itemName} onChangeText={setItemName} />
+        <TextInput style={[styles.input, { flex: 1, marginBottom: 0 }]} placeholder="$" placeholderTextColor="#9AA0A6" keyboardType="decimal-pad" value={itemPrice} onChangeText={setItemPrice} />
         <Pressable style={styles.addBtn} onPress={addItem}><Text style={styles.addText}>Add</Text></Pressable>
       </View>
 
@@ -122,27 +122,27 @@ export default function Restaurant() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 8 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 8 },
   openWrap: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  openLabel: { color: '#8FA3BF', fontWeight: '600' },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 14, color: '#fff', fontSize: 16, borderWidth: 1, borderColor: '#1F2A40', marginBottom: 10 },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
+  openLabel: { color: '#7A7A7A', fontWeight: '600' },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, color: '#1C1C1C', fontSize: 16, borderWidth: 1, borderColor: '#ECECEC', marginBottom: 10 },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
   primaryText: { color: '#fff', fontWeight: '700' },
-  section: { color: '#fff', fontSize: 16, fontWeight: '700', marginTop: 24, marginBottom: 10 },
-  empty: { color: '#5B6B84' },
-  order: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#151E30', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#1F2A40' },
-  orderTitle: { color: '#fff', fontWeight: '700', textTransform: 'capitalize' },
-  orderSub: { color: '#8FA3BF', fontSize: 13, marginTop: 2 },
-  act: { backgroundColor: '#10B981', borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14 },
+  section: { color: '#1C1C1C', fontSize: 16, fontWeight: '700', marginTop: 24, marginBottom: 10 },
+  empty: { color: '#9AA0A6' },
+  order: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#ECECEC' },
+  orderTitle: { color: '#1C1C1C', fontWeight: '700', textTransform: 'capitalize' },
+  orderSub: { color: '#7A7A7A', fontSize: 13, marginTop: 2 },
+  act: { backgroundColor: '#00B14F', borderRadius: 10, paddingVertical: 8, paddingHorizontal: 14 },
   actText: { color: '#fff', fontWeight: '700' },
-  menuRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#151E30' },
-  menuName: { color: '#fff' },
-  menuPrice: { color: '#10B981', fontWeight: '700' },
+  menuRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#ECECEC' },
+  menuName: { color: '#1C1C1C' },
+  menuPrice: { color: '#00B14F', fontWeight: '700' },
   addRow: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 12 },
-  addBtn: { backgroundColor: '#F04438', borderRadius: 10, paddingVertical: 14, paddingHorizontal: 14 },
+  addBtn: { backgroundColor: '#00B14F', borderRadius: 10, paddingVertical: 14, paddingHorizontal: 14 },
   addText: { color: '#fff', fontWeight: '700' },
   back: { padding: 14, alignItems: 'center', marginTop: 8 },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

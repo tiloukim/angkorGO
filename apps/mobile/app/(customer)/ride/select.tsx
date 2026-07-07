@@ -64,7 +64,7 @@ export default function RideSelect() {
   }
 
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator color="#F04438" /><Text style={styles.loading}>Getting prices…</Text></View>;
+    return <View style={styles.center}><ActivityIndicator color="#00B14F" /><Text style={styles.loading}>Getting prices…</Text></View>;
   }
 
   return (
@@ -78,9 +78,9 @@ export default function RideSelect() {
           longitudeDelta: Math.abs(pickup.lng - dropoff.lng) * 2.2 + 0.02,
         }}
       >
-        <Marker coordinate={{ latitude: pickup.lat, longitude: pickup.lng }} pinColor="#10B981" />
-        <Marker coordinate={{ latitude: dropoff.lat, longitude: dropoff.lng }} pinColor="#F04438" />
-        {route && <Polyline coordinates={route.points.map((c) => ({ latitude: c.lat, longitude: c.lng }))} strokeColor="#F04438" strokeWidth={4} />}
+        <Marker coordinate={{ latitude: pickup.lat, longitude: pickup.lng }} pinColor="#00B14F" />
+        <Marker coordinate={{ latitude: dropoff.lat, longitude: dropoff.lng }} pinColor="#1C1C1C" />
+        {route && <Polyline coordinates={route.points.map((c) => ({ latitude: c.lat, longitude: c.lng }))} strokeColor="#00B14F" strokeWidth={4} />}
       </MapView>
 
       <View style={styles.sheet}>
@@ -124,21 +124,21 @@ function haversine(a: { lat: number; lng: number }, b: { lat: number; lng: numbe
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0B1220' },
-  loading: { color: '#8FA3BF', marginTop: 12 },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F6F7' },
+  loading: { color: '#7A7A7A', marginTop: 12 },
   map: { flex: 1 },
-  sheet: { backgroundColor: '#0B1220', padding: 20, paddingBottom: 36, borderTopLeftRadius: 20, borderTopRightRadius: 20, marginTop: -20 },
-  route: { color: '#8FA3BF', fontSize: 13, marginBottom: 12 },
-  card: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#151E30', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#1F2A40' },
-  cardOn: { borderColor: '#F04438' },
-  cardTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
-  price: { color: '#fff', fontSize: 16, fontWeight: '800' },
-  priceKhr: { color: '#8FA3BF', fontSize: 12 },
+  sheet: { backgroundColor: '#F5F6F7', padding: 20, paddingBottom: 36, borderTopLeftRadius: 20, borderTopRightRadius: 20, marginTop: -20 },
+  route: { color: '#7A7A7A', fontSize: 13, marginBottom: 12 },
+  card: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#ECECEC' },
+  cardOn: { borderColor: '#00B14F' },
+  cardTitle: { color: '#1C1C1C', fontSize: 16, fontWeight: '700' },
+  price: { color: '#1C1C1C', fontSize: 16, fontWeight: '800' },
+  priceKhr: { color: '#7A7A7A', fontSize: 12 },
   methods: { flexDirection: 'row', gap: 10, marginTop: 4, marginBottom: 16 },
-  method: { flex: 1, backgroundColor: '#151E30', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1F2A40' },
-  methodOn: { backgroundColor: '#F04438', borderColor: '#F04438' },
-  methodText: { color: '#8FA3BF', fontWeight: '700' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  method: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 10, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#ECECEC' },
+  methodOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
+  methodText: { color: '#7A7A7A', fontWeight: '700' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

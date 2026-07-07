@@ -52,8 +52,8 @@ export default function ListingDetail() {
 
       <Text style={styles.label}>Dates</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder="Start YYYY-MM-DD" placeholderTextColor="#5B6B84" value={start} onChangeText={setStart} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="End YYYY-MM-DD" placeholderTextColor="#5B6B84" value={end} onChangeText={setEnd} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder="Start YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={start} onChangeText={setStart} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder="End YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={end} onChangeText={setEnd} autoCapitalize="none" />
       </View>
 
       {days > 0 && (
@@ -78,29 +78,29 @@ export default function ListingDetail() {
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
     <View style={styles.row}>
-      <Text style={[styles.rowLabel, bold && { color: '#fff', fontWeight: '800' }]}>{label}</Text>
+      <Text style={[styles.rowLabel, bold && { color: '#1C1C1C', fontWeight: '800' }]}>{label}</Text>
       <Text style={[styles.rowVal, bold && { fontWeight: '800' }]}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220' },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
   photo: { width: '100%', height: 220 },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800', paddingHorizontal: 24, marginTop: 20 },
-  addr: { color: '#8FA3BF', paddingHorizontal: 24, marginTop: 4 },
-  price: { color: '#10B981', fontSize: 20, fontWeight: '800', paddingHorizontal: 24, marginTop: 10 },
-  desc: { color: '#C7D0DE', paddingHorizontal: 24, marginTop: 12, lineHeight: 20 },
-  attr: { color: '#8FA3BF', paddingHorizontal: 24, marginTop: 10 },
-  label: { color: '#fff', fontSize: 15, fontWeight: '700', paddingHorizontal: 24, marginTop: 24, marginBottom: 10 },
+  title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', paddingHorizontal: 24, marginTop: 20 },
+  addr: { color: '#7A7A7A', paddingHorizontal: 24, marginTop: 4 },
+  price: { color: '#00B14F', fontSize: 20, fontWeight: '800', paddingHorizontal: 24, marginTop: 10 },
+  desc: { color: '#3A3A3A', paddingHorizontal: 24, marginTop: 12, lineHeight: 20 },
+  attr: { color: '#7A7A7A', paddingHorizontal: 24, marginTop: 10 },
+  label: { color: '#1C1C1C', fontSize: 15, fontWeight: '700', paddingHorizontal: 24, marginTop: 24, marginBottom: 10 },
   dates: { flexDirection: 'row', gap: 10, paddingHorizontal: 24 },
-  input: { flex: 1, backgroundColor: '#151E30', borderRadius: 12, padding: 14, color: '#fff', borderWidth: 1, borderColor: '#1F2A40' },
-  summary: { marginHorizontal: 24, marginTop: 20, backgroundColor: '#151E30', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#1F2A40' },
+  input: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, color: '#1C1C1C', borderWidth: 1, borderColor: '#ECECEC' },
+  summary: { marginHorizontal: 24, marginTop: 20, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#ECECEC' },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
-  rowLabel: { color: '#8FA3BF' },
-  rowVal: { color: '#fff' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center', marginHorizontal: 24, marginTop: 24 },
+  rowLabel: { color: '#7A7A7A' },
+  rowVal: { color: '#1C1C1C' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginHorizontal: 24, marginTop: 24 },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   back: { padding: 14, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

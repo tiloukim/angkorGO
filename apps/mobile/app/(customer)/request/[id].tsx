@@ -91,7 +91,7 @@ export default function RequestStatusScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-        {searching && <ActivityIndicator size="large" color="#F04438" style={{ marginBottom: 24 }} />}
+        {searching && <ActivityIndicator size="large" color="#00B14F" style={{ marginBottom: 24 }} />}
         <Text style={styles.title}>{copy.title}</Text>
         <Text style={styles.sub}>{copy.sub}</Text>
       </View>
@@ -119,20 +119,20 @@ export default function RequestStatusScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800', textAlign: 'center' },
-  sub: { color: '#8FA3BF', fontSize: 15, textAlign: 'center', marginTop: 8 },
+  title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', textAlign: 'center' },
+  sub: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 8 },
   cancel: { padding: 16, alignItems: 'center' },
-  cancelText: { color: '#F04438', fontWeight: '600' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  cancelText: { color: '#E5484D', fontWeight: '600' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
   banner: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#0B1220', padding: 24, paddingBottom: 40,
+    backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 40,
     borderTopLeftRadius: 20, borderTopRightRadius: 20,
   },
-  bannerTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  bannerSub: { color: '#8FA3BF', fontSize: 14, marginTop: 4 },
+  bannerTitle: { color: '#1C1C1C', fontSize: 20, fontWeight: '800' },
+  bannerSub: { color: '#7A7A7A', fontSize: 14, marginTop: 4 },
   sheetWrap: { position: 'absolute', bottom: 0, left: 0, right: 0 },
 });

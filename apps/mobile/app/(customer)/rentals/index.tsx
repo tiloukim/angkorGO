@@ -47,18 +47,18 @@ export default function Rentals() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800', marginBottom: 16 },
-  empty: { color: '#5B6B84', marginTop: 20 },
-  card: { backgroundColor: '#151E30', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: '#1F2A40', overflow: 'hidden' },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
+  empty: { color: '#9AA0A6', marginTop: 20 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: '#ECECEC', overflow: 'hidden' },
   photo: { width: '100%', height: 160 },
-  photoEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#1F2A40' },
+  photoEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#ECECEC' },
   photoEmptyText: { fontSize: 44 },
   cardBody: { padding: 16 },
-  title: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  sub: { color: '#8FA3BF', fontSize: 13, marginTop: 2 },
-  price: { color: '#10B981', fontSize: 18, fontWeight: '800', marginTop: 8 },
-  perDay: { color: '#8FA3BF', fontSize: 13, fontWeight: '600' },
+  title: { color: '#1C1C1C', fontSize: 18, fontWeight: '700' },
+  sub: { color: '#7A7A7A', fontSize: 13, marginTop: 2 },
+  price: { color: '#00B14F', fontSize: 18, fontWeight: '800', marginTop: 8 },
+  perDay: { color: '#7A7A7A', fontSize: 13, fontWeight: '600' },
   back: { padding: 14, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

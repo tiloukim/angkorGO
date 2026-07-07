@@ -79,13 +79,13 @@ export default function PhotosScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  title: { color: '#fff', fontSize: 24, fontWeight: '800' },
-  sub: { color: '#8FA3BF', fontSize: 14, marginTop: 6, marginBottom: 20 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800' },
+  sub: { color: '#7A7A7A', fontSize: 14, marginTop: 6, marginBottom: 20 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   thumb: { width: 96, height: 96, borderRadius: 12 },
-  add: { width: 96, height: 96, borderRadius: 12, backgroundColor: '#151E30', borderWidth: 1, borderColor: '#1F2A40', alignItems: 'center', justifyContent: 'center' },
-  addText: { color: '#8FA3BF', fontSize: 34 },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 'auto' },
+  add: { width: 96, height: 96, borderRadius: 12, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#ECECEC', alignItems: 'center', justifyContent: 'center' },
+  addText: { color: '#7A7A7A', fontSize: 34 },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 'auto' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 });

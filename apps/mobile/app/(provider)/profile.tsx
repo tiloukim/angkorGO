@@ -37,7 +37,7 @@ export default function ProviderProfile() {
 
       <Text style={styles.label}>Bio</Text>
       <TextInput
-        style={styles.input} multiline placeholder="Tell customers about your service" placeholderTextColor="#5B6B84"
+        style={styles.input} multiline placeholder="Tell customers about your service" placeholderTextColor="#9AA0A6"
         value={bio} onChangeText={setBio}
       />
       <Pressable style={styles.primary} onPress={save}>
@@ -65,19 +65,19 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, paddingTop: 72 },
-  h1: { color: '#fff', fontSize: 24, fontWeight: '800' },
-  status: { color: '#8FA3BF', marginTop: 4, textTransform: 'capitalize' },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800' },
+  status: { color: '#7A7A7A', marginTop: 4, textTransform: 'capitalize' },
   stats: { flexDirection: 'row', gap: 12, marginTop: 20 },
-  stat: { flex: 1, backgroundColor: '#151E30', borderRadius: 12, padding: 16, alignItems: 'center' },
-  statValue: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  statLabel: { color: '#8FA3BF', fontSize: 12, marginTop: 4 },
-  label: { color: '#fff', fontSize: 15, fontWeight: '700', marginTop: 24, marginBottom: 10 },
-  input: { backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16, minHeight: 90, textAlignVertical: 'top', borderWidth: 1, borderColor: '#1F2A40' },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
+  stat: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, alignItems: 'center' },
+  statValue: { color: '#1C1C1C', fontSize: 22, fontWeight: '800' },
+  statLabel: { color: '#7A7A7A', fontSize: 12, marginTop: 4 },
+  label: { color: '#1C1C1C', fontSize: 15, fontWeight: '700', marginTop: 24, marginBottom: 10 },
+  input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16, minHeight: 90, textAlignVertical: 'top', borderWidth: 1, borderColor: '#ECECEC' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
   primaryText: { color: '#fff', fontWeight: '700' },
   link: { padding: 16, alignItems: 'center', marginTop: 8 },
-  linkText: { color: '#fff', fontWeight: '600' },
+  linkText: { color: '#1C1C1C', fontWeight: '600' },
   back: { padding: 12, alignItems: 'center' },
-  backText: { color: '#8FA3BF', fontWeight: '600' },
+  backText: { color: '#7A7A7A', fontWeight: '600' },
 });

@@ -37,7 +37,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Email address"
-        placeholderTextColor="#5B6B84"
+        placeholderTextColor="#9AA0A6"
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -66,23 +66,23 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', padding: 24, justifyContent: 'center' },
-  brand: { color: '#fff', fontSize: 30, fontWeight: '800', textAlign: 'center' },
-  tagline: { color: '#8FA3BF', fontSize: 15, textAlign: 'center', marginTop: 6, marginBottom: 40 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, justifyContent: 'center' },
+  brand: { color: '#1C1C1C', fontSize: 30, fontWeight: '800', textAlign: 'center' },
+  tagline: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 6, marginBottom: 40 },
   input: {
-    backgroundColor: '#151E30', borderRadius: 12, padding: 16, color: '#fff', fontSize: 16,
-    borderWidth: 1, borderColor: '#1F2A40', marginBottom: 12,
+    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, color: '#1C1C1C', fontSize: 16,
+    borderWidth: 1, borderColor: '#ECECEC', marginBottom: 12,
   },
-  primary: { backgroundColor: '#F04438', borderRadius: 12, padding: 16, alignItems: 'center' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   disabled: { opacity: 0.5 },
   divider: { alignItems: 'center', marginVertical: 20 },
-  dividerText: { color: '#5B6B84' },
+  dividerText: { color: '#9AA0A6' },
   oauth: {
-    backgroundColor: '#151E30', borderRadius: 12, padding: 16, alignItems: 'center',
-    borderWidth: 1, borderColor: '#1F2A40', marginBottom: 12,
+    backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, alignItems: 'center',
+    borderWidth: 1, borderColor: '#ECECEC', marginBottom: 12,
   },
   apple: { backgroundColor: '#000', borderColor: '#000' },
-  oauthText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  legal: { color: '#5B6B84', fontSize: 12, textAlign: 'center', marginTop: 24 },
+  oauthText: { color: '#1C1C1C', fontSize: 16, fontWeight: '600' },
+  legal: { color: '#9AA0A6', fontSize: 12, textAlign: 'center', marginTop: 24 },
 });
