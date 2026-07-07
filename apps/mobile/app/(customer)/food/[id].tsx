@@ -1,6 +1,6 @@
 // Food — restaurant menu + cart → place order (delivery to current GPS).
 import { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { getCurrentCoords, coordsToAddress } from '@/lib/location';

@@ -93,7 +93,6 @@ export default function DriverTrip() {
   }
 
   function navigateTo() {
-    const target = status === 'in_progress' ? dropoff : pickup?.address;
     if (pickup) {
       const q = status === 'in_progress' ? encodeURIComponent(dropoff) : `${pickup.lat},${pickup.lng}`;
       Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${q}`);

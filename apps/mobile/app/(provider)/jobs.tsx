@@ -1,6 +1,6 @@
 // Provider job history — active + completed jobs assigned to this provider.
 import { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, SectionList } from 'react-native';
+import { View, Text, StyleSheet, Pressable, SectionList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { categoryLabel, type RequestStatus, type ServiceCategory, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
