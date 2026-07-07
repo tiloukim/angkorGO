@@ -5,14 +5,12 @@ import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
 import { LocationLangBar } from '@/components/LocationLangBar';
-import { type Language } from '@angkorgo/shared';
 
 interface Restaurant { id: string; name: string; cuisine: string | null; photo_url: string | null; rating: number; is_open: boolean }
 
 export default function Food() {
   const router = useRouter();
   const [rows, setRows] = useState<Restaurant[]>([]);
-  const [lang, setLang] = useState<Language>('en');
 
   useEffect(() => {
     supabase.from('restaurants').select('id, name, cuisine, photo_url, rating, is_open')
@@ -23,7 +21,7 @@ export default function Food() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <LocationLangBar lang={lang} onLang={setLang} />
+        <LocationLangBar />
       </View>
       <View style={styles.content}>
       <Text style={styles.h1}>Food delivery</Text>

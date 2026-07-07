@@ -6,11 +6,9 @@ import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { placeAutocomplete, placeCoords, type Prediction } from '@/lib/places';
 import { theme } from '@/lib/theme';
 import { LocationLangBar } from '@/components/LocationLangBar';
-import { type Language } from '@angkorgo/shared';
 
 export default function RideHome() {
   const router = useRouter();
-  const [lang, setLang] = useState<Language>('en');
   const [pickup, setPickup] = useState<Coords | null>(null);
   const [pickupAddr, setPickupAddr] = useState('Locating…');
   const [query, setQuery] = useState('');
@@ -48,7 +46,7 @@ export default function RideHome() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <LocationLangBar lang={lang} onLang={setLang} />
+        <LocationLangBar />
       </View>
       <View style={styles.content}>
       <Text style={styles.h1}>Where to?</Text>

@@ -1,13 +1,11 @@
 // Customer super-app home — Grab-inspired.
 // Green header + search, colorful service grid, gold promo banner, and the
 // roadside-help categories. Tapping a service starts its flow.
-import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   SERVICE_CATEGORIES,
   categoryLabel,
-  type Language,
   type ServiceCategory,
 } from '@angkorgo/shared';
 import { theme, tileColors } from '../../lib/theme';
@@ -15,10 +13,11 @@ import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
 import { Mascot } from '@/components/Mascot';
 import { TukiTukTuk } from '@/components/TukiTukTuk';
 import { LocationLangBar } from '@/components/LocationLangBar';
+import { useLocale } from '@/lib/locale';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [lang, setLang] = useState<Language>('en');
+  const { lang } = useLocale();
 
   const onSelect = (category: ServiceCategory) =>
     router.push({ pathname: '/(customer)/request/location', params: { category } });
@@ -67,8 +66,6 @@ export default function HomeScreen() {
         {/* Green header */}
         <View style={styles.header}>
           <LocationLangBar
-            lang={lang}
-            onLang={setLang}
             right={
               <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={10} style={styles.mascot}>
                 <Mascot size={38} />

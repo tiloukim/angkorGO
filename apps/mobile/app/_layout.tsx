@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '@/lib/auth';
+import { LocaleProvider } from '@/lib/locale';
 
 function RootNavigator() {
   const { session, profile, loading } = useAuth();
@@ -46,7 +47,9 @@ function RootNavigator() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootNavigator />
+      <LocaleProvider>
+        <RootNavigator />
+      </LocaleProvider>
     </AuthProvider>
   );
 }

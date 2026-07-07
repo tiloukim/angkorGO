@@ -4,20 +4,13 @@ import { useState } from 'react';
 import { View, Text, Pressable, Modal, ScrollView, StyleSheet } from 'react-native';
 import { LANGUAGES, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
+import { useLocale } from '@/lib/locale';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 const CITIES = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville', 'Kampot', 'Kep', 'Kampong Cham'];
 
-export function LocationLangBar({
-  lang,
-  onLang,
-  right,
-}: {
-  lang: Language;
-  onLang: (l: Language) => void;
-  right?: React.ReactNode;
-}) {
-  const [city, setCity] = useState('Phnom Penh');
+export function LocationLangBar({ right }: { right?: React.ReactNode }) {
+  const { lang, setLang, city, setCity } = useLocale();
   const [cityOpen, setCityOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
 
@@ -62,7 +55,7 @@ export function LocationLangBar({
           <Pressable style={styles.sheet} onPress={() => {}}>
             <Text style={styles.sheetTitle}>Language</Text>
             {LANGUAGES.map((l) => (
-              <Pressable key={l.code} style={styles.optRow} onPress={() => { onLang(l.code); setLangOpen(false); }}>
+              <Pressable key={l.code} style={styles.optRow} onPress={() => { setLang(l.code); setLangOpen(false); }}>
                 <Text style={[styles.optText, l.code === lang && styles.optActive]}>{FLAGS[l.code]}  {l.label}</Text>
                 {l.code === lang && <Text style={styles.check}>✓</Text>}
               </Pressable>

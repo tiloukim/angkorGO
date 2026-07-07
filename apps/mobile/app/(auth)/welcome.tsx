@@ -1,17 +1,17 @@
 // Welcome / language splash (WOWNOW-style) — branded first screen with the
 // mascot and a trilingual chooser, then continues to sign in.
-import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LANGUAGES, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
 import { TukiTukTuk } from '@/components/TukiTukTuk';
+import { useLocale } from '@/lib/locale';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 
 export default function WelcomeScreen() {
   const router = useRouter();
-  const [lang, setLang] = useState<Language>('en');
+  const { lang, setLang } = useLocale();
 
   return (
     <View style={styles.container}>
