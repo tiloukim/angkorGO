@@ -24,10 +24,12 @@ Deno.serve(async (req) => {
     case 'aba_payway':
     case 'wing':
     case 'acleda': {
-      // TODO: call Bakong/ABA PayWay to generate a real KHQR payload + txn ref.
-      // For now return a deterministic placeholder the app renders as a QR.
+      // SANDBOX: return a deterministic KHQR-shaped payload the app renders as a
+      // QR. In production, replace this block with a Bakong/ABA PayWay call that
+      // generates a real KHQR string + txn ref; the gateway then POSTs `callback`
+      // (payment-webhook) on success — which the app's sandbox button simulates.
       const qr = `KHQR|angkorgo|${payment.currency}|${amount.toFixed(2)}|${payment_id}`;
-      return json({ method, qr, amount, currency: payment.currency, callback });
+      return json({ method, qr, amount, currency: payment.currency, callback, sandbox: true });
     }
     case 'stripe': {
       // TODO: create a Stripe PaymentIntent with STRIPE_SECRET_KEY and metadata

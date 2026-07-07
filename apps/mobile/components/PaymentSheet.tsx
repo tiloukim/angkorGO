@@ -20,6 +20,7 @@ const L: Record<Language, Record<string, string>> = {
     cashBody: 'Pay the provider directly. They will confirm completion.',
     paymentError: 'Payment error',
     tryAgain: 'Try again',
+    simulatePay: '✓ Simulate payment (sandbox)',
   },
   km: {
     paymentReceived: 'បានទទួលការបង់ប្រាក់',
@@ -33,6 +34,7 @@ const L: Record<Language, Record<string, string>> = {
     cashBody: 'បង់ប្រាក់ដោយផ្ទាល់ទៅអ្នកផ្តល់សេវា។ ពួកគេនឹងបញ្ជាក់ការបញ្ចប់។',
     paymentError: 'កំហុសក្នុងការបង់ប្រាក់',
     tryAgain: 'ព្យាយាមម្តងទៀត',
+    simulatePay: '✓ ក្លែងធ្វើការបង់ប្រាក់ (សាកល្បង)',
   },
   zh: {
     paymentReceived: '已收到付款',
@@ -46,8 +48,13 @@ const L: Record<Language, Record<string, string>> = {
     cashBody: '直接向服务提供者付款。他们将确认完成。',
     paymentError: '付款错误',
     tryAgain: '请重试',
+    simulatePay: '✓ 模拟付款（沙盒）',
   },
 };
+
+// Sandbox mode shows a "simulate payment" button (no real gateway wired yet).
+// Set EXPO_PUBLIC_PAYMENTS_SANDBOX=false once ABA PayWay / Bakong is live.
+const PAYMENTS_SANDBOX = (process.env.EXPO_PUBLIC_PAYMENTS_SANDBOX ?? 'true') !== 'false';
 
 export function PaymentSheet({ payment }: { payment: Payment }) {
   const { lang } = useLocale();
@@ -74,6 +81,18 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
     } finally {
       setBusy(false);
     }
+  }
+
+  // Sandbox: simulate the gateway callback (what ABA PayWay / Bakong will POST
+  // to payment-webhook once live). Confirms + releases → wallet credited.
+  async function simulatePaid() {
+    setBusy(true);
+    const { error } = await supabase.functions.invoke('payment-webhook', {
+      body: { payment_id: payment.id, method: method ?? 'khqr', status: 'paid' },
+    });
+    setBusy(false);
+    if (error) Alert.alert(t.paymentError, error.message);
+    // Realtime flips the sheet to Paid ✓ automatically.
   }
 
   if (payment.status === 'held') {
@@ -106,6 +125,11 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
         <View style={styles.qrBox}>
           <Text style={styles.qrText}>{qr}</Text>
           <Text style={styles.qrHint}>{t.scanPrefix}{PAYMENT_METHODS.find((p) => p.method === method)?.label}{t.scanSuffix}</Text>
+          {PAYMENTS_SANDBOX && (
+            <Pressable style={styles.sandbox} onPress={simulatePaid} disabled={busy}>
+              <Text style={styles.sandboxText}>{t.simulatePay}</Text>
+            </Pressable>
+          )}
         </View>
       ) : (
         <View style={styles.methods}>
@@ -134,4 +158,6 @@ const styles = StyleSheet.create({
   qrBox: { backgroundColor: '#F5F6F7', borderRadius: 12, padding: 24, alignItems: 'center', marginTop: 12, borderWidth: 1, borderColor: '#ECECEC' },
   qrText: { color: '#1C1C1C', fontSize: 11, textAlign: 'center' },
   qrHint: { color: '#7A7A7A', fontSize: 13, marginTop: 12 },
+  sandbox: { marginTop: 16, backgroundColor: '#00B14F', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 20 },
+  sandboxText: { color: '#fff', fontWeight: '800' },
 });
