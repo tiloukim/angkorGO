@@ -21,14 +21,14 @@ export default async function VehiclesPage() {
   const verified = (vehicles ?? []).filter((v: any) => v.verified);
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Vehicle Approvals</h1>
 
       <h2 className="mb-3 text-sm font-semibold uppercase text-black/45">Pending ({pending.length})</h2>
       {!pending.length && <p className="text-black/55">No vehicles awaiting verification.</p>}
       <div className="space-y-3">
         {pending.map((v: any) => (
-          <div key={v.id} className="flex items-center justify-between rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
+          <div key={v.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
             <div className="flex items-center gap-4">
               {v.photo_url && signed[v.photo_url] && (
                 <a href={signed[v.photo_url]} target="_blank" className="text-xs text-danger">photo ↗</a>
@@ -52,7 +52,7 @@ export default async function VehiclesPage() {
           <h2 className="mb-3 mt-8 text-sm font-semibold uppercase text-black/45">Verified ({verified.length})</h2>
           <div className="space-y-2">
             {verified.map((v: any) => (
-              <div key={v.id} className="flex items-center justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+              <div key={v.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
                 <span className="capitalize">{v.class} · {v.plate_number}</span>
                 <form action={setVehicleVerified.bind(null, v.id, false)}>
                   <button className="text-xs text-black/55 hover:text-danger">Unverify</button>

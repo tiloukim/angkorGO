@@ -29,10 +29,10 @@ export default async function RidesPage() {
   ];
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Ride Operations</h1>
 
-      <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         {kpis.map((k) => (
           <div key={k.label} className="rounded-2xl border border-black/10 bg-[#f6f6f6] p-5">
             <p className="text-sm text-black/55">{k.label}</p>
@@ -44,7 +44,7 @@ export default async function RidesPage() {
       {/* Surge */}
       <section className="mb-8 rounded-2xl border border-black/10 bg-[#f6f6f6] p-5">
         <h2 className="mb-3 font-bold">Global surge</h2>
-        <form action={setSurge} className="flex items-end gap-3">
+        <form action={setSurge} className="flex flex-wrap items-end gap-3">
           <label className="text-sm text-black/55">
             Multiplier
             <input name="surge" type="number" step="0.1" min="1" defaultValue={surge}
@@ -80,8 +80,8 @@ export default async function RidesPage() {
       {/* Live / recent trips */}
       <section>
         <h2 className="mb-3 font-bold">Recent trips</h2>
-        <div className="overflow-hidden rounded-2xl border border-black/10">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-black/10">
+          <table className="w-full min-w-[560px] text-sm">
             <thead className="bg-[#f6f6f6] text-left text-black/55">
               <tr><th className="p-3">Class</th><th className="p-3">Status</th><th className="p-3">Fare</th><th className="p-3">Route</th></tr>
             </thead>

@@ -20,7 +20,7 @@ export default async function DisputesPage() {
   ]);
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Dispute Center</h1>
 
       <section className="mb-8">
@@ -28,7 +28,7 @@ export default async function DisputesPage() {
         {!payments?.length && <p className="text-sm text-black/55">None.</p>}
         <div className="space-y-2">
           {(payments ?? []).map((p) => (
-            <div key={p.id} className="flex justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+            <div key={p.id} className="flex justify-between gap-3 rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
               <span>${Number(p.amount).toFixed(2)} {p.currency}</span>
               <span className="text-danger">{p.status}</span>
             </div>
@@ -41,7 +41,7 @@ export default async function DisputesPage() {
         {!requests?.length && <p className="text-sm text-black/55">None.</p>}
         <div className="space-y-2">
           {(requests ?? []).map((r) => (
-            <div key={r.id} className="flex justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+            <div key={r.id} className="flex justify-between gap-3 rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
               <span className="capitalize">{r.category.replace('_', ' ')}</span>
               <span className="text-[#b26b00] capitalize">{r.status}</span>
             </div>

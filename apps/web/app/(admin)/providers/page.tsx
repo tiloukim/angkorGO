@@ -21,7 +21,7 @@ export default async function ProvidersPage() {
   }
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Provider Approvals</h1>
 
       {!providers?.length && <p className="text-black/55">No providers awaiting review. 🎉</p>}
@@ -29,7 +29,7 @@ export default async function ProvidersPage() {
       <div className="space-y-4">
         {(providers ?? []).map((p: any) => (
           <div key={p.id} className="rounded-2xl border border-black/10 bg-[#f6f6f6] p-5">
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-lg font-bold">{p.business_name ?? p.profiles?.full_name ?? 'Unnamed'}</p>
                 <p className="text-sm text-black/55">{p.profiles?.full_name} · {p.profiles?.phone ?? 'no phone'}</p>

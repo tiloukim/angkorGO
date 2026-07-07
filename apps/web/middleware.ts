@@ -7,7 +7,7 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 // Also refreshes the auth cookie on every request (Supabase SSR pattern).
 export async function middleware(request: NextRequest) {
   // Fully public static pages — no auth context needed.
-  const STATIC_PUBLIC = ['/', '/privacy', '/terms'];
+  const STATIC_PUBLIC = ['/', '/privacy', '/terms', '/promos'];
   if (STATIC_PUBLIC.includes(request.nextUrl.pathname)) return NextResponse.next();
 
   let response = NextResponse.next({ request });

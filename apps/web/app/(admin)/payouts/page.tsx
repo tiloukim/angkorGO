@@ -12,13 +12,13 @@ export default async function PayoutsPage() {
     .order('requested_at', { ascending: true });
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Payout Queue</h1>
       {!rows?.length && <p className="text-black/55">No pending payouts.</p>}
 
       <div className="space-y-3">
         {(rows ?? []).map((w: any) => (
-          <div key={w.id} className="flex items-center justify-between rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
+          <div key={w.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
             <div>
               <p className="font-bold">${Number(w.amount).toFixed(2)}</p>
               <p className="text-sm text-black/55">

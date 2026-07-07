@@ -11,10 +11,10 @@ export default async function UsersPage() {
     .limit(200);
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Users</h1>
-      <div className="overflow-hidden rounded-2xl border border-black/10">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-black/10">
+        <table className="w-full min-w-[560px] text-sm">
           <thead className="bg-[#f6f6f6] text-left text-black/50">
             <tr>
               <th className="p-3 font-semibold">Name</th><th className="p-3 font-semibold">Phone</th>

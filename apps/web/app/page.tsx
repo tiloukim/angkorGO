@@ -2,6 +2,9 @@
 // Uber / Uber Eats look: white canvas, black ink, green accents, bold type.
 // The admin console lives under /login + /dashboard (gated by middleware).
 import Link from 'next/link';
+import { Logo } from './components/Logo';
+import { AngkorWat } from './components/AngkorWat';
+import { PromoPoster, PROMOS } from './components/PromoPoster';
 
 // The five AngkorGo verticals (Cambodia super-app).
 const SERVICES = [
@@ -26,26 +29,32 @@ export default function Landing() {
       <header className="sticky top-0 z-20 border-b border-black/5 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-extrabold tracking-tight">AngkorGo</span>
-            <span className="rounded-full bg-black px-2 py-0.5 text-xs font-semibold text-white">Cambodia</span>
+            <Logo size={30} />
+            <span className="hidden rounded-full bg-black px-2 py-0.5 text-xs font-semibold text-white sm:inline-block">Cambodia</span>
           </div>
-          <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
-            <a href="#services" className="text-black/60 hover:text-black">Services</a>
-            <a href="#how" className="text-black/60 hover:text-black">How it works</a>
-            <a href="#providers" className="text-black/60 hover:text-black">For providers</a>
-            <Link href="/login" className="rounded-full bg-black px-4 py-2 font-semibold text-white hover:bg-black/85">
+          <div className="flex items-center gap-4 sm:gap-7">
+            <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+              <a href="#services" className="text-black/60 hover:text-black">Services</a>
+              <a href="#how" className="text-black/60 hover:text-black">How it works</a>
+              <a href="#promos" className="text-black/60 hover:text-black">Promotions</a>
+              <a href="#providers" className="text-black/60 hover:text-black">For providers</a>
+            </nav>
+            <Link href="/login" className="rounded-full bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/85">
               Admin
             </Link>
-          </nav>
+          </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
+      <section className="relative overflow-hidden">
+        {/* Angkor Wat landmark silhouette behind the hero */}
+        <AngkorWat className="pointer-events-none absolute -bottom-6 left-1/2 w-[900px] max-w-none -translate-x-1/2 text-black/[0.045]" />
+        <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
         <p className="mb-5 inline-block rounded-full bg-brand/10 px-4 py-1.5 text-sm font-semibold text-[#048a49]">
           🇰🇭 Cambodia&apos;s everyday super-app
         </p>
-        <h1 className="max-w-3xl text-5xl font-extrabold leading-[1.02] tracking-tight md:text-7xl">
+        <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
           Rides, repairs, rentals &amp; more — one app.
         </h1>
         {/* Trilingual tagline */}
@@ -61,6 +70,7 @@ export default function Landing() {
           </span>
         </div>
         <p className="mt-4 text-xs font-medium text-black/45">Apps launching soon · English · ភាសាខ្មែរ · 中文</p>
+        </div>
       </section>
 
       {/* Services */}
@@ -105,6 +115,26 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Promotions */}
+      <section id="promos" className="border-t border-black/10 bg-[#f6f6f6] py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-4xl font-extrabold tracking-tight">Launch promotions</h2>
+              <p className="mt-2 text-lg text-black/55">Trilingual posters — share on social or print for the street.</p>
+            </div>
+            <Link href="/promos" className="rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-black/85">
+              See all posters
+            </Link>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {PROMOS.map((p) => (
+              <PromoPoster key={p.eyebrow} promo={p} />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* For providers */}
       <section id="providers" className="border-t border-black/10">
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-6 py-20 md:grid-cols-2">
@@ -134,10 +164,11 @@ export default function Landing() {
 
       {/* Footer */}
       <footer className="border-t border-black/10 bg-black py-12 text-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-sm text-white/50 md:flex-row">
-          <span className="font-semibold text-white">AngkorGo</span>
-          <span>© 2026 AngkorGo. All rights reserved.</span>
-          <div className="flex gap-6">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 text-sm text-white/50 md:flex-row">
+          <Logo size={28} tone="white" />
+          <span className="text-center">© 2026 AngkorGo. All rights reserved.</span>
+          <div className="flex flex-wrap justify-center gap-6">
+            <Link href="/promos" className="hover:text-white">Promotions</Link>
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
             <Link href="/terms" className="hover:text-white">Terms</Link>
             <Link href="/login" className="hover:text-white">Admin</Link>

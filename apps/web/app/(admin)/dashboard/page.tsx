@@ -39,9 +39,9 @@ export default async function AdminDashboard() {
   ];
 
   return (
-    <main className="p-8">
+    <main className="p-5 md:p-8">
       <h1 className="text-3xl font-extrabold tracking-tight mb-6">Overview</h1>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {cards.map((c) => (
           <div key={c.label} className="rounded-2xl border border-black/10 bg-[#f6f6f6] p-5">
             <p className="text-sm font-medium text-black/50">{c.label}</p>
