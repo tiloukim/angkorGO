@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { DeleteAccountButton } from '@/components/DeleteAccountButton';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
+import { LocationLangBar } from '@/components/LocationLangBar';
+import { theme } from '@/lib/theme';
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -11,6 +13,10 @@ export default function AccountScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <LocationLangBar />
+      </View>
+      <View style={styles.content}>
       <Text style={styles.h1}>Account</Text>
       <View style={styles.card}>
         <Text style={styles.name}>{profile?.full_name ?? 'AngkorGo user'}</Text>
@@ -30,6 +36,7 @@ export default function AccountScreen() {
       <View style={{ marginTop: 'auto' }}>
         <DeleteAccountButton />
       </View>
+      </View>
 
       <TabBar active="account" />
     </View>
@@ -37,7 +44,9 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72, paddingBottom: TAB_BAR_SPACE },
+  container: { flex: 1, backgroundColor: '#F5F6F7' },
+  header: { backgroundColor: theme.greenDark, paddingTop: 60, paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
+  content: { flex: 1, padding: 24, paddingTop: 20, paddingBottom: TAB_BAR_SPACE },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#ECECEC' },
   name: { color: '#1C1C1C', fontSize: 18, fontWeight: '700' },
