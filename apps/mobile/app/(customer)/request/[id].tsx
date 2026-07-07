@@ -91,7 +91,7 @@ export default function RequestStatusScreen() {
   }, [id]);
 
   async function cancel() {
-    await supabase.from('service_requests').update({ status: 'cancelled' }).eq('id', id);
+    await supabase.rpc('cancel_request', { p_request: id, p_reason: 'customer_cancelled' });
     router.replace('/(customer)');
   }
 
