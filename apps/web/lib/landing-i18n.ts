@@ -14,7 +14,8 @@ export type LandingCopy = {
   quick: { topUp: string; coupons: string; invite: string; rewards: string };
   groups: { getAround: string; orderShop: string };
   noResults: string;
-  service: { body: string; cta: string };
+  service: { cta: string };
+  desc: Record<string, string>;
   w: Record<string, string>;
   how: { title: string; steps: { title: string; body: string }[] };
   deal: { week: string; title: string; sub: string; cta: string; badge: string };
@@ -36,7 +37,25 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: 'Top up', coupons: 'Coupons', invite: 'Invite', rewards: 'Rewards' },
     groups: { getAround: 'Get around', orderShop: 'Order & shop' },
     noResults: 'No matches — try another service',
-    service: { body: '{name} is available in the AngkorGo super-app.', cta: 'Get the app' },
+    service: { cta: 'Got it' },
+    desc: {
+      ride: 'Book a moto, tuk-tuk or car and track your driver live.',
+      food: 'Order from local restaurants, delivered hot to your door.',
+      rent: 'Rent a car or van by the day from local owners.',
+      stay: 'Find short-term places to stay across Cambodia.',
+      repair: 'A mechanic comes to you — flat tire, battery, tow, fuel & more.',
+      airport: 'Pre-book reliable airport pickups and drop-offs.',
+      schedule: 'Plan a ride in advance for the time you need.',
+      spin: 'Spin the wheel daily for discounts and rewards.',
+      mart: 'Groceries and essentials delivered from nearby shops.',
+      grocery: 'Fresh produce and daily goods to your door.',
+      coupons: 'Save with vouchers and deals across every service.',
+      rewards: 'Earn points on every trip, order and booking.',
+      wallet: 'One balance for rides, food, rentals and more.',
+      more: 'New services are on the way — stay tuned.',
+      topUp: 'Add funds to your AngkorGo wallet in seconds.',
+      invite: 'Invite friends and both of you earn rewards.',
+    },
     w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons' },
     how: {
       title: 'How AngkorGo works',
@@ -70,7 +89,25 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ', rewards: 'រង្វាន់' },
     groups: { getAround: 'ធ្វើដំណើរ', orderShop: 'កម្ម៉ង់ & ទិញ' },
     noResults: 'គ្មានលទ្ធផល — សាកល្បងសេវាផ្សេង',
-    service: { body: '{name} មាននៅក្នុងកម្មវិធីរួម AngkorGo។', cta: 'ទាញយកកម្មវិធី' },
+    service: { cta: 'យល់ព្រម' },
+    desc: {
+      ride: 'កក់ម៉ូតូ តុកតុក ឬឡាន និងតាមដានអ្នកបើកបរផ្ទាល់។',
+      food: 'កម្ម៉ង់ពីភោជនីយដ្ឋានក្នុងស្រុក ដឹកជូនដល់ផ្ទះក្តៅៗ។',
+      rent: 'ជួលឡាន ឬរថយន្តដឹកតាមថ្ងៃ ពីម្ចាស់ក្នុងស្រុក។',
+      stay: 'ស្វែងរកកន្លែងស្នាក់នៅរយៈពេលខ្លីទូទាំងកម្ពុជា។',
+      repair: 'ជាងម៉ាស៊ីនមកដល់អ្នក — កង់បែក ថ្មអស់ អូសរថ ប្រេង និងច្រើនទៀត។',
+      airport: 'កក់ជាមុននូវការទទួល និងដឹកទៅព្រលានយន្តហោះ។',
+      schedule: 'គ្រោងទុកការជិះជាមុនតាមពេលដែលអ្នកត្រូវការ។',
+      spin: 'បង្វិលកង់ជារៀងរាល់ថ្ងៃដើម្បីទទួលការបញ្ចុះតម្លៃ និងរង្វាន់។',
+      mart: 'គ្រឿងទេស និងរបស់ចាំបាច់ដឹកជូនពីហាងក្បែរអ្នក។',
+      grocery: 'បន្លែស្រស់ និងទំនិញប្រចាំថ្ងៃដល់ផ្ទះអ្នក។',
+      coupons: 'សន្សំជាមួយប័ណ្ណ និងការផ្តល់ជូនគ្រប់សេវាកម្ម។',
+      rewards: 'ទទួលពិន្ទុរាល់ដំណើរ ការកម្ម៉ង់ និងការកក់។',
+      wallet: 'សមតុល្យតែមួយសម្រាប់ការជិះ អាហារ ការជួល និងច្រើនទៀត។',
+      more: 'សេវាកម្មថ្មីៗកំពុងមកដល់ — សូមរង់ចាំ។',
+      topUp: 'បញ្ចូលទឹកប្រាក់ទៅកាបូប AngkorGo ក្នុងរយៈពេលពីរបីវិនាទី។',
+      invite: 'អញ្ជើញមិត្តភក្តិ ហើយអ្នកទាំងពីរទទួលបានរង្វាន់។',
+    },
     w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង' },
     how: {
       title: 'របៀប AngkorGo ដំណើរការ',
@@ -104,7 +141,25 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: '充值', coupons: '优惠券', invite: '邀请', rewards: '奖励' },
     groups: { getAround: '出行', orderShop: '订购 & 购物' },
     noResults: '无匹配结果 — 试试其他服务',
-    service: { body: '{name} 已在 AngkorGo 超级应用中提供。', cta: '获取应用' },
+    service: { cta: '知道了' },
+    desc: {
+      ride: '预约摩托车、嘟嘟车或汽车，实时追踪司机。',
+      food: '从本地餐厅点餐，热腾腾送到家门口。',
+      rent: '按天租用本地车主的汽车或货车。',
+      stay: '在柬埔寨各地寻找短租住宿。',
+      repair: '技师上门 — 补胎、电瓶、拖车、加油等。',
+      airport: '提前预约可靠的机场接送。',
+      schedule: '按您需要的时间提前预约行程。',
+      spin: '每天转动转盘，赢取折扣和奖励。',
+      mart: '从附近商店配送杂货和日用品。',
+      grocery: '新鲜果蔬和日用品送到家。',
+      coupons: '使用优惠券和各项服务的优惠省钱。',
+      rewards: '每次出行、订购和预订均可赚取积分。',
+      wallet: '一个余额，畅享打车、美食、租车等。',
+      more: '更多服务即将推出 — 敬请期待。',
+      topUp: '几秒钟为您的 AngkorGo 钱包充值。',
+      invite: '邀请好友，双方均可获得奖励。',
+    },
     w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券' },
     how: {
       title: 'AngkorGo 如何运作',

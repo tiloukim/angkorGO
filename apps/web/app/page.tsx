@@ -121,7 +121,7 @@ function PhoneMockup({ t }: { t: LandingCopy }) {
 export default function Landing() {
   const [lang, setLang] = useState<Language>('en');
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState<{ icon: string; label: string } | null>(null);
+  const [selected, setSelected] = useState<{ icon: string; label: string; key: string } | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('angkorgo.lang');
@@ -213,7 +213,7 @@ export default function Landing() {
               {QUICK.map((qa) => (
                 <button
                   key={qa.key}
-                  onClick={() => setSelected({ icon: qa.icon, label: t.quick[qa.key as keyof LandingCopy['quick']] })}
+                  onClick={() => setSelected({ icon: qa.icon, label: t.quick[qa.key as keyof LandingCopy['quick']], key: qa.key })}
                   className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95"
                 >
                   <span>{qa.icon}</span>
@@ -235,7 +235,7 @@ export default function Landing() {
                         {g.items.map((it) => (
                           <button
                             key={it.key}
-                            onClick={() => setSelected({ icon: it.icon, label: t.w[it.key] })}
+                            onClick={() => setSelected({ icon: it.icon, label: t.w[it.key], key: it.key })}
                             className="group flex flex-col items-center gap-1.5"
                           >
                             <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
@@ -347,9 +347,9 @@ export default function Landing() {
           <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-2xl bg-grab-soft text-4xl">{selected.icon}</div>
             <h3 className="text-2xl font-extrabold tracking-tight">{selected.label}</h3>
-            <p className="mt-2 text-black/60">{t.service.body.replace('{name}', selected.label)}</p>
+            <p className="mt-2 text-black/60">{t.desc[selected.key] ?? ''}</p>
             <button
-              onClick={() => { setSelected(null); document.getElementById('download')?.scrollIntoView({ behavior: 'smooth' }); }}
+              onClick={() => setSelected(null)}
               className="mt-6 w-full rounded-xl bg-grab px-6 py-3.5 text-base font-bold text-white hover:brightness-110"
             >
               {t.service.cta}
