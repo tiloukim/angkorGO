@@ -2,9 +2,89 @@
 // Shared detail + booking form for Rentals (vehicles) and Stays (places).
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import type { Language } from '@angkorgo/shared';
 import { createClient } from '@/lib/supabase-browser';
+import { useShopLocale } from '@/lib/shop-i18n';
 import { ShopHeader } from './ShopHeader';
 import { AuthModal } from './AuthModal';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    seats: 'seats',
+    beds: 'beds',
+    baths: 'baths',
+    upTo: 'Up to',
+    guestsWord: 'guests',
+    amenities: 'Amenities',
+    start: 'Start',
+    end: 'End',
+    checkIn: 'Check-in',
+    checkOut: 'Check-out',
+    guests: 'Guests',
+    perDay: '/ day',
+    perNight: '/ night',
+    daysWord: 'days',
+    nightsWord: 'nights',
+    cleaningFee: 'Cleaning fee',
+    deposit: 'Deposit',
+    total: 'Total',
+    request: 'Request to book',
+    requesting: 'Requesting…',
+    invalidDates: 'Please pick an end date after the start date.',
+    loading: 'Loading…',
+    unavailable: 'This listing is no longer available.',
+  },
+  km: {
+    seats: 'កៅអី',
+    beds: 'គ្រែ',
+    baths: 'បន្ទប់ទឹក',
+    upTo: 'រហូតដល់',
+    guestsWord: 'នាក់',
+    amenities: 'សម្ភារៈបន្ថែម',
+    start: 'ចាប់ផ្តើម',
+    end: 'បញ្ចប់',
+    checkIn: 'ថ្ងៃចូល',
+    checkOut: 'ថ្ងៃចេញ',
+    guests: 'ភ្ញៀវ',
+    perDay: '/ ថ្ងៃ',
+    perNight: '/ យប់',
+    daysWord: 'ថ្ងៃ',
+    nightsWord: 'យប់',
+    cleaningFee: 'ថ្លៃសម្អាត',
+    deposit: 'ប្រាក់កក់',
+    total: 'សរុប',
+    request: 'ស្នើសុំកក់',
+    requesting: 'កំពុងស្នើសុំ…',
+    invalidDates: 'សូមជ្រើសរើសកាលបរិច្ឆេទបញ្ចប់ក្រោយកាលបរិច្ឆេទចាប់ផ្តើម។',
+    loading: 'កំពុងផ្ទុក…',
+    unavailable: 'បញ្ជីនេះលែងមានទៀតហើយ។',
+  },
+  zh: {
+    seats: '个座位',
+    beds: '张床',
+    baths: '间浴室',
+    upTo: '最多',
+    guestsWord: '位客人',
+    amenities: '设施',
+    start: '开始',
+    end: '结束',
+    checkIn: '入住',
+    checkOut: '退房',
+    guests: '客人',
+    perDay: '/ 天',
+    perNight: '/ 晚',
+    daysWord: '天',
+    nightsWord: '晚',
+    cleaningFee: '清洁费',
+    deposit: '押金',
+    total: '总计',
+    request: '请求预订',
+    requesting: '请求中…',
+    invalidDates: '请选择晚于开始日期的结束日期。',
+    loading: '加载中…',
+    unavailable: '该房源已不再可用。',
+  },
+};
 
 type Listing = {
   id: string;
@@ -22,11 +102,13 @@ type Listing = {
 };
 
 export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base: string }) {
+  const { lang } = useShopLocale();
+  const t = L[lang] ?? L.en;
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const unit = type === 'vehicle' ? 'day' : 'night';
-  const unitPlural = type === 'vehicle' ? 'days' : 'nights';
+  const unitLabel = type === 'vehicle' ? t.perDay : t.perNight;
+  const unitPlural = type === 'vehicle' ? t.daysWord : t.nightsWord;
   const fallback = type === 'vehicle' ? '🚗' : '🏠';
 
   const [listing, setListing] = useState<Listing | null>(null);
@@ -62,7 +144,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
     if (!listing) return;
     setError('');
     if (!start || !end || new Date(end) <= new Date(start)) {
-      setError('Please pick an end date after the start date.');
+      setError(t.invalidDates);
       return;
     }
     setBusy(true);
@@ -92,7 +174,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
       <div className="min-h-screen bg-white text-black">
         <ShopHeader />
         <main className="mx-auto max-w-6xl px-6 py-10">
-          <p className="text-black/55">Loading…</p>
+          <p className="text-black/55">{t.loading}</p>
         </main>
       </div>
     );
@@ -103,7 +185,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
       <div className="min-h-screen bg-white text-black">
         <ShopHeader />
         <main className="mx-auto max-w-6xl px-6 py-10">
-          <p className="text-black/55">This listing is no longer available.</p>
+          <p className="text-black/55">{t.unavailable}</p>
         </main>
       </div>
     );
@@ -146,15 +228,15 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
             <div className="mt-5 flex flex-wrap gap-2">
               {type === 'vehicle' ? (
                 <>
-                  {a.seats != null && <Chip>{a.seats} seats</Chip>}
+                  {a.seats != null && <Chip>{a.seats} {t.seats}</Chip>}
                   {a.transmission && <Chip>{a.transmission}</Chip>}
                   {a.year != null && <Chip>{a.year}</Chip>}
                 </>
               ) : (
                 <>
-                  {a.beds != null && <Chip>{a.beds} beds</Chip>}
-                  {a.baths != null && <Chip>{a.baths} baths</Chip>}
-                  {a.max_guests != null && <Chip>Up to {a.max_guests} guests</Chip>}
+                  {a.beds != null && <Chip>{a.beds} {t.beds}</Chip>}
+                  {a.baths != null && <Chip>{a.baths} {t.baths}</Chip>}
+                  {a.max_guests != null && <Chip>{t.upTo} {a.max_guests} {t.guestsWord}</Chip>}
                 </>
               )}
             </div>
@@ -165,7 +247,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
 
             {type === 'place' && Array.isArray(a.amenities) && a.amenities.length > 0 && (
               <div className="mt-6">
-                <h3 className="font-extrabold tracking-tight">Amenities</h3>
+                <h3 className="font-extrabold tracking-tight">{t.amenities}</h3>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {a.amenities.map((am: string) => (
                     <Chip key={am}>{am}</Chip>
@@ -180,12 +262,12 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
             <div className="rounded-2xl border border-black/10 p-6">
               <p className="text-3xl font-black text-grab">
                 ${Number(listing.price_per_unit).toFixed(2)} {listing.currency}
-                <span className="text-base font-medium text-black/45"> / {unit}</span>
+                <span className="text-base font-medium text-black/45"> {unitLabel}</span>
               </p>
 
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <label className="text-sm font-semibold text-black/60">
-                  Start
+                  {type === 'vehicle' ? t.start : t.checkIn}
                   <input
                     type="date"
                     value={start}
@@ -194,7 +276,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
                   />
                 </label>
                 <label className="text-sm font-semibold text-black/60">
-                  End
+                  {type === 'vehicle' ? t.end : t.checkOut}
                   <input
                     type="date"
                     value={end}
@@ -206,7 +288,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
 
               {type === 'place' && (
                 <label className="mt-3 block text-sm font-semibold text-black/60">
-                  Guests
+                  {t.guests}
                   <input
                     type="number"
                     min={1}
@@ -225,13 +307,13 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
                     currency={listing.currency}
                   />
                   {Number(listing.cleaning_fee ?? 0) > 0 && (
-                    <Row label="Cleaning fee" value={Number(listing.cleaning_fee)} currency={listing.currency} />
+                    <Row label={t.cleaningFee} value={Number(listing.cleaning_fee)} currency={listing.currency} />
                   )}
                   {Number(listing.deposit ?? 0) > 0 && (
-                    <Row label="Deposit" value={Number(listing.deposit)} currency={listing.currency} />
+                    <Row label={t.deposit} value={Number(listing.deposit)} currency={listing.currency} />
                   )}
                   <div className="flex justify-between border-t border-black/10 pt-2 font-extrabold">
-                    <span>Total</span>
+                    <span>{t.total}</span>
                     <span>
                       ${price.toFixed(2)} {listing.currency}
                     </span>
@@ -246,7 +328,7 @@ export function ListingDetail({ type, base }: { type: 'vehicle' | 'place'; base:
                 disabled={busy}
                 className="mt-5 w-full rounded-xl bg-grab p-4 font-bold text-white hover:brightness-110 disabled:opacity-60"
               >
-                {busy ? 'Requesting…' : 'Request to book'}
+                {busy ? t.requesting : t.request}
               </button>
             </div>
           </div>

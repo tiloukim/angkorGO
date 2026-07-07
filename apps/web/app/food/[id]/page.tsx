@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 import { ShopHeader } from '@/app/components/shop/ShopHeader';
 import { AuthModal } from '@/app/components/shop/AuthModal';
+import type { Language } from '@angkorgo/shared';
+import { useShopLocale } from '@/lib/shop-i18n';
 
 type MenuItem = {
   id: string;
@@ -12,6 +14,48 @@ type MenuItem = {
   description: string | null;
   price: number;
   category: string | null;
+};
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    restaurant: 'Restaurant',
+    loadingMenu: 'Loading menu…',
+    noItems: 'No items available.',
+    add: 'Add',
+    deliveryAddress: 'Delivery address',
+    addressPlaceholder: 'Street, building, notes…',
+    enterAddress: 'Please enter a delivery address.',
+    item: 'item',
+    items: 'items',
+    placing: 'Placing…',
+    checkout: 'Checkout',
+  },
+  km: {
+    restaurant: 'ភោជនីយដ្ឋាន',
+    loadingMenu: 'កំពុងផ្ទុកម៉ឺនុយ…',
+    noItems: 'មិនមានមុខម្ហូបទេ។',
+    add: 'បន្ថែម',
+    deliveryAddress: 'អាសយដ្ឋានដឹកជញ្ជូន',
+    addressPlaceholder: 'ផ្លូវ អគារ កំណត់សម្គាល់…',
+    enterAddress: 'សូមបញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន។',
+    item: 'មុខ',
+    items: 'មុខ',
+    placing: 'កំពុងកម្ម៉ង់…',
+    checkout: 'បង់ប្រាក់',
+  },
+  zh: {
+    restaurant: '餐厅',
+    loadingMenu: '正在加载菜单…',
+    noItems: '暂无可用菜品。',
+    add: '添加',
+    deliveryAddress: '配送地址',
+    addressPlaceholder: '街道、楼栋、备注…',
+    enterAddress: '请输入配送地址。',
+    item: '份',
+    items: '份',
+    placing: '正在下单…',
+    checkout: '结账',
+  },
 };
 
 const PHNOM_PENH = { lat: 11.5564, lng: 104.9219 };
@@ -31,6 +75,8 @@ export default function RestaurantPage() {
   const params = useParams();
   const router = useRouter();
   const id = String(params.id);
+  const { lang } = useShopLocale();
+  const t = L[lang] ?? L.en;
 
   const [name, setName] = useState('');
   const [items, setItems] = useState<MenuItem[]>([]);
@@ -48,7 +94,7 @@ export default function RestaurantPage() {
       .select('name')
       .eq('id', id)
       .maybeSingle()
-      .then(({ data }) => setName((data as { name: string } | null)?.name ?? 'Restaurant'));
+      .then(({ data }) => setName((data as { name: string } | null)?.name ?? t.restaurant));
     supabase
       .from('menu_items')
       .select('id,name,description,price,category')
@@ -81,7 +127,7 @@ export default function RestaurantPage() {
       data: { user },
     } = await createClient().auth.getUser();
     if (!user) return setAuth(true);
-    if (!address.trim()) return setErr('Please enter a delivery address.');
+    if (!address.trim()) return setErr(t.enterAddress);
     if (count === 0) return;
 
     setBusy(true);
@@ -107,9 +153,9 @@ export default function RestaurantPage() {
         <h1 className="text-4xl font-extrabold tracking-tight">{name}</h1>
 
         {loading ? (
-          <p className="mt-10 text-black/40">Loading menu…</p>
+          <p className="mt-10 text-black/40">{t.loadingMenu}</p>
         ) : items.length === 0 ? (
-          <p className="mt-10 text-black/40">No items available.</p>
+          <p className="mt-10 text-black/40">{t.noItems}</p>
         ) : (
           <div className="mt-8 space-y-3">
             {items.map((it) => {
@@ -131,7 +177,7 @@ export default function RestaurantPage() {
                       onClick={() => setQty(it.id, 1)}
                       className="shrink-0 rounded-full bg-grab px-5 py-2 text-sm font-bold text-white hover:brightness-110"
                     >
-                      Add
+                      {t.add}
                     </button>
                   ) : (
                     <div className="flex shrink-0 items-center gap-3">
@@ -155,11 +201,11 @@ export default function RestaurantPage() {
             })}
 
             <div className="pt-4">
-              <label className="text-sm font-semibold text-black/55">Delivery address</label>
+              <label className="text-sm font-semibold text-black/55">{t.deliveryAddress}</label>
               <input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Street, building, notes…"
+                placeholder={t.addressPlaceholder}
                 className="mt-1 w-full rounded-xl border border-black/10 bg-[#f6f6f6] p-4 outline-none focus:border-grab"
               />
             </div>
@@ -174,7 +220,7 @@ export default function RestaurantPage() {
           <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
             <div>
               <p className="text-sm text-black/55">
-                {count} item{count > 1 ? 's' : ''}
+                {count} {count > 1 ? t.items : t.item}
               </p>
               <p className="text-xl font-black">${subtotal.toFixed(2)}</p>
             </div>
@@ -183,7 +229,7 @@ export default function RestaurantPage() {
               disabled={busy}
               className="rounded-full bg-grab px-8 py-3 font-bold text-white hover:brightness-110 disabled:opacity-60"
             >
-              {busy ? 'Placing…' : 'Checkout'}
+              {busy ? t.placing : t.checkout}
             </button>
           </div>
         </div>

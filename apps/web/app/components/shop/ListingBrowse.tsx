@@ -2,8 +2,37 @@
 // Shared browse grid for Rentals (vehicles) and Stays (places).
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import type { Language } from '@angkorgo/shared';
 import { createClient } from '@/lib/supabase-browser';
+import { useShopLocale } from '@/lib/shop-i18n';
 import { ShopHeader } from './ShopHeader';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    rentTitle: 'Rent a vehicle',
+    stayTitle: 'Book a stay',
+    perDay: '/ day',
+    perNight: '/ night',
+    loading: 'Loading…',
+    empty: 'Nothing available right now. Check back soon.',
+  },
+  km: {
+    rentTitle: 'ជួលយានយន្ត',
+    stayTitle: 'កក់កន្លែងស្នាក់នៅ',
+    perDay: '/ ថ្ងៃ',
+    perNight: '/ យប់',
+    loading: 'កំពុងផ្ទុក…',
+    empty: 'មិនមានអ្វីទំនេរនៅពេលនេះទេ។ សូមពិនិត្យមើលនៅពេលក្រោយ។',
+  },
+  zh: {
+    rentTitle: '租车',
+    stayTitle: '预订住宿',
+    perDay: '/ 天',
+    perNight: '/ 晚',
+    loading: '加载中…',
+    empty: '目前暂无可用项目。请稍后再来查看。',
+  },
+};
 
 type Listing = {
   id: string;
@@ -15,10 +44,13 @@ type Listing = {
   rating: number | null;
 };
 
-export function ListingBrowse({ type, base, title }: { type: 'vehicle' | 'place'; base: string; title: string }) {
+export function ListingBrowse({ type, base }: { type: 'vehicle' | 'place'; base: string }) {
+  const { lang } = useShopLocale();
+  const t = L[lang] ?? L.en;
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const unit = type === 'vehicle' ? 'day' : 'night';
+  const title = type === 'vehicle' ? t.rentTitle : t.stayTitle;
+  const unitLabel = type === 'vehicle' ? t.perDay : t.perNight;
   const fallback = type === 'vehicle' ? '🚗' : '🏠';
 
   useEffect(() => {
@@ -41,9 +73,9 @@ export function ListingBrowse({ type, base, title }: { type: 'vehicle' | 'place'
         <h1 className="text-3xl font-extrabold tracking-tight">{title}</h1>
 
         {loading ? (
-          <p className="mt-8 text-black/55">Loading…</p>
+          <p className="mt-8 text-black/55">{t.loading}</p>
         ) : listings.length === 0 ? (
-          <p className="mt-8 text-black/55">Nothing available right now. Check back soon.</p>
+          <p className="mt-8 text-black/55">{t.empty}</p>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {listings.map((l) => (
@@ -69,7 +101,7 @@ export function ListingBrowse({ type, base, title }: { type: 'vehicle' | 'place'
                   {l.address && <p className="mt-1 line-clamp-1 text-sm text-black/55">{l.address}</p>}
                   <p className="mt-2 font-bold text-grab">
                     ${Number(l.price_per_unit).toFixed(2)} {l.currency}
-                    <span className="font-medium text-black/45"> / {unit}</span>
+                    <span className="font-medium text-black/45"> {unitLabel}</span>
                   </p>
                 </div>
               </Link>
