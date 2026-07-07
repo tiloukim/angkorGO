@@ -9,12 +9,12 @@ import { useLocale } from '@/lib/locale';
 import { fetchRoute, type Route } from '@/lib/directions';
 
 type Fare = { class: VehicleClass; fare: number; currency: string };
-const METHODS = [{ key: 'cash', label: 'Cash' }, { key: 'khqr', label: 'KHQR' }] as const;
+const METHODS = [{ key: 'cash', labelKey: 'cash' }, { key: 'khqr', labelKey: 'khqr' }] as const;
 
 const L: Record<Language, Record<string, string>> = {
-  en: { couldNotRequestRide: 'Could not request ride' },
-  km: { couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ' },
-  zh: { couldNotRequestRide: '无法叫车' },
+  en: { couldNotRequestRide: 'Could not request ride', gettingPrices: 'Getting prices…', request: 'Request', cash: 'Cash', khqr: 'KHQR' },
+  km: { couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ', gettingPrices: 'កំពុងទាញយកតម្លៃ…', request: 'ស្នើ', cash: 'សាច់ប្រាក់', khqr: 'KHQR' },
+  zh: { couldNotRequestRide: '无法叫车', gettingPrices: '正在获取价格…', request: '叫车', cash: '现金', khqr: 'KHQR' },
 };
 
 export default function RideSelect() {
@@ -73,7 +73,7 @@ export default function RideSelect() {
   }
 
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator color="#00B14F" /><Text style={styles.loading}>Getting prices…</Text></View>;
+    return <View style={styles.center}><ActivityIndicator color="#00B14F" /><Text style={styles.loading}>{t.gettingPrices}</Text></View>;
   }
 
   return (
@@ -98,7 +98,7 @@ export default function RideSelect() {
         <ScrollView style={{ maxHeight: 220 }}>
           {fares.map((f) => (
             <Pressable key={f.class} style={[styles.card, cls === f.class && styles.cardOn]} onPress={() => setCls(f.class)}>
-              <Text style={styles.cardTitle}>{VEHICLE_LABELS.en[f.class]}</Text>
+              <Text style={styles.cardTitle}>{VEHICLE_LABELS[lang][f.class]}</Text>
               <View style={{ alignItems: 'flex-end' }}>
                 <Text style={styles.price}>${f.fare.toFixed(2)}</Text>
                 <Text style={styles.priceKhr}>≈ ៛{usdToKhr(f.fare).toLocaleString()}</Text>
@@ -110,14 +110,14 @@ export default function RideSelect() {
         <View style={styles.methods}>
           {METHODS.map((m) => (
             <Pressable key={m.key} style={[styles.method, method === m.key && styles.methodOn]} onPress={() => setMethod(m.key)}>
-              <Text style={[styles.methodText, method === m.key && { color: '#fff' }]}>{m.label}</Text>
+              <Text style={[styles.methodText, method === m.key && { color: '#fff' }]}>{t[m.labelKey]}</Text>
             </Pressable>
           ))}
         </View>
 
         <Pressable style={[styles.primary, busy && { opacity: 0.6 }]} onPress={request} disabled={busy}>
           {busy ? <ActivityIndicator color="#fff" /> : (
-            <Text style={styles.primaryText}>Request {VEHICLE_LABELS.en[cls]} · ${selected?.fare.toFixed(2)}</Text>
+            <Text style={styles.primaryText}>{t.request} {VEHICLE_LABELS[lang][cls]} · ${selected?.fare.toFixed(2)}</Text>
           )}
         </Pressable>
       </View>

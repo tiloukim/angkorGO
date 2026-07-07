@@ -2,14 +2,22 @@
 // on the right. Each opens a picker modal. Styled for a green header.
 import { useState } from 'react';
 import { View, Text, Pressable, Modal, ScrollView, StyleSheet } from 'react-native';
+import { type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
 import { useLocale } from '@/lib/locale';
 import { LanguagePicker } from '@/components/LanguagePicker';
 
 const CITIES = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville', 'Kampot', 'Kep', 'Kampong Cham'];
 
+const L: Record<Language, Record<string, string>> = {
+  en: { yourLocation: 'Your location', chooseCity: 'Choose your city' },
+  km: { yourLocation: 'ទីតាំងរបស់អ្នក', chooseCity: 'ជ្រើសរើសទីក្រុងរបស់អ្នក' },
+  zh: { yourLocation: '您的位置', chooseCity: '选择您的城市' },
+};
+
 export function LocationLangBar({ right }: { right?: React.ReactNode }) {
-  const { city, setCity } = useLocale();
+  const { city, setCity, lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [cityOpen, setCityOpen] = useState(false);
 
   return (
@@ -17,7 +25,7 @@ export function LocationLangBar({ right }: { right?: React.ReactNode }) {
       <Pressable style={styles.loc} onPress={() => setCityOpen(true)} hitSlop={8}>
         <Text style={styles.pin}>📍</Text>
         <View>
-          <Text style={styles.locLabel}>Your location</Text>
+          <Text style={styles.locLabel}>{t.yourLocation}</Text>
           <Text style={styles.locCity}>{city} ▾</Text>
         </View>
       </Pressable>
@@ -31,7 +39,7 @@ export function LocationLangBar({ right }: { right?: React.ReactNode }) {
       <Modal visible={cityOpen} transparent animationType="fade" onRequestClose={() => setCityOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setCityOpen(false)}>
           <Pressable style={styles.sheet} onPress={() => {}}>
-            <Text style={styles.sheetTitle}>Choose your city</Text>
+            <Text style={styles.sheetTitle}>{t.chooseCity}</Text>
             <ScrollView style={{ maxHeight: 320 }}>
               {CITIES.map((c) => (
                 <Pressable key={c} style={styles.optRow} onPress={() => { setCity(c); setCityOpen(false); }}>

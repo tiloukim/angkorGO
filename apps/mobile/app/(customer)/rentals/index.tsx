@@ -4,6 +4,8 @@ import { View, Text, Image, Pressable, StyleSheet, FlatList } from 'react-native
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 import { LocationLangBar } from '@/components/LocationLangBar';
 
 interface Listing {
@@ -11,8 +13,16 @@ interface Listing {
   photos: string[]; address: string | null; attributes: Record<string, any>;
 }
 
+const L: Record<Language, Record<string, string>> = {
+  en: { h1: 'Rent a vehicle', empty: 'No vehicles available yet.', seats: 'seats', perDay: '/ day', back: 'Back' },
+  km: { h1: 'ជួលរថយន្ត', empty: 'មិនទាន់មានរថយន្តទេ។', seats: 'កៅអី', perDay: '/ ថ្ងៃ', back: 'ថយក្រោយ' },
+  zh: { h1: '租车', empty: '暂无可用车辆。', seats: '座位', perDay: '/ 天', back: '返回' },
+};
+
 export default function Rentals() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [listings, setListings] = useState<Listing[]>([]);
 
   useEffect(() => {
@@ -27,11 +37,11 @@ export default function Rentals() {
         <LocationLangBar />
       </View>
       <View style={styles.content}>
-      <Text style={styles.h1}>Rent a vehicle</Text>
+      <Text style={styles.h1}>{t.h1}</Text>
       <FlatList
         data={listings}
         keyExtractor={(l) => l.id}
-        ListEmptyComponent={<Text style={styles.empty}>No vehicles available yet.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.empty}</Text>}
         renderItem={({ item }) => (
           <Pressable style={styles.card} onPress={() => router.push({ pathname: '/(customer)/rentals/[id]', params: { id: item.id } })}>
             {item.photos?.[0]
@@ -39,14 +49,14 @@ export default function Rentals() {
               : <View style={[styles.photo, styles.photoEmpty]}><Text style={styles.photoEmptyText}>🚗</Text></View>}
             <View style={styles.cardBody}>
               <Text style={styles.title}>{item.title}</Text>
-              {item.attributes?.seats ? <Text style={styles.sub}>{item.attributes.seats} seats{item.attributes.transmission ? ` · ${item.attributes.transmission}` : ''}</Text> : null}
-              <Text style={styles.price}>${Number(item.price_per_unit).toFixed(2)} <Text style={styles.perDay}>/ day</Text></Text>
+              {item.attributes?.seats ? <Text style={styles.sub}>{item.attributes.seats} {t.seats}{item.attributes.transmission ? ` · ${item.attributes.transmission}` : ''}</Text> : null}
+              <Text style={styles.price}>${Number(item.price_per_unit).toFixed(2)} <Text style={styles.perDay}>{t.perDay}</Text></Text>
             </View>
           </Pressable>
         )}
       />
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
       </View>
     </View>

@@ -7,9 +7,33 @@ import { useLocale } from '@/lib/locale';
 import type { UserRole, Language } from '@angkorgo/shared';
 
 const L: Record<Language, Record<string, string>> = {
-  en: { couldNotSave: 'Could not save' },
-  km: { couldNotSave: 'មិន​អាច​រក្សា​ទុក' },
-  zh: { couldNotSave: '无法保存' },
+  en: {
+    couldNotSave: 'Could not save',
+    title: 'How will you use AngkorGo?',
+    needHelpTitle: 'I need help',
+    needHelpSub: 'Request roadside assistance when I break down',
+    provideHelpTitle: 'I provide help',
+    provideHelpSub: 'Mechanic, tow, tire, battery or fuel service provider',
+    note: 'Providers must upload documents and be approved before going online.',
+  },
+  km: {
+    couldNotSave: 'មិន​អាច​រក្សា​ទុក',
+    title: 'តើ​អ្នក​នឹង​ប្រើ AngkorGo យ៉ាង​ដូចម្ដេច?',
+    needHelpTitle: 'ខ្ញុំ​ត្រូវការ​ជំនួយ',
+    needHelpSub: 'ស្នើ​ជំនួយ​តាម​ផ្លូវ​នៅ​ពេល​រថយន្ត​ខូច',
+    provideHelpTitle: 'ខ្ញុំ​ផ្ដល់​ជំនួយ',
+    provideHelpSub: 'អ្នក​ផ្ដល់​សេវា​ជាង​ម៉ាស៊ីន សណ្ដោង កង់ ថ្ម ឬ​ប្រេង',
+    note: 'អ្នក​ផ្ដល់​សេវា​ត្រូវ​បញ្ចូល​ឯកសារ និង​ត្រូវ​បាន​អនុម័ត​មុន​ពេល​ចូល​ដំណើរការ។',
+  },
+  zh: {
+    couldNotSave: '无法保存',
+    title: '您将如何使用 AngkorGo？',
+    needHelpTitle: '我需要帮助',
+    needHelpSub: '车辆抛锚时请求道路救援',
+    provideHelpTitle: '我提供帮助',
+    provideHelpSub: '机修、拖车、轮胎、电瓶或燃油服务提供者',
+    note: '服务提供者须上传文件并通过审核后方可上线。',
+  },
 };
 
 export default function RoleScreen() {
@@ -30,21 +54,21 @@ export default function RoleScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>How will you use AngkorGo?</Text>
+      <Text style={styles.title}>{t.title}</Text>
 
       <Pressable style={styles.card} onPress={() => pick('customer')} disabled={!!busy}>
         <Text style={styles.emoji}>🚗</Text>
-        <Text style={styles.cardTitle}>I need help</Text>
-        <Text style={styles.cardSub}>Request roadside assistance when I break down</Text>
+        <Text style={styles.cardTitle}>{t.needHelpTitle}</Text>
+        <Text style={styles.cardSub}>{t.needHelpSub}</Text>
       </Pressable>
 
       <Pressable style={styles.card} onPress={() => pick('provider')} disabled={!!busy}>
         <Text style={styles.emoji}>🔧</Text>
-        <Text style={styles.cardTitle}>I provide help</Text>
-        <Text style={styles.cardSub}>Mechanic, tow, tire, battery or fuel service provider</Text>
+        <Text style={styles.cardTitle}>{t.provideHelpTitle}</Text>
+        <Text style={styles.cardSub}>{t.provideHelpSub}</Text>
       </Pressable>
 
-      <Text style={styles.note}>Providers must upload documents and be approved before going online.</Text>
+      <Text style={styles.note}>{t.note}</Text>
     </View>
   );
 }

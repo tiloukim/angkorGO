@@ -6,11 +6,21 @@ import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { placeAutocomplete, placeCoords, type Prediction } from '@/lib/places';
 import { theme } from '@/lib/theme';
 import { LocationLangBar } from '@/components/LocationLangBar';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { whereTo: 'Where to?', locating: 'Locating…', currentLocation: 'Current location', searchDestination: 'Search destination', noMatches: 'No matches', cancel: 'Cancel' },
+  km: { whereTo: 'ទៅណា?', locating: 'កំពុងកំណត់ទីតាំង…', currentLocation: 'ទីតាំងបច្ចុប្បន្ន', searchDestination: 'ស្វែងរកគោលដៅ', noMatches: 'គ្មានលទ្ធផល', cancel: 'បោះបង់' },
+  zh: { whereTo: '去哪里？', locating: '正在定位…', currentLocation: '当前位置', searchDestination: '搜索目的地', noMatches: '无匹配结果', cancel: '取消' },
+};
 
 export default function RideHome() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [pickup, setPickup] = useState<Coords | null>(null);
-  const [pickupAddr, setPickupAddr] = useState('Locating…');
+  const [pickupAddr, setPickupAddr] = useState(t.locating);
   const [query, setQuery] = useState('');
   const [preds, setPreds] = useState<Prediction[]>([]);
   const [busy, setBusy] = useState(false);
@@ -19,7 +29,7 @@ export default function RideHome() {
     (async () => {
       const c = await getCurrentCoords();
       setPickup(c);
-      setPickupAddr((await coordsToAddress(c)) || 'Current location');
+      setPickupAddr((await coordsToAddress(c)) || t.currentLocation);
     })();
   }, []);
 
@@ -49,7 +59,7 @@ export default function RideHome() {
         <LocationLangBar />
       </View>
       <View style={styles.content}>
-      <Text style={styles.h1}>Where to?</Text>
+      <Text style={styles.h1}>{t.whereTo}</Text>
 
       <View style={styles.pickup}>
         <View style={styles.dot} />
@@ -58,7 +68,7 @@ export default function RideHome() {
 
       <TextInput
         style={styles.input}
-        placeholder="Search destination"
+        placeholder={t.searchDestination}
         placeholderTextColor="#9AA0A6"
         value={query}
         onChangeText={setQuery}
@@ -78,12 +88,12 @@ export default function RideHome() {
           </Pressable>
         )}
         ListEmptyComponent={
-          query.length >= 2 && !busy ? <Text style={styles.empty}>No matches</Text> : null
+          query.length >= 2 && !busy ? <Text style={styles.empty}>{t.noMatches}</Text> : null
         }
       />
 
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
-        <Text style={styles.backText}>Cancel</Text>
+        <Text style={styles.backText}>{t.cancel}</Text>
       </Pressable>
       </View>
     </View>

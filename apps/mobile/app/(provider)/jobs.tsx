@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, SectionList } from 'react-native';
 import { useRouter } from 'expo-router';
-import { categoryLabel, type RequestStatus, type ServiceCategory } from '@angkorgo/shared';
+import { categoryLabel, type RequestStatus, type ServiceCategory, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 
@@ -10,9 +10,24 @@ interface Job { id: string; category: ServiceCategory; status: RequestStatus; ad
 
 const ACTIVE: RequestStatus[] = ['accepted', 'en_route', 'arrived', 'in_progress'];
 
+const L: Record<Language, Record<string, string>> = {
+  en: { myJobs: 'My jobs', noJobs: 'No jobs yet', active: 'Active', history: 'History', back: 'Back' },
+  km: { myJobs: 'ការងារ​របស់​ខ្ញុំ', noJobs: 'មិន​ទាន់​មាន​ការងារ', active: 'កំពុង​ដំណើរការ', history: 'ប្រវត្តិ', back: 'ថយក្រោយ' },
+  zh: { myJobs: '我的工作', noJobs: '暂无工作', active: '进行中', history: '历史记录', back: '返回' },
+};
+
+// Trilingual status labels; falls back to the raw status with underscores stripped.
+const STATUS: Record<Language, Record<string, string>> = {
+  en: { pending: 'pending', accepted: 'accepted', en_route: 'en route', arrived: 'arrived', in_progress: 'in progress', completed: 'completed', cancelled: 'cancelled' },
+  km: { pending: 'កំពុង​រង់ចាំ', accepted: 'បាន​ទទួល', en_route: 'កំពុង​ធ្វើ​ដំណើរ', arrived: 'បាន​មក​ដល់', in_progress: 'កំពុង​ដំណើរការ', completed: 'បាន​បញ្ចប់', cancelled: 'បាន​បោះបង់' },
+  zh: { pending: '待处理', accepted: '已接受', en_route: '前往中', arrived: '已到达', in_progress: '进行中', completed: '已完成', cancelled: '已取消' },
+};
+
 export default function JobsScreen() {
   const router = useRouter();
   const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
+  const st = STATUS[lang] ?? STATUS.en;
   const [jobs, setJobs] = useState<Job[]>([]);
 
   const load = useCallback(async () => {
@@ -28,17 +43,17 @@ export default function JobsScreen() {
   useEffect(() => { load(); }, [load]);
 
   const sections = [
-    { title: 'Active', data: jobs.filter((j) => ACTIVE.includes(j.status)) },
-    { title: 'History', data: jobs.filter((j) => !ACTIVE.includes(j.status)) },
+    { title: t.active, data: jobs.filter((j) => ACTIVE.includes(j.status)) },
+    { title: t.history, data: jobs.filter((j) => !ACTIVE.includes(j.status)) },
   ].filter((s) => s.data.length);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.h1}>My jobs</Text>
+      <Text style={styles.h1}>{t.myJobs}</Text>
       <SectionList
         sections={sections}
         keyExtractor={(j) => j.id}
-        ListEmptyComponent={<Text style={styles.empty}>No jobs yet</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.noJobs}</Text>}
         renderSectionHeader={({ section }) => <Text style={styles.section}>{section.title}</Text>}
         renderItem={({ item }) => (
           <Pressable
@@ -50,13 +65,13 @@ export default function JobsScreen() {
               {item.address ? <Text style={styles.rowAddr} numberOfLines={1}>{item.address}</Text> : null}
             </View>
             <Text style={[styles.badge, item.status === 'completed' && { color: '#00B14F' }]}>
-              {item.status.replace('_', ' ')}
+              {st[item.status] ?? item.status.replace('_', ' ')}
             </Text>
           </Pressable>
         )}
       />
       <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </View>
   );

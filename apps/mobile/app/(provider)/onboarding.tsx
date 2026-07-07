@@ -17,6 +17,14 @@ const L: Record<Language, Record<string, string>> = {
     submittedMsg: 'Your application is under review. You will be notified once approved.',
     ok: 'OK',
     couldNotSubmit: 'Could not submit',
+    title: 'Become a provider',
+    businessName: 'Business name',
+    businessNamePh: "e.g. Sok's Roadside Service",
+    servicesYouOffer: 'Services you offer',
+    verificationDocs: 'Verification documents',
+    upload: 'Upload',
+    uploaded: 'Uploaded ✓',
+    submitForReview: 'Submit for review',
   },
   km: {
     uploadFailed: 'ការ​ផ្ទុក​ឡើង​បរាជ័យ',
@@ -25,6 +33,14 @@ const L: Record<Language, Record<string, string>> = {
     submittedMsg: 'ពាក្យ​សុំ​របស់​អ្នក​កំពុង​ត្រួតពិនិត្យ។ អ្នក​នឹង​ត្រូវ​ជូន​ដំណឹង​នៅ​ពេល​អនុម័ត។',
     ok: 'យល់​ព្រម',
     couldNotSubmit: 'មិន​អាច​ដាក់​ស្នើ​បាន',
+    title: 'ក្លាយ​ជា​អ្នក​ផ្ដល់​សេវា',
+    businessName: 'ឈ្មោះ​អាជីវកម្ម',
+    businessNamePh: 'ឧ. សេវា​ជួសជុល​តាម​ផ្លូវ​របស់ Sok',
+    servicesYouOffer: 'សេវា​ដែល​អ្នក​ផ្ដល់',
+    verificationDocs: 'ឯកសារ​ផ្ទៀងផ្ទាត់',
+    upload: 'ផ្ទុកឡើង',
+    uploaded: 'បាន​ផ្ទុក​ឡើង ✓',
+    submitForReview: 'ដាក់​ស្នើ​ដើម្បី​ត្រួតពិនិត្យ',
   },
   zh: {
     uploadFailed: '上传失败',
@@ -33,6 +49,14 @@ const L: Record<Language, Record<string, string>> = {
     submittedMsg: '您的申请正在审核中，通过后将通知您。',
     ok: '确定',
     couldNotSubmit: '无法提交',
+    title: '成为服务商',
+    businessName: '商家名称',
+    businessNamePh: '例如：Sok 路边救援',
+    servicesYouOffer: '您提供的服务',
+    verificationDocs: '验证文件',
+    upload: '上传',
+    uploaded: '已上传 ✓',
+    submitForReview: '提交审核',
   },
 };
 
@@ -102,15 +126,15 @@ export default function OnboardingScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 48 }}>
-      <Text style={styles.h1}>Become a provider</Text>
+      <Text style={styles.h1}>{t.title}</Text>
 
-      <Text style={styles.label}>Business name</Text>
+      <Text style={styles.label}>{t.businessName}</Text>
       <TextInput
-        style={styles.input} placeholder="e.g. Sok's Roadside Service" placeholderTextColor="#9AA0A6"
+        style={styles.input} placeholder={t.businessNamePh} placeholderTextColor="#9AA0A6"
         value={businessName} onChangeText={setBusinessName}
       />
 
-      <Text style={styles.label}>Services you offer</Text>
+      <Text style={styles.label}>{t.servicesYouOffer}</Text>
       <View style={styles.chips}>
         {SERVICE_CATEGORIES.map((c) => (
           <Pressable key={c} onPress={() => toggle(c)} style={[styles.chip, selected.has(c) && styles.chipOn]}>
@@ -119,18 +143,18 @@ export default function OnboardingScreen() {
         ))}
       </View>
 
-      <Text style={styles.label}>Verification documents</Text>
+      <Text style={styles.label}>{t.verificationDocs}</Text>
       {DOCS.map((d) => (
         <Pressable key={d.type} style={styles.docRow} onPress={() => pickDoc(d.type)}>
           <Text style={styles.docLabel}>{d.label}</Text>
           <Text style={[styles.docState, uploaded[d.type] && { color: '#00B14F' }]}>
-            {uploaded[d.type] ? 'Uploaded ✓' : 'Upload'}
+            {uploaded[d.type] ? t.uploaded : t.upload}
           </Text>
         </Pressable>
       ))}
 
       <Pressable style={[styles.primary, saving && { opacity: 0.6 }]} onPress={submit} disabled={saving}>
-        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>Submit for review</Text>}
+        {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>{t.submitForReview}</Text>}
       </Pressable>
     </ScrollView>
   );

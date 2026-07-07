@@ -13,18 +13,60 @@ const L: Record<Language, Record<string, string>> = {
     enterName: 'Enter a name',
     enterItemNamePrice: 'Enter item name and price',
     dispatched: 'Dispatched',
+    openRestaurant: 'Open a restaurant',
+    restaurantName: 'Restaurant name',
+    cuisine: 'Cuisine (e.g. Khmer, BBQ)',
+    createUsesLocation: 'Create (uses your current location)',
+    back: 'Back',
+    open: 'Open',
+    closed: 'Closed',
+    orders: 'Orders',
+    accept: 'Accept',
+    ready: 'Ready',
+    noActiveOrders: 'No active orders.',
+    menu: 'Menu',
+    itemName: 'Item name',
+    add: 'Add',
   },
   km: {
     failed: 'បរាជ័យ',
     enterName: 'បញ្ចូល​ឈ្មោះ',
     enterItemNamePrice: 'បញ្ចូល​ឈ្មោះ​និង​តម្លៃ',
     dispatched: 'បាន​បញ្ជូន',
+    openRestaurant: 'បើកភោជនីយដ្ឋាន',
+    restaurantName: 'ឈ្មោះភោជនីយដ្ឋាន',
+    cuisine: 'ម្ហូប (ឧ. ខ្មែរ, អាំង)',
+    createUsesLocation: 'បង្កើត (ប្រើទីតាំងបច្ចុប្បន្នរបស់អ្នក)',
+    back: 'ថយក្រោយ',
+    open: 'បើក',
+    closed: 'បិទ',
+    orders: 'ការបញ្ជាទិញ',
+    accept: 'ទទួល',
+    ready: 'រួចរាល់',
+    noActiveOrders: 'គ្មានការបញ្ជាទិញសកម្ម។',
+    menu: 'ម៉ឺនុយ',
+    itemName: 'ឈ្មោះមុខម្ហូប',
+    add: 'បន្ថែម',
   },
   zh: {
     failed: '失败',
     enterName: '请输入名称',
     enterItemNamePrice: '请输入名称和价格',
     dispatched: '已派送',
+    openRestaurant: '开设餐厅',
+    restaurantName: '餐厅名称',
+    cuisine: '菜系（如高棉菜、烧烤）',
+    createUsesLocation: '创建（使用您当前的位置）',
+    back: '返回',
+    open: '营业中',
+    closed: '已打烊',
+    orders: '订单',
+    accept: '接受',
+    ready: '备好',
+    noActiveOrders: '暂无进行中的订单。',
+    menu: '菜单',
+    itemName: '菜品名称',
+    add: '添加',
   },
 };
 
@@ -102,11 +144,11 @@ export default function Restaurant() {
   if (!rest) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-        <Text style={styles.h1}>Open a restaurant</Text>
-        <TextInput style={styles.input} placeholder="Restaurant name" placeholderTextColor="#9AA0A6" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Cuisine (e.g. Khmer, BBQ)" placeholderTextColor="#9AA0A6" value={cuisine} onChangeText={setCuisine} />
-        <Pressable style={styles.primary} onPress={createRestaurant}><Text style={styles.primaryText}>Create (uses your current location)</Text></Pressable>
-        <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>Back</Text></Pressable>
+        <Text style={styles.h1}>{t.openRestaurant}</Text>
+        <TextInput style={styles.input} placeholder={t.restaurantName} placeholderTextColor="#9AA0A6" value={name} onChangeText={setName} />
+        <TextInput style={styles.input} placeholder={t.cuisine} placeholderTextColor="#9AA0A6" value={cuisine} onChangeText={setCuisine} />
+        <Pressable style={styles.primary} onPress={createRestaurant}><Text style={styles.primaryText}>{t.createUsesLocation}</Text></Pressable>
+        <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>{t.back}</Text></Pressable>
       </ScrollView>
     );
   }
@@ -115,33 +157,33 @@ export default function Restaurant() {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={styles.headerRow}>
         <Text style={styles.h1}>{rest.name}</Text>
-        <View style={styles.openWrap}><Text style={styles.openLabel}>{rest.is_open ? 'Open' : 'Closed'}</Text><Switch value={rest.is_open} onValueChange={toggleOpen} /></View>
+        <View style={styles.openWrap}><Text style={styles.openLabel}>{rest.is_open ? t.open : t.closed}</Text><Switch value={rest.is_open} onValueChange={toggleOpen} /></View>
       </View>
 
-      <Text style={styles.section}>Orders ({orders.length})</Text>
+      <Text style={styles.section}>{t.orders} ({orders.length})</Text>
       {orders.map((o) => (
         <View key={o.id} style={styles.order}>
           <View style={{ flex: 1 }}>
             <Text style={styles.orderTitle}>${Number(o.total).toFixed(2)} · {o.status}</Text>
             <Text style={styles.orderSub} numberOfLines={1}>{o.delivery_address}</Text>
           </View>
-          {o.status === 'placed' && <Pressable style={styles.act} onPress={() => accept(o.id)}><Text style={styles.actText}>Accept</Text></Pressable>}
-          {o.status === 'accepted' && <Pressable style={styles.act} onPress={() => ready(o.id)}><Text style={styles.actText}>Ready</Text></Pressable>}
+          {o.status === 'placed' && <Pressable style={styles.act} onPress={() => accept(o.id)}><Text style={styles.actText}>{t.accept}</Text></Pressable>}
+          {o.status === 'accepted' && <Pressable style={styles.act} onPress={() => ready(o.id)}><Text style={styles.actText}>{t.ready}</Text></Pressable>}
         </View>
       ))}
-      {orders.length === 0 && <Text style={styles.empty}>No active orders.</Text>}
+      {orders.length === 0 && <Text style={styles.empty}>{t.noActiveOrders}</Text>}
 
-      <Text style={styles.section}>Menu ({menu.length})</Text>
+      <Text style={styles.section}>{t.menu} ({menu.length})</Text>
       {menu.map((m) => (
         <View key={m.id} style={styles.menuRow}><Text style={styles.menuName}>{m.name}</Text><Text style={styles.menuPrice}>${Number(m.price).toFixed(2)}</Text></View>
       ))}
       <View style={styles.addRow}>
-        <TextInput style={[styles.input, { flex: 2, marginBottom: 0 }]} placeholder="Item name" placeholderTextColor="#9AA0A6" value={itemName} onChangeText={setItemName} />
+        <TextInput style={[styles.input, { flex: 2, marginBottom: 0 }]} placeholder={t.itemName} placeholderTextColor="#9AA0A6" value={itemName} onChangeText={setItemName} />
         <TextInput style={[styles.input, { flex: 1, marginBottom: 0 }]} placeholder="$" placeholderTextColor="#9AA0A6" keyboardType="decimal-pad" value={itemPrice} onChangeText={setItemPrice} />
-        <Pressable style={styles.addBtn} onPress={addItem}><Text style={styles.addText}>Add</Text></Pressable>
+        <Pressable style={styles.addBtn} onPress={addItem}><Text style={styles.addText}>{t.add}</Text></Pressable>
       </View>
 
-      <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>Back</Text></Pressable>
+      <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>{t.back}</Text></Pressable>
     </ScrollView>
   );
 }

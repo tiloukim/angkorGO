@@ -9,9 +9,16 @@ import { useLocale } from '@/lib/locale';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 
+const L: Record<Language, Record<string, string>> = {
+  en: { tagline: "Cambodia's everyday super-app", chooseLanguage: 'Choose language', confirm: 'Confirm' },
+  km: { tagline: 'កម្មវិធីរួមប្រចាំថ្ងៃរបស់កម្ពុជា', chooseLanguage: 'ជ្រើសរើសភាសា', confirm: 'បញ្ជាក់' },
+  zh: { tagline: '柬埔寨的日常超级应用', chooseLanguage: '选择语言', confirm: '确认' },
+};
+
 export default function WelcomeScreen() {
   const router = useRouter();
   const { lang, setLang } = useLocale();
+  const t = L[lang] ?? L.en;
 
   return (
     <View style={styles.container}>
@@ -19,12 +26,12 @@ export default function WelcomeScreen() {
       <View style={styles.hero}>
         <TukiTukTuk width={300} />
         <Text style={styles.brand}>AngkorGo</Text>
-        <Text style={styles.tagline}>Cambodia&apos;s everyday super-app</Text>
+        <Text style={styles.tagline}>{t.tagline}</Text>
       </View>
 
       {/* Language sheet */}
       <View style={styles.sheet}>
-        <Text style={styles.sheetTitle}>Choose language</Text>
+        <Text style={styles.sheetTitle}>{t.chooseLanguage}</Text>
         {LANGUAGES.map((l) => {
           const active = l.code === lang;
           return (
@@ -39,7 +46,7 @@ export default function WelcomeScreen() {
         })}
 
         <Pressable style={styles.confirm} onPress={() => router.replace('/(auth)/login')}>
-          <Text style={styles.confirmText}>Confirm</Text>
+          <Text style={styles.confirmText}>{t.confirm}</Text>
         </Pressable>
       </View>
     </View>

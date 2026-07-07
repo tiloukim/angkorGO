@@ -8,9 +8,45 @@ import { useLocale } from '@/lib/locale';
 import type { Provider, Language } from '@angkorgo/shared';
 
 const L: Record<Language, Record<string, string>> = {
-  en: { saveFailed: 'Save failed', saved: 'Saved' },
-  km: { saveFailed: 'រក្សាទុក​បរាជ័យ', saved: 'បាន​រក្សាទុក' },
-  zh: { saveFailed: '保存失败', saved: '已保存' },
+  en: {
+    saveFailed: 'Save failed', saved: 'Saved',
+    provider: 'Provider',
+    status: 'Status',
+    rating: 'Rating',
+    jobsDone: 'Jobs done',
+    commission: 'Commission',
+    bio: 'Bio',
+    bioPh: 'Tell customers about your service',
+    save: 'Save',
+    editServices: 'Edit services & documents →',
+    back: 'Back',
+  },
+  km: {
+    saveFailed: 'រក្សាទុក​បរាជ័យ', saved: 'បាន​រក្សាទុក',
+    provider: 'អ្នក​ផ្ដល់​សេវា',
+    status: 'ស្ថានភាព',
+    rating: 'ការ​វាយ​តម្លៃ',
+    jobsDone: 'ការងារ​បាន​បញ្ចប់',
+    commission: 'កម្រៃ​ជើងសា',
+    bio: 'ប្រវត្តិ​រូប',
+    bioPh: 'ប្រាប់​អតិថិជន​អំពី​សេវា​របស់​អ្នក',
+    save: 'រក្សាទុក',
+    editServices: 'កែ​សេវា & ឯកសារ →',
+    back: 'ថយក្រោយ',
+  },
+  zh: {
+    saveFailed: '保存失败', saved: '已保存',
+    provider: '服务商',
+    status: '状态',
+    rating: '评分',
+    jobsDone: '已完成订单',
+    commission: '佣金',
+    bio: '简介',
+    bioPh: '向客户介绍您的服务',
+    save: '保存',
+    editServices: '编辑服务和文件 →',
+    back: '返回',
+  },
 };
 
 export default function ProviderProfile() {
@@ -35,29 +71,29 @@ export default function ProviderProfile() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.h1}>{provider?.business_name ?? 'Provider'}</Text>
-      <Text style={styles.status}>Status: {provider?.status ?? '…'}</Text>
+      <Text style={styles.h1}>{provider?.business_name ?? t.provider}</Text>
+      <Text style={styles.status}>{t.status}: {provider?.status ?? '…'}</Text>
 
       <View style={styles.stats}>
-        <Stat label="Rating" value={provider?.rating?.toFixed(1) ?? '—'} />
-        <Stat label="Jobs done" value={String(provider?.total_jobs ?? 0)} />
-        <Stat label="Commission" value={`${Math.round((provider?.commission_rate ?? 0.1) * 100)}%`} />
+        <Stat label={t.rating} value={provider?.rating?.toFixed(1) ?? '—'} />
+        <Stat label={t.jobsDone} value={String(provider?.total_jobs ?? 0)} />
+        <Stat label={t.commission} value={`${Math.round((provider?.commission_rate ?? 0.1) * 100)}%`} />
       </View>
 
-      <Text style={styles.label}>Bio</Text>
+      <Text style={styles.label}>{t.bio}</Text>
       <TextInput
-        style={styles.input} multiline placeholder="Tell customers about your service" placeholderTextColor="#9AA0A6"
+        style={styles.input} multiline placeholder={t.bioPh} placeholderTextColor="#9AA0A6"
         value={bio} onChangeText={setBio}
       />
       <Pressable style={styles.primary} onPress={save}>
-        <Text style={styles.primaryText}>Save</Text>
+        <Text style={styles.primaryText}>{t.save}</Text>
       </Pressable>
 
       <Pressable style={styles.link} onPress={() => router.push('/(provider)/onboarding')}>
-        <Text style={styles.linkText}>Edit services & documents →</Text>
+        <Text style={styles.linkText}>{t.editServices}</Text>
       </Pressable>
       <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
       <DeleteAccountButton />
     </View>

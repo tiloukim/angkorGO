@@ -21,18 +21,78 @@ const L: Record<Language, Record<string, string>> = {
     reqTaken: 'This request was taken by another provider.',
     rideTaken: 'This ride was taken by another driver.',
     deliveryTaken: 'This delivery was taken.',
+    dashboard: 'Dashboard',
+    online: 'Online',
+    offline: 'Offline',
+    completeOnboarding: 'Complete your onboarding →',
+    account: 'Account',
+    onboardingSub: 'Upload documents and choose your services to get approved.',
+    youreOffline: "You're offline",
+    flipSwitch: 'Flip the switch to start receiving nearby requests.',
+    rideRequests: 'Ride requests',
+    deliveryRequests: 'Delivery requests',
+    roadsideRequests: 'Roadside requests',
+    waiting: 'Waiting for requests…',
+    pickup: 'Pickup',
+    skip: 'Skip',
+    accept: 'Accept',
+    jobs: 'Jobs',
+    vehicles: 'Vehicles',
+    wallet: 'Wallet',
+    profile: 'Profile',
+    signOut: 'Sign out',
   },
   km: {
     tooLate: 'យឺត​ពេល',
     reqTaken: 'សំណើ​នេះ​ត្រូវ​បាន​អ្នក​ផ្តល់​សេវា​ផ្សេង​យក។',
     rideTaken: 'ដំណើរ​នេះ​ត្រូវ​បាន​អ្នក​បើកបរ​ផ្សេង​យក។',
     deliveryTaken: 'ការ​ដឹក​ជញ្ជូន​នេះ​ត្រូវ​បាន​យក។',
+    dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+    online: 'អនឡាញ',
+    offline: 'ក្រៅបណ្ដាញ',
+    completeOnboarding: 'បំពេញ​ការ​ចុះឈ្មោះ​របស់​អ្នក →',
+    account: 'គណនី',
+    onboardingSub: 'ផ្ទុក​ឡើង​ឯកសារ ហើយ​ជ្រើសរើស​សេវាកម្ម​របស់​អ្នក​ដើម្បី​ទទួល​ការ​អនុម័ត។',
+    youreOffline: 'អ្នក​នៅ​ក្រៅ​បណ្ដាញ',
+    flipSwitch: 'បើក​កុងតាក់​ដើម្បី​ចាប់ផ្តើម​ទទួល​សំណើ​នៅ​ជិត។',
+    rideRequests: 'សំណើ​ដំណើរ',
+    deliveryRequests: 'សំណើ​ដឹកជញ្ជូន',
+    roadsideRequests: 'សំណើ​ជំនួយ​តាម​ផ្លូវ',
+    waiting: 'កំពុង​រង់ចាំ​សំណើ…',
+    pickup: 'ទទួល',
+    skip: 'រំលង',
+    accept: 'ទទួល',
+    jobs: 'ការងារ',
+    vehicles: 'យានយន្ត',
+    wallet: 'កាបូប',
+    profile: 'ប្រវត្តិរូប',
+    signOut: 'ចាកចេញ',
   },
   zh: {
     tooLate: '来晚了',
     reqTaken: '该请求已被其他服务商接走。',
     rideTaken: '该行程已被其他司机接走。',
     deliveryTaken: '该配送已被接走。',
+    dashboard: '仪表板',
+    online: '在线',
+    offline: '离线',
+    completeOnboarding: '完成入驻 →',
+    account: '账户',
+    onboardingSub: '上传文件并选择您的服务以获得批准。',
+    youreOffline: '您已离线',
+    flipSwitch: '打开开关以开始接收附近的请求。',
+    rideRequests: '行程请求',
+    deliveryRequests: '配送请求',
+    roadsideRequests: '道路救援请求',
+    waiting: '正在等待请求…',
+    pickup: '取货',
+    skip: '跳过',
+    accept: '接受',
+    jobs: '工作',
+    vehicles: '车辆',
+    wallet: '钱包',
+    profile: '个人资料',
+    signOut: '退出登录',
   },
 };
 
@@ -96,12 +156,12 @@ export default function ProviderDashboard() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.h1}>Dashboard</Text>
+        <Text style={styles.h1}>{t.dashboard}</Text>
         <View style={styles.headerRight}>
           <LanguagePicker tone="light" />
           {approved && (
             <View style={styles.onlineWrap}>
-              <Text style={styles.onlineLabel}>{provider?.is_online ? 'Online' : 'Offline'}</Text>
+              <Text style={styles.onlineLabel}>{provider?.is_online ? t.online : t.offline}</Text>
               <Switch value={provider?.is_online ?? false} onValueChange={toggleOnline} />
             </View>
           )}
@@ -111,23 +171,23 @@ export default function ProviderDashboard() {
       {!approved && (
         <Pressable style={styles.banner} onPress={() => router.push('/(provider)/onboarding')}>
           <Text style={styles.bannerTitle}>
-            {provider?.status === 'pending' ? 'Complete your onboarding →' : `Account ${provider?.status ?? '…'}`}
+            {provider?.status === 'pending' ? t.completeOnboarding : `${t.account} ${provider?.status ?? '…'}`}
           </Text>
-          <Text style={styles.bannerSub}>Upload documents and choose your services to get approved.</Text>
+          <Text style={styles.bannerSub}>{t.onboardingSub}</Text>
         </Pressable>
       )}
 
       {approved && !provider?.is_online && (
         <View style={styles.idle}>
           <TukiTukTuk width={230} />
-          <Text style={styles.idleTitle}>You&apos;re offline</Text>
-          <Text style={styles.hint}>Flip the switch to start receiving nearby requests.</Text>
+          <Text style={styles.idleTitle}>{t.youreOffline}</Text>
+          <Text style={styles.hint}>{t.flipSwitch}</Text>
         </View>
       )}
 
       {approved && provider?.is_online && rideOffers.length > 0 && (
         <>
-          <Text style={styles.section}>Ride requests ({rideOffers.length})</Text>
+          <Text style={styles.section}>{t.rideRequests} ({rideOffers.length})</Text>
           {rideOffers.map((item) => (
             <View key={item.offer_id} style={styles.offer}>
               <View style={{ flex: 1 }}>
@@ -136,10 +196,10 @@ export default function ProviderDashboard() {
                 {item.dropoff_address ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff_address}</Text> : null}
               </View>
               <Pressable style={styles.reject} onPress={() => rejectRide(item)}>
-                <Text style={styles.rejectText}>Skip</Text>
+                <Text style={styles.rejectText}>{t.skip}</Text>
               </Pressable>
               <Pressable style={styles.accept} onPress={() => acceptRide(item)}>
-                <Text style={styles.acceptText}>Accept</Text>
+                <Text style={styles.acceptText}>{t.accept}</Text>
               </Pressable>
             </View>
           ))}
@@ -148,16 +208,16 @@ export default function ProviderDashboard() {
 
       {approved && provider?.is_online && foodOffers.length > 0 && (
         <>
-          <Text style={styles.section}>Delivery requests ({foodOffers.length})</Text>
+          <Text style={styles.section}>{t.deliveryRequests} ({foodOffers.length})</Text>
           {foodOffers.map((item) => (
             <View key={item.offer_id} style={styles.offer}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.offerCat}>🍜 {item.restaurant ?? 'Pickup'} · ${Number(item.fee ?? 0).toFixed(2)} fee</Text>
+                <Text style={styles.offerCat}>🍜 {item.restaurant ?? t.pickup} · ${Number(item.fee ?? 0).toFixed(2)} fee</Text>
                 <Text style={styles.offerMeta}>{item.distance_km ?? '?'} km to pickup · ~{item.eta_minutes ?? '?'} min</Text>
                 {item.dropoff ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff}</Text> : null}
               </View>
-              <Pressable style={styles.reject} onPress={() => rejectFood(item)}><Text style={styles.rejectText}>Skip</Text></Pressable>
-              <Pressable style={styles.accept} onPress={() => acceptFood(item)}><Text style={styles.acceptText}>Accept</Text></Pressable>
+              <Pressable style={styles.reject} onPress={() => rejectFood(item)}><Text style={styles.rejectText}>{t.skip}</Text></Pressable>
+              <Pressable style={styles.accept} onPress={() => acceptFood(item)}><Text style={styles.acceptText}>{t.accept}</Text></Pressable>
             </View>
           ))}
         </>
@@ -165,14 +225,14 @@ export default function ProviderDashboard() {
 
       {approved && provider?.is_online && (
         <>
-          <Text style={styles.section}>Roadside requests ({offers.length})</Text>
+          <Text style={styles.section}>{t.roadsideRequests} ({offers.length})</Text>
           <FlatList
             data={offers}
             keyExtractor={(o) => o.assignment_id}
             ListEmptyComponent={
               <View style={styles.idleSmall}>
                 <TukiTukTuk width={170} />
-                <Text style={styles.empty}>Waiting for requests…</Text>
+                <Text style={styles.empty}>{t.waiting}</Text>
               </View>
             }
             renderItem={({ item }) => (
@@ -185,10 +245,10 @@ export default function ProviderDashboard() {
                   {item.address ? <Text style={styles.offerAddr} numberOfLines={1}>{item.address}</Text> : null}
                 </View>
                 <Pressable style={styles.reject} onPress={() => reject(item)}>
-                  <Text style={styles.rejectText}>Skip</Text>
+                  <Text style={styles.rejectText}>{t.skip}</Text>
                 </Pressable>
                 <Pressable style={styles.accept} onPress={() => accept(item)}>
-                  <Text style={styles.acceptText}>Accept</Text>
+                  <Text style={styles.acceptText}>{t.accept}</Text>
                 </Pressable>
               </View>
             )}
@@ -198,20 +258,20 @@ export default function ProviderDashboard() {
 
       <View style={styles.navRow}>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/jobs')}>
-          <Text style={styles.navText}>Jobs</Text>
+          <Text style={styles.navText}>{t.jobs}</Text>
         </Pressable>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/vehicles')}>
-          <Text style={styles.navText}>Vehicles</Text>
+          <Text style={styles.navText}>{t.vehicles}</Text>
         </Pressable>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/wallet')}>
-          <Text style={styles.navText}>Wallet</Text>
+          <Text style={styles.navText}>{t.wallet}</Text>
         </Pressable>
         <Pressable style={styles.navBtn} onPress={() => router.push('/(provider)/profile')}>
-          <Text style={styles.navText}>Profile</Text>
+          <Text style={styles.navText}>{t.profile}</Text>
         </Pressable>
       </View>
       <Pressable style={styles.signout} onPress={signOut}>
-        <Text style={styles.signoutText}>Sign out</Text>
+        <Text style={styles.signoutText}>{t.signOut}</Text>
       </Pressable>
     </View>
   );

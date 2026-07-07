@@ -5,11 +5,21 @@ import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
 import { LocationLangBar } from '@/components/LocationLangBar';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 
 interface Restaurant { id: string; name: string; cuisine: string | null; photo_url: string | null; rating: number; is_open: boolean }
 
+const L: Record<Language, Record<string, string>> = {
+  en: { title: 'Food delivery', empty: 'No restaurants yet.', restaurant: 'Restaurant', closed: 'Closed', back: 'Back' },
+  km: { title: 'ការដឹកជញ្ជូនម្ហូប', empty: 'មិន​ទាន់​មាន​ភោជនីយដ្ឋាន​នៅ​ឡើយ។', restaurant: 'ភោជនីយដ្ឋាន', closed: 'បិទ', back: 'ថយក្រោយ' },
+  zh: { title: '外卖', empty: '暂无餐厅。', restaurant: '餐厅', closed: '已打烊', back: '返回' },
+};
+
 export default function Food() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [rows, setRows] = useState<Restaurant[]>([]);
 
   useEffect(() => {
@@ -24,11 +34,11 @@ export default function Food() {
         <LocationLangBar />
       </View>
       <View style={styles.content}>
-      <Text style={styles.h1}>Food delivery</Text>
+      <Text style={styles.h1}>{t.title}</Text>
       <FlatList
         data={rows}
         keyExtractor={(r) => r.id}
-        ListEmptyComponent={<Text style={styles.empty}>No restaurants yet.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.empty}</Text>}
         renderItem={({ item }) => (
           <Pressable style={[styles.card, !item.is_open && { opacity: 0.5 }]} disabled={!item.is_open}
             onPress={() => router.push({ pathname: '/(customer)/food/[id]', params: { id: item.id } })}>
@@ -37,12 +47,12 @@ export default function Food() {
               : <View style={[styles.photo, styles.photoEmpty]}><Text style={styles.photoEmptyText}>🍜</Text></View>}
             <View style={styles.body}>
               <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.sub}>{item.cuisine ?? 'Restaurant'} · ⭐ {Number(item.rating).toFixed(1)}{item.is_open ? '' : ' · Closed'}</Text>
+              <Text style={styles.sub}>{item.cuisine ?? t.restaurant} · ⭐ {Number(item.rating).toFixed(1)}{item.is_open ? '' : ` · ${t.closed}`}</Text>
             </View>
           </Pressable>
         )}
       />
-      <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>Back</Text></Pressable>
+      <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}><Text style={styles.backText}>{t.back}</Text></Pressable>
       </View>
     </View>
   );

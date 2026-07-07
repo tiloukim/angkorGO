@@ -3,10 +3,55 @@
 // the row to held/released via Realtime, so this sheet reacts automatically.
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { PAYMENT_METHODS, type PaymentMethod, type Payment } from '@angkorgo/shared';
+import { PAYMENT_METHODS, type PaymentMethod, type Payment, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    paymentReceived: 'Payment received',
+    releaseHint: 'Confirm the work is complete to release payment.',
+    confirmRelease: 'Confirm & release',
+    paid: 'Paid',
+    invoice: 'Invoice',
+    scanPrefix: 'Scan with ',
+    scanSuffix: ' to pay',
+    cashSelected: 'Cash selected',
+    cashBody: 'Pay the provider directly. They will confirm completion.',
+    paymentError: 'Payment error',
+    tryAgain: 'Try again',
+  },
+  km: {
+    paymentReceived: 'បានទទួលការបង់ប្រាក់',
+    releaseHint: 'បញ្ជាក់ថាការងារបានបញ្ចប់ ដើម្បីដោះលែងការបង់ប្រាក់។',
+    confirmRelease: 'បញ្ជាក់ និងដោះលែង',
+    paid: 'បានបង់',
+    invoice: 'វិក្កយបត្រ',
+    scanPrefix: 'ស្កេនជាមួយ ',
+    scanSuffix: ' ដើម្បីបង់ប្រាក់',
+    cashSelected: 'បានជ្រើសសាច់ប្រាក់',
+    cashBody: 'បង់ប្រាក់ដោយផ្ទាល់ទៅអ្នកផ្តល់សេវា។ ពួកគេនឹងបញ្ជាក់ការបញ្ចប់។',
+    paymentError: 'កំហុសក្នុងការបង់ប្រាក់',
+    tryAgain: 'ព្យាយាមម្តងទៀត',
+  },
+  zh: {
+    paymentReceived: '已收到付款',
+    releaseHint: '确认工作已完成以释放付款。',
+    confirmRelease: '确认并释放',
+    paid: '已支付',
+    invoice: '账单',
+    scanPrefix: '使用 ',
+    scanSuffix: ' 扫描支付',
+    cashSelected: '已选择现金',
+    cashBody: '直接向服务提供者付款。他们将确认完成。',
+    paymentError: '付款错误',
+    tryAgain: '请重试',
+  },
+};
 
 export function PaymentSheet({ payment }: { payment: Payment }) {
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [method, setMethod] = useState<PaymentMethod | null>(null);
   const [busy, setBusy] = useState(false);
   const [qr, setQr] = useState<string | null>(null);
@@ -20,12 +65,12 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
       });
       if (error) throw error;
       if (m === 'cash') {
-        Alert.alert('Cash selected', 'Pay the provider directly. They will confirm completion.');
+        Alert.alert(t.cashSelected, t.cashBody);
       } else if (data?.qr) {
         setQr(data.qr); // render as a QR for the customer to scan/confirm
       }
     } catch (e: any) {
-      Alert.alert('Payment error', e.message ?? 'Try again');
+      Alert.alert(t.paymentError, e.message ?? t.tryAgain);
     } finally {
       setBusy(false);
     }
@@ -34,10 +79,10 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
   if (payment.status === 'held') {
     return (
       <View style={styles.sheet}>
-        <Text style={styles.title}>Payment received</Text>
-        <Text style={styles.sub}>Confirm the work is complete to release payment.</Text>
+        <Text style={styles.title}>{t.paymentReceived}</Text>
+        <Text style={styles.sub}>{t.releaseHint}</Text>
         <Pressable style={styles.primary} onPress={() => supabase.rpc('release_payment', { p_payment_id: payment.id })}>
-          <Text style={styles.primaryText}>Confirm & release</Text>
+          <Text style={styles.primaryText}>{t.confirmRelease}</Text>
         </Pressable>
       </View>
     );
@@ -46,7 +91,7 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
   if (payment.status === 'released') {
     return (
       <View style={styles.sheet}>
-        <Text style={styles.title}>Paid ✓</Text>
+        <Text style={styles.title}>{t.paid} ✓</Text>
         <Text style={styles.sub}>${Number(payment.amount).toFixed(2)} {payment.currency}</Text>
       </View>
     );
@@ -54,13 +99,13 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
 
   return (
     <View style={styles.sheet}>
-      <Text style={styles.title}>Invoice</Text>
+      <Text style={styles.title}>{t.invoice}</Text>
       <Text style={styles.amount}>${Number(payment.amount).toFixed(2)} {payment.currency}</Text>
 
       {qr ? (
         <View style={styles.qrBox}>
           <Text style={styles.qrText}>{qr}</Text>
-          <Text style={styles.qrHint}>Scan with {PAYMENT_METHODS.find((p) => p.method === method)?.label} to pay</Text>
+          <Text style={styles.qrHint}>{t.scanPrefix}{PAYMENT_METHODS.find((p) => p.method === method)?.label}{t.scanSuffix}</Text>
         </View>
       ) : (
         <View style={styles.methods}>
@@ -71,22 +116,22 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
           ))}
         </View>
       )}
-      {busy && <ActivityIndicator color="#F04438" style={{ marginTop: 12 }} />}
+      {busy && <ActivityIndicator color="#00B14F" style={{ marginTop: 12 }} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sheet: { backgroundColor: '#0B1220', padding: 24, paddingBottom: 40, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
-  title: { color: '#fff', fontSize: 20, fontWeight: '800' },
-  sub: { color: '#8FA3BF', fontSize: 14, marginTop: 6 },
-  amount: { color: '#10B981', fontSize: 32, fontWeight: '800', marginVertical: 12 },
+  sheet: { backgroundColor: '#FFFFFF', padding: 24, paddingBottom: 40, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
+  title: { color: '#1C1C1C', fontSize: 20, fontWeight: '800' },
+  sub: { color: '#7A7A7A', fontSize: 14, marginTop: 6 },
+  amount: { color: '#00B14F', fontSize: 32, fontWeight: '800', marginVertical: 12 },
   methods: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 8 },
-  method: { backgroundColor: '#151E30', borderRadius: 12, paddingVertical: 14, paddingHorizontal: 18, borderWidth: 1, borderColor: '#1F2A40' },
-  methodText: { color: '#fff', fontWeight: '700' },
-  primary: { backgroundColor: '#10B981', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
+  method: { backgroundColor: '#F5F6F7', borderRadius: 12, paddingVertical: 14, paddingHorizontal: 18, borderWidth: 1, borderColor: '#ECECEC' },
+  methodText: { color: '#1C1C1C', fontWeight: '700' },
+  primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 16 },
   primaryText: { color: '#fff', fontWeight: '700' },
-  qrBox: { backgroundColor: '#151E30', borderRadius: 12, padding: 24, alignItems: 'center', marginTop: 12, borderWidth: 1, borderColor: '#1F2A40' },
-  qrText: { color: '#fff', fontSize: 11, textAlign: 'center' },
-  qrHint: { color: '#8FA3BF', fontSize: 13, marginTop: 12 },
+  qrBox: { backgroundColor: '#F5F6F7', borderRadius: 12, padding: 24, alignItems: 'center', marginTop: 12, borderWidth: 1, borderColor: '#ECECEC' },
+  qrText: { color: '#1C1C1C', fontSize: 11, textAlign: 'center' },
+  qrHint: { color: '#7A7A7A', fontSize: 13, marginTop: 12 },
 });

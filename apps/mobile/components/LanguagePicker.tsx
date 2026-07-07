@@ -8,8 +8,15 @@ import { useLocale } from '@/lib/locale';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 
+const L: Record<Language, Record<string, string>> = {
+  en: { language: 'Language' },
+  km: { language: 'ភាសា' },
+  zh: { language: '语言' },
+};
+
 export function LanguagePicker({ tone = 'green' }: { tone?: 'green' | 'light' }) {
   const { lang, setLang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [open, setOpen] = useState(false);
   const green = tone === 'green';
 
@@ -27,7 +34,7 @@ export function LanguagePicker({ tone = 'green' }: { tone?: 'green' | 'light' })
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <Pressable style={styles.sheet} onPress={() => {}}>
-            <Text style={styles.sheetTitle}>Language</Text>
+            <Text style={styles.sheetTitle}>{t.language}</Text>
             {LANGUAGES.map((l) => (
               <Pressable key={l.code} style={styles.optRow} onPress={() => { setLang(l.code); setOpen(false); }}>
                 <Text style={[styles.optText, l.code === lang && styles.optActive]}>{FLAGS[l.code]}  {l.label}</Text>

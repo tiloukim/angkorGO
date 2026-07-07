@@ -7,9 +7,45 @@ import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 
 const L: Record<Language, Record<string, string>> = {
-  en: { failed: 'Failed' },
-  km: { failed: 'បរាជ័យ' },
-  zh: { failed: '失败' },
+  en: {
+    failed: 'Failed',
+    host: 'Host',
+    addListing: '+ Listing',
+    bookingRequests: 'Booking requests',
+    decline: 'Decline',
+    confirm: 'Confirm',
+    noRequests: 'No pending requests.',
+    myListings: 'My listings',
+    noListings: 'No listings yet — add one.',
+    perDay: 'day',
+    back: 'Back',
+  },
+  km: {
+    failed: 'បរាជ័យ',
+    host: 'ម្ចាស់ផ្ទះ',
+    addListing: '+ បញ្ជី',
+    bookingRequests: 'សំណើកក់',
+    decline: 'បដិសេធ',
+    confirm: 'បញ្ជាក់',
+    noRequests: 'គ្មានសំណើកំពុងរង់ចាំ។',
+    myListings: 'បញ្ជីរបស់ខ្ញុំ',
+    noListings: 'មិនទាន់មានបញ្ជី — បន្ថែមមួយ។',
+    perDay: 'ថ្ងៃ',
+    back: 'ថយក្រោយ',
+  },
+  zh: {
+    failed: '失败',
+    host: '房东',
+    addListing: '+ 房源',
+    bookingRequests: '预订请求',
+    decline: '拒绝',
+    confirm: '确认',
+    noRequests: '暂无待处理请求。',
+    myListings: '我的房源',
+    noListings: '还没有房源 — 添加一个。',
+    perDay: '天',
+    back: '返回',
+  },
 };
 
 export default function HostDashboard() {
@@ -41,40 +77,40 @@ export default function HostDashboard() {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.h1}>Host</Text>
+        <Text style={styles.h1}>{t.host}</Text>
         <Pressable style={styles.addBtn} onPress={() => router.push('/(customer)/host/new')}>
-          <Text style={styles.addText}>+ Listing</Text>
+          <Text style={styles.addText}>{t.addListing}</Text>
         </Pressable>
       </View>
 
-      <Text style={styles.section}>Booking requests ({requests.length})</Text>
+      <Text style={styles.section}>{t.bookingRequests} ({requests.length})</Text>
       {requests.map((b) => (
         <View key={b.id} style={styles.req}>
           <View style={{ flex: 1 }}>
             <Text style={styles.reqTitle}>{b.listings?.title}</Text>
             <Text style={styles.reqSub}>{b.start_date} → {b.end_date} · ${Number(b.total_amount).toFixed(2)}</Text>
           </View>
-          <Pressable style={styles.decline} onPress={() => respond(b.id, 'decline')}><Text style={styles.declineText}>Decline</Text></Pressable>
-          <Pressable style={styles.confirm} onPress={() => respond(b.id, 'confirm')}><Text style={styles.confirmText}>Confirm</Text></Pressable>
+          <Pressable style={styles.decline} onPress={() => respond(b.id, 'decline')}><Text style={styles.declineText}>{t.decline}</Text></Pressable>
+          <Pressable style={styles.confirm} onPress={() => respond(b.id, 'confirm')}><Text style={styles.confirmText}>{t.confirm}</Text></Pressable>
         </View>
       ))}
-      {requests.length === 0 && <Text style={styles.empty}>No pending requests.</Text>}
+      {requests.length === 0 && <Text style={styles.empty}>{t.noRequests}</Text>}
 
-      <Text style={styles.section}>My listings ({listings.length})</Text>
+      <Text style={styles.section}>{t.myListings} ({listings.length})</Text>
       <FlatList
         data={listings}
         keyExtractor={(l) => l.id}
-        ListEmptyComponent={<Text style={styles.empty}>No listings yet — add one.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.noListings}</Text>}
         renderItem={({ item }) => (
           <View style={styles.listing}>
             <Text style={styles.listingTitle}>{item.title}</Text>
-            <Text style={styles.listingSub}>${Number(item.price_per_unit).toFixed(2)}/day · {item.status}</Text>
+            <Text style={styles.listingSub}>${Number(item.price_per_unit).toFixed(2)}/{t.perDay} · {item.status}</Text>
           </View>
         )}
       />
 
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </View>
   );

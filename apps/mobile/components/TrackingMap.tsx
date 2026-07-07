@@ -3,10 +3,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import { type Language } from '@angkorgo/shared';
 import { fetchRoute, type Route } from '@/lib/directions';
 import type { Coords } from '@/lib/location';
+import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { you: 'You', provider: 'Your provider', min: 'min', away: 'km away' },
+  km: { you: 'អ្នក', provider: 'អ្នកផ្តល់សេវារបស់អ្នក', min: 'នាទី', away: 'គ.ម ទៀត' },
+  zh: { you: '你', provider: '您的服务商', min: '分钟', away: '公里外' },
+};
 
 export function TrackingMap({ customer, provider }: { customer: Coords; provider: Coords | null }) {
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [route, setRoute] = useState<Route | null>(null);
   const mapRef = useRef<MapView>(null);
 
@@ -31,18 +41,18 @@ export function TrackingMap({ customer, provider }: { customer: Coords; provider
         style={StyleSheet.absoluteFill}
         initialRegion={{ latitude: customer.lat, longitude: customer.lng, latitudeDelta: 0.02, longitudeDelta: 0.02 }}
       >
-        <Marker coordinate={{ latitude: customer.lat, longitude: customer.lng }} title="You" pinColor="#F04438" />
+        <Marker coordinate={{ latitude: customer.lat, longitude: customer.lng }} title={t.you} pinColor="#E5484D" />
         {provider && (
           <Marker
             coordinate={{ latitude: provider.lat, longitude: provider.lng }}
-            title="Your provider"
-            pinColor="#10B981"
+            title={t.provider}
+            pinColor="#00B14F"
           />
         )}
         {route && (
           <Polyline
             coordinates={route.points.map((p) => ({ latitude: p.lat, longitude: p.lng }))}
-            strokeColor="#F04438"
+            strokeColor="#00B14F"
             strokeWidth={4}
           />
         )}
@@ -50,7 +60,7 @@ export function TrackingMap({ customer, provider }: { customer: Coords; provider
 
       {route && (
         <View style={styles.etaPill}>
-          <Text style={styles.etaText}>~{route.etaMinutes} min · {route.distanceKm} km away</Text>
+          <Text style={styles.etaText}>~{route.etaMinutes} {t.min} · {route.distanceKm} {t.away}</Text>
         </View>
       )}
     </View>
@@ -60,8 +70,8 @@ export function TrackingMap({ customer, provider }: { customer: Coords; provider
 const styles = StyleSheet.create({
   etaPill: {
     position: 'absolute', top: 60, alignSelf: 'center',
-    backgroundColor: '#0B1220', paddingVertical: 10, paddingHorizontal: 18,
-    borderRadius: 999, borderWidth: 1, borderColor: '#1F2A40',
+    backgroundColor: '#FFFFFF', paddingVertical: 10, paddingHorizontal: 18,
+    borderRadius: 999, borderWidth: 1, borderColor: '#ECECEC',
   },
-  etaText: { color: '#fff', fontWeight: '700' },
+  etaText: { color: '#1C1C1C', fontWeight: '700' },
 });

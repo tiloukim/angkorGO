@@ -10,9 +10,27 @@ import { useLocale } from '@/lib/locale';
 import { uploadRequestImages, MAX_REQUEST_IMAGES } from '@/lib/uploads';
 
 const L: Record<Language, Record<string, string>> = {
-  en: { requestFailed: 'Request failed', tryAgain: 'Please try again' },
-  km: { requestFailed: 'ស្នើ​បរាជ័យ', tryAgain: 'សូម​ព្យាយាម​ម្តង​ទៀត' },
-  zh: { requestFailed: '请求失败', tryAgain: '请重试' },
+  en: {
+    requestFailed: 'Request failed',
+    tryAgain: 'Please try again',
+    addPhotos: 'Add photos',
+    optionalHelp: 'Optional — help the provider understand the problem. Up to',
+    requestHelp: 'Request help',
+  },
+  km: {
+    requestFailed: 'ស្នើ​បរាជ័យ',
+    tryAgain: 'សូម​ព្យាយាម​ម្តង​ទៀត',
+    addPhotos: 'បន្ថែមរូបភាព',
+    optionalHelp: 'ស្រេចចិត្ត — ជួយឱ្យអ្នកផ្តល់សេវាយល់ពីបញ្ហា។ រហូតដល់',
+    requestHelp: 'ស្នើសុំជំនួយ',
+  },
+  zh: {
+    requestFailed: '请求失败',
+    tryAgain: '请重试',
+    addPhotos: '添加照片',
+    optionalHelp: '可选 — 帮助服务人员了解问题。最多',
+    requestHelp: '请求帮助',
+  },
 };
 
 export default function PhotosScreen() {
@@ -66,8 +84,8 @@ export default function PhotosScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add photos</Text>
-      <Text style={styles.sub}>Optional — help the provider understand the problem. Up to {MAX_REQUEST_IMAGES}.</Text>
+      <Text style={styles.title}>{t.addPhotos}</Text>
+      <Text style={styles.sub}>{t.optionalHelp} {MAX_REQUEST_IMAGES}.</Text>
 
       <ScrollView contentContainerStyle={styles.grid}>
         {uris.map((u) => (
@@ -81,7 +99,7 @@ export default function PhotosScreen() {
       </ScrollView>
 
       <Pressable style={[styles.primary, busy && { opacity: 0.6 }]} onPress={submit} disabled={busy}>
-        {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>Request help</Text>}
+        {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryText}>{t.requestHelp}</Text>}
       </Pressable>
     </View>
   );

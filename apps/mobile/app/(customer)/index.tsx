@@ -7,6 +7,7 @@ import {
   SERVICE_CATEGORIES,
   categoryLabel,
   type ServiceCategory,
+  type Language,
 } from '@angkorgo/shared';
 import { theme, tileColors } from '../../lib/theme';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
@@ -15,9 +16,61 @@ import { TukiTukTuk } from '@/components/TukiTukTuk';
 import { LocationLangBar } from '@/components/LocationLangBar';
 import { useLocale } from '@/lib/locale';
 
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    hi: 'Hi there',
+    searchPlaceholder: 'What do you need today?',
+    getAround: 'Get around',
+    orderShop: 'Order & shop',
+    ride: 'Ride', rent: 'Rent', airport: 'Airport', repair: 'Repair', schedule: 'Schedule', spin: 'Spin',
+    food: 'Food', stay: 'Stay', mart: 'Mart', grocery: 'Grocery', host: 'Host', rewards: 'Rewards',
+    topUp: 'Top up', coupons: 'Coupons', invite: 'Invite',
+    ribbon: '50% OFF',
+    promoTitle: 'Your first ride is on us',
+    promoSub: "Welcome to AngkorGo — Cambodia's super-app",
+    promo1Title: '50% off', promo1Sub: 'first ride',
+    promo2Title: 'Free', promo2Sub: 'repair callout',
+    promo3Title: '$0', promo3Sub: 'delivery fees',
+    roadsideHelp: 'Roadside help',
+  },
+  km: {
+    hi: 'សួស្តី',
+    searchPlaceholder: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?',
+    getAround: 'ធ្វើដំណើរ',
+    orderShop: 'កម្ម៉ង់ & ទិញ',
+    ride: 'ជិះ', rent: 'ជួល', airport: 'ព្រលានយន្តហោះ', repair: 'ជួសជុល', schedule: 'កំណត់ពេល', spin: 'បង្វិល',
+    food: 'អាហារ', stay: 'ស្នាក់នៅ', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', host: 'ម្ចាស់ផ្ទះ', rewards: 'រង្វាន់',
+    topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ',
+    ribbon: 'បញ្ចុះ 50%',
+    promoTitle: 'ការជិះលើកដំបូងរបស់អ្នកគឺឥតគិតថ្លៃ',
+    promoSub: 'សូមស្វាគមន៍មកកាន់ AngkorGo — កម្មវិធីរួមរបស់កម្ពុជា',
+    promo1Title: 'បញ្ចុះ 50%', promo1Sub: 'ជិះលើកដំបូង',
+    promo2Title: 'ឥតគិតថ្លៃ', promo2Sub: 'ហៅជួសជុល',
+    promo3Title: '$0', promo3Sub: 'ថ្លៃដឹកជញ្ជូន',
+    roadsideHelp: 'ជំនួយតាមផ្លូវ',
+  },
+  zh: {
+    hi: '你好',
+    searchPlaceholder: '今天需要什么？',
+    getAround: '出行',
+    orderShop: '订购 & 购物',
+    ride: '打车', rent: '租车', airport: '机场', repair: '维修', schedule: '预约', spin: '转盘',
+    food: '美食', stay: '住宿', mart: '商城', grocery: '生鲜', host: '房东', rewards: '奖励',
+    topUp: '充值', coupons: '优惠券', invite: '邀请',
+    ribbon: '5折优惠',
+    promoTitle: '首次乘车免费',
+    promoSub: '欢迎使用 AngkorGo — 柬埔寨超级应用',
+    promo1Title: '5折', promo1Sub: '首次乘车',
+    promo2Title: '免费', promo2Sub: '维修上门',
+    promo3Title: '$0', promo3Sub: '配送费',
+    roadsideHelp: '道路救援',
+  },
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
 
   const onSelect = (category: ServiceCategory) =>
     router.push({ pathname: '/(customer)/request/location', params: { category } });
@@ -27,37 +80,37 @@ export default function HomeScreen() {
   type Item = { label: string; icon: string; go: () => void };
   const groups: { title: string; hero: string; tile: string; items: Item[] }[] = [
     {
-      title: 'Get around',
+      title: t.getAround,
       hero: '🛺',
       tile: tileColors.green,
       items: [
-        { label: 'Ride', icon: '🛺', go: () => router.push('/(customer)/ride') },
-        { label: 'Rent', icon: '🚗', go: () => router.push('/(customer)/rentals') },
-        { label: 'Airport', icon: '✈️', go: () => router.push('/(customer)/ride') },
-        { label: 'Repair', icon: '🔧', go: () => onSelect('emergency_repair') },
-        { label: 'Schedule', icon: '🗓️', go: () => router.push('/(customer)/ride') },
-        { label: 'Spin', icon: '🎡', go: () => router.push('/(customer)/spin') },
+        { label: t.ride, icon: '🛺', go: () => router.push('/(customer)/ride') },
+        { label: t.rent, icon: '🚗', go: () => router.push('/(customer)/rentals') },
+        { label: t.airport, icon: '✈️', go: () => router.push('/(customer)/ride') },
+        { label: t.repair, icon: '🔧', go: () => onSelect('emergency_repair') },
+        { label: t.schedule, icon: '🗓️', go: () => router.push('/(customer)/ride') },
+        { label: t.spin, icon: '🎡', go: () => router.push('/(customer)/spin') },
       ],
     },
     {
-      title: 'Order & shop',
+      title: t.orderShop,
       hero: '🍜',
       tile: tileColors.peach,
       items: [
-        { label: 'Food', icon: '🍜', go: () => router.push('/(customer)/food') },
-        { label: 'Stay', icon: '🏠', go: () => router.push('/(customer)/stays') },
-        { label: 'Mart', icon: '🛒', go: () => router.push('/(customer)/food') },
-        { label: 'Grocery', icon: '🥬', go: () => router.push('/(customer)/food') },
-        { label: 'Host', icon: '🔑', go: () => router.push('/(customer)/host') },
-        { label: 'Rewards', icon: '🎁', go: () => router.push('/(customer)/wallet') },
+        { label: t.food, icon: '🍜', go: () => router.push('/(customer)/food') },
+        { label: t.stay, icon: '🏠', go: () => router.push('/(customer)/stays') },
+        { label: t.mart, icon: '🛒', go: () => router.push('/(customer)/food') },
+        { label: t.grocery, icon: '🥬', go: () => router.push('/(customer)/food') },
+        { label: t.host, icon: '🔑', go: () => router.push('/(customer)/host') },
+        { label: t.rewards, icon: '🎁', go: () => router.push('/(customer)/wallet') },
       ],
     },
   ];
 
   const subPromos = [
-    { title: '50% off', sub: 'first ride', color: theme.greenSoft },
-    { title: 'Free', sub: 'repair callout', color: '#FFE8D6' },
-    { title: '$0', sub: 'delivery fees', color: '#FFF3C4' },
+    { title: t.promo1Title, sub: t.promo1Sub, color: theme.greenSoft },
+    { title: t.promo2Title, sub: t.promo2Sub, color: '#FFE8D6' },
+    { title: t.promo3Title, sub: t.promo3Sub, color: '#FFF3C4' },
   ];
 
   return (
@@ -73,11 +126,11 @@ export default function HomeScreen() {
             }
           />
 
-          <Text style={styles.hi}>Hi there 👋</Text>
+          <Text style={styles.hi}>{t.hi} 👋</Text>
 
           <Pressable style={styles.search} onPress={() => router.push('/(customer)/ride')}>
             <Text style={styles.searchIcon}>🔍</Text>
-            <Text style={styles.searchText}>What do you need today?</Text>
+            <Text style={styles.searchText}>{t.searchPlaceholder}</Text>
           </Pressable>
         </View>
 
@@ -104,10 +157,10 @@ export default function HomeScreen() {
         {/* Quick actions (WOWNOW-style strip) */}
         <View style={styles.quickRow}>
           {[
-            { icon: '💰', label: 'Top up', go: () => router.push('/(customer)/wallet') },
-            { icon: '🎟️', label: 'Coupons', go: () => router.push('/(customer)/wallet') },
-            { icon: '👥', label: 'Invite', go: () => router.push('/(customer)/account') },
-            { icon: '🎁', label: 'Rewards', go: () => router.push('/(customer)/wallet') },
+            { icon: '💰', label: t.topUp, go: () => router.push('/(customer)/wallet') },
+            { icon: '🎟️', label: t.coupons, go: () => router.push('/(customer)/wallet') },
+            { icon: '👥', label: t.invite, go: () => router.push('/(customer)/account') },
+            { icon: '🎁', label: t.rewards, go: () => router.push('/(customer)/wallet') },
           ].map((q) => (
             <Pressable key={q.label} style={styles.quickAction} onPress={q.go}>
               <View style={styles.quickIcon}>
@@ -121,12 +174,12 @@ export default function HomeScreen() {
         {/* Gold promo banner */}
         <View style={styles.promo}>
           <View style={styles.ribbon}>
-            <Text style={styles.ribbonText}>50% OFF</Text>
+            <Text style={styles.ribbonText}>{t.ribbon}</Text>
           </View>
           <View style={styles.promoTop}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.promoTitle}>Your first ride is on us</Text>
-              <Text style={styles.promoSub}>Welcome to AngkorGo — Cambodia&apos;s super-app</Text>
+              <Text style={styles.promoTitle}>{t.promoTitle}</Text>
+              <Text style={styles.promoSub}>{t.promoSub}</Text>
             </View>
             <TukiTukTuk width={132} />
           </View>
@@ -141,7 +194,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Roadside help */}
-        <Text style={styles.sectionTitle}>Roadside help</Text>
+        <Text style={styles.sectionTitle}>{t.roadsideHelp}</Text>
         <View style={styles.rescueGrid}>
           {SERVICE_CATEGORIES.map((c) => (
             <Pressable key={c} style={styles.rescueCard} onPress={() => onSelect(c)}>

@@ -4,14 +4,24 @@ import { View, Text, Image, Pressable, StyleSheet, FlatList } from 'react-native
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 import { LocationLangBar } from '@/components/LocationLangBar';
 
 interface Listing {
   id: string; title: string; price_per_unit: number; photos: string[]; address: string | null; attributes: Record<string, any>;
 }
 
+const L: Record<Language, Record<string, string>> = {
+  en: { h1: 'Book a stay', empty: 'No places available yet.', beds: 'beds', guests: 'guests', perNight: '/ night', back: 'Back' },
+  km: { h1: 'កក់កន្លែងស្នាក់នៅ', empty: 'មិនទាន់មានកន្លែងស្នាក់នៅទេ។', beds: 'គ្រែ', guests: 'ភ្ញៀវ', perNight: '/ យប់', back: 'ថយក្រោយ' },
+  zh: { h1: '预订住宿', empty: '暂无可用住宿。', beds: '床', guests: '位客人', perNight: '/ 晚', back: '返回' },
+};
+
 export default function Stays() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [listings, setListings] = useState<Listing[]>([]);
 
   useEffect(() => {
@@ -26,11 +36,11 @@ export default function Stays() {
         <LocationLangBar />
       </View>
       <View style={styles.content}>
-      <Text style={styles.h1}>Book a stay</Text>
+      <Text style={styles.h1}>{t.h1}</Text>
       <FlatList
         data={listings}
         keyExtractor={(l) => l.id}
-        ListEmptyComponent={<Text style={styles.empty}>No places available yet.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>{t.empty}</Text>}
         renderItem={({ item }) => (
           <Pressable style={styles.card} onPress={() => router.push({ pathname: '/(customer)/stays/[id]', params: { id: item.id } })}>
             {item.photos?.[0]
@@ -39,14 +49,14 @@ export default function Stays() {
             <View style={styles.cardBody}>
               <Text style={styles.title}>{item.title}</Text>
               {item.address ? <Text style={styles.sub}>{item.address}</Text> : null}
-              {item.attributes?.beds ? <Text style={styles.sub}>{item.attributes.beds} beds · {item.attributes.max_guests ?? '?'} guests</Text> : null}
-              <Text style={styles.price}>${Number(item.price_per_unit).toFixed(2)} <Text style={styles.perNight}>/ night</Text></Text>
+              {item.attributes?.beds ? <Text style={styles.sub}>{item.attributes.beds} {t.beds} · {item.attributes.max_guests ?? '?'} {t.guests}</Text> : null}
+              <Text style={styles.price}>${Number(item.price_per_unit).toFixed(2)} <Text style={styles.perNight}>{t.perNight}</Text></Text>
             </View>
           </Pressable>
         )}
       />
       <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
       </View>
     </View>

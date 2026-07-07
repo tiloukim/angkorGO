@@ -15,18 +15,48 @@ const L: Record<Language, Record<string, string>> = {
     vehicleAdded: 'Vehicle added',
     vehicleAddedMsg: 'It will receive rides once an admin verifies it.',
     couldNotAdd: 'Could not add',
+    title: 'My vehicles',
+    verified: 'Verified',
+    pending: 'Pending',
+    addVehicle: 'Add a vehicle',
+    makeModelPh: 'Make & model (e.g. Honda Dream)',
+    platePh: 'Plate number',
+    colorPh: 'Color',
+    addPhoto: 'Add photo (optional)',
+    addVehicleBtn: 'Add vehicle',
+    back: 'Back',
   },
   km: {
     enterPlate: 'បញ្ចូល​លេខ​ស្លាក',
     vehicleAdded: 'បាន​បន្ថែម​យានយន្ត',
     vehicleAddedMsg: 'វា​នឹង​ទទួល​ការ​ជិះ​នៅ​ពេល​អ្នក​គ្រប់គ្រង​ផ្ទៀងផ្ទាត់​វា។',
     couldNotAdd: 'មិន​អាច​បន្ថែម​បាន',
+    title: 'យានយន្ត​របស់​ខ្ញុំ',
+    verified: 'បាន​ផ្ទៀងផ្ទាត់',
+    pending: 'កំពុង​រង់ចាំ',
+    addVehicle: 'បន្ថែម​យានយន្ត',
+    makeModelPh: 'ម៉ាក & ម៉ូដែល (ឧ. Honda Dream)',
+    platePh: 'លេខ​ស្លាក',
+    colorPh: 'ពណ៌',
+    addPhoto: 'បន្ថែម​រូបភាព (ជម្រើស)',
+    addVehicleBtn: 'បន្ថែម​យានយន្ត',
+    back: 'ថយក្រោយ',
   },
   zh: {
     enterPlate: '请输入车牌号',
     vehicleAdded: '已添加车辆',
     vehicleAddedMsg: '管理员验证后即可开始接单。',
     couldNotAdd: '无法添加',
+    title: '我的车辆',
+    verified: '已验证',
+    pending: '待处理',
+    addVehicle: '添加车辆',
+    makeModelPh: '品牌和型号（例如 Honda Dream）',
+    platePh: '车牌号',
+    colorPh: '颜色',
+    addPhoto: '添加照片（可选）',
+    addVehicleBtn: '添加车辆',
+    back: '返回',
   },
 };
 
@@ -86,7 +116,7 @@ export default function VehiclesScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 48 }}>
-      <Text style={styles.h1}>My vehicles</Text>
+      <Text style={styles.h1}>{t.title}</Text>
 
       {vehicles.map((v) => (
         <View key={v.id} style={styles.row}>
@@ -95,12 +125,12 @@ export default function VehiclesScreen() {
             {v.make_model ? <Text style={styles.vSub}>{v.make_model}{v.color ? ` · ${v.color}` : ''}</Text> : null}
           </View>
           <Text style={[styles.badge, v.verified ? { color: '#00B14F' } : { color: '#FF6D00' }]}>
-            {v.verified ? 'Verified' : 'Pending'}
+            {v.verified ? t.verified : t.pending}
           </Text>
         </View>
       ))}
 
-      <Text style={styles.section}>Add a vehicle</Text>
+      <Text style={styles.section}>{t.addVehicle}</Text>
       <View style={styles.chips}>
         {VEHICLE_CLASSES.map((c) => (
           <Pressable key={c} onPress={() => setCls(c)} style={[styles.chip, cls === c && styles.chipOn]}>
@@ -108,19 +138,19 @@ export default function VehiclesScreen() {
           </Pressable>
         ))}
       </View>
-      <TextInput style={styles.input} placeholder="Make & model (e.g. Honda Dream)" placeholderTextColor="#9AA0A6" value={makeModel} onChangeText={setMakeModel} />
-      <TextInput style={styles.input} placeholder="Plate number" placeholderTextColor="#9AA0A6" value={plate} onChangeText={setPlate} />
-      <TextInput style={styles.input} placeholder="Color" placeholderTextColor="#9AA0A6" value={color} onChangeText={setColor} />
+      <TextInput style={styles.input} placeholder={t.makeModelPh} placeholderTextColor="#9AA0A6" value={makeModel} onChangeText={setMakeModel} />
+      <TextInput style={styles.input} placeholder={t.platePh} placeholderTextColor="#9AA0A6" value={plate} onChangeText={setPlate} />
+      <TextInput style={styles.input} placeholder={t.colorPh} placeholderTextColor="#9AA0A6" value={color} onChangeText={setColor} />
 
       <Pressable style={styles.photoBtn} onPress={pickPhoto}>
-        {photo ? <Image source={{ uri: photo }} style={styles.photo} /> : <Text style={styles.photoText}>Add photo (optional)</Text>}
+        {photo ? <Image source={{ uri: photo }} style={styles.photo} /> : <Text style={styles.photoText}>{t.addPhoto}</Text>}
       </Pressable>
 
       <Pressable style={[styles.primary, busy && { opacity: 0.6 }]} onPress={add} disabled={busy}>
-        <Text style={styles.primaryText}>Add vehicle</Text>
+        <Text style={styles.primaryText}>{t.addVehicleBtn}</Text>
       </Pressable>
       <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </ScrollView>
   );

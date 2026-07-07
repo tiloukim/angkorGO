@@ -11,16 +11,37 @@ const L: Record<Language, Record<string, string>> = {
     enterValidEmail: 'Enter a valid email',
     couldNotSendCode: 'Could not send code',
     signInFailed: 'Sign in failed',
+    tagline: 'Help is on the way.',
+    emailPlaceholder: 'Email address',
+    continueWithEmail: 'Continue with email',
+    or: 'or',
+    continueWithGoogle: 'Continue with Google',
+    continueWithApple: 'Continue with Apple',
+    legal: 'By continuing you agree to the Terms & Privacy Policy.',
   },
   km: {
     enterValidEmail: 'បញ្ចូល​អ៊ីមែល​ត្រឹមត្រូវ',
     couldNotSendCode: 'មិន​អាច​ផ្ញើ​កូដ',
     signInFailed: 'ចូល​បរាជ័យ',
+    tagline: 'ជំនួយ​កំពុង​មក​ដល់។',
+    emailPlaceholder: 'អាសយដ្ឋាន​អ៊ីមែល',
+    continueWithEmail: 'បន្ត​ដោយ​អ៊ីមែល',
+    or: 'ឬ',
+    continueWithGoogle: 'បន្ត​ដោយ Google',
+    continueWithApple: 'បន្ត​ដោយ Apple',
+    legal: 'ដោយ​បន្ត អ្នក​យល់ព្រម​តាម​លក្ខខណ្ឌ និង​គោលការណ៍​ឯកជនភាព។',
   },
   zh: {
     enterValidEmail: '请输入有效邮箱',
     couldNotSendCode: '无法发送验证码',
     signInFailed: '登录失败',
+    tagline: '救援即将到达。',
+    emailPlaceholder: '电子邮箱地址',
+    continueWithEmail: '使用邮箱继续',
+    or: '或',
+    continueWithGoogle: '使用 Google 继续',
+    continueWithApple: '使用 Apple 继续',
+    legal: '继续即表示您同意条款和隐私政策。',
   },
 };
 
@@ -54,11 +75,11 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.brand}>AngkorGo</Text>
-      <Text style={styles.tagline}>Help is on the way.</Text>
+      <Text style={styles.tagline}>{t.tagline}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email address"
+        placeholder={t.emailPlaceholder}
         placeholderTextColor="#9AA0A6"
         keyboardType="email-address"
         autoCapitalize="none"
@@ -67,22 +88,22 @@ export default function LoginScreen() {
         onChangeText={setEmail}
       />
       <Pressable style={[styles.primary, busy && styles.disabled]} onPress={onEmail} disabled={busy}>
-        <Text style={styles.primaryText}>Continue with email</Text>
+        <Text style={styles.primaryText}>{t.continueWithEmail}</Text>
       </Pressable>
 
-      <View style={styles.divider}><Text style={styles.dividerText}>or</Text></View>
+      <View style={styles.divider}><Text style={styles.dividerText}>{t.or}</Text></View>
 
       <Pressable style={styles.oauth} onPress={() => wrap(signInWithGoogle)} disabled={busy}>
-        <Text style={styles.oauthText}>Continue with Google</Text>
+        <Text style={styles.oauthText}>{t.continueWithGoogle}</Text>
       </Pressable>
 
       {Platform.OS === 'ios' && (
         <Pressable style={[styles.oauth, styles.apple]} onPress={() => wrap(signInWithApple)} disabled={busy}>
-          <Text style={[styles.oauthText, { color: '#fff' }]}>Continue with Apple</Text>
+          <Text style={[styles.oauthText, { color: '#fff' }]}>{t.continueWithApple}</Text>
         </Pressable>
       )}
 
-      <Text style={styles.legal}>By continuing you agree to the Terms & Privacy Policy.</Text>
+      <Text style={styles.legal}>{t.legal}</Text>
     </View>
   );
 }

@@ -8,9 +8,30 @@ import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
 
 const L: Record<Language, Record<string, string>> = {
-  en: { invalidCode: 'Invalid code' },
-  km: { invalidCode: 'កូដ​មិន​ត្រឹមត្រូវ' },
-  zh: { invalidCode: '验证码无效' },
+  en: {
+    invalidCode: 'Invalid code',
+    title: 'Enter the code',
+    sub: 'We sent a 6-digit code to',
+    codePlaceholder: 'Enter code',
+    verify: 'Verify',
+    resend: 'Resend code',
+  },
+  km: {
+    invalidCode: 'កូដ​មិន​ត្រឹមត្រូវ',
+    title: 'បញ្ចូល​កូដ',
+    sub: 'យើង​បាន​ផ្ញើ​កូដ ៦ ខ្ទង់​ទៅ',
+    codePlaceholder: 'បញ្ចូល​កូដ',
+    verify: 'ផ្ទៀងផ្ទាត់',
+    resend: 'ផ្ញើ​កូដ​ម្ដង​ទៀត',
+  },
+  zh: {
+    invalidCode: '验证码无效',
+    title: '输入验证码',
+    sub: '我们已将 6 位验证码发送至',
+    codePlaceholder: '输入验证码',
+    verify: '验证',
+    resend: '重新发送验证码',
+  },
 };
 
 export default function VerifyScreen() {
@@ -36,12 +57,12 @@ export default function VerifyScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Enter the code</Text>
-      <Text style={styles.sub}>We sent a 6-digit code to{'\n'}{email}</Text>
+      <Text style={styles.title}>{t.title}</Text>
+      <Text style={styles.sub}>{t.sub}{'\n'}{email}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Enter code"
+        placeholder={t.codePlaceholder}
         placeholderTextColor="#9AA0A6"
         keyboardType="number-pad"
         maxLength={10}
@@ -51,11 +72,11 @@ export default function VerifyScreen() {
       />
 
       <Pressable style={[styles.primary, busy && styles.disabled]} onPress={onVerify} disabled={busy}>
-        <Text style={styles.primaryText}>Verify</Text>
+        <Text style={styles.primaryText}>{t.verify}</Text>
       </Pressable>
 
       <Pressable onPress={() => sendEmailOtp(email)} style={{ marginTop: 20 }}>
-        <Text style={styles.resend}>Resend code</Text>
+        <Text style={styles.resend}>{t.resend}</Text>
       </Pressable>
     </View>
   );

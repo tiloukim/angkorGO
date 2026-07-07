@@ -4,11 +4,35 @@ import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE, type Region } from 'react-native-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { categoryLabel, type ServiceCategory } from '@angkorgo/shared';
+import { categoryLabel, type ServiceCategory, type Language } from '@angkorgo/shared';
 import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
+import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    detecting: 'Detecting your location…',
+    confirmLocation: 'Confirm your location',
+    dragPin: 'Drag the pin to your exact position',
+    confirmContinue: 'Confirm & continue',
+  },
+  km: {
+    detecting: 'កំពុងរកទីតាំងរបស់អ្នក…',
+    confirmLocation: 'បញ្ជាក់ទីតាំងរបស់អ្នក',
+    dragPin: 'អូសម្ជុលទៅទីតាំងពិតប្រាកដរបស់អ្នក',
+    confirmContinue: 'បញ្ជាក់ & បន្ត',
+  },
+  zh: {
+    detecting: '正在检测您的位置…',
+    confirmLocation: '确认您的位置',
+    dragPin: '拖动图钉到您的准确位置',
+    confirmContinue: '确认并继续',
+  },
+};
 
 export default function LocationScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const { category } = useLocalSearchParams<{ category: ServiceCategory }>();
   const [coords, setCoords] = useState<Coords | null>(null);
   const [address, setAddress] = useState('');
@@ -32,7 +56,7 @@ export default function LocationScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator color="#00B14F" />
-        <Text style={styles.loadingText}>Detecting your location…</Text>
+        <Text style={styles.loadingText}>{t.detecting}</Text>
       </View>
     );
   }
@@ -50,9 +74,9 @@ export default function LocationScreen() {
       </MapView>
 
       <View style={styles.sheet}>
-        <Text style={styles.category}>{categoryLabel('en', category)}</Text>
-        <Text style={styles.label}>Confirm your location</Text>
-        <Text style={styles.address}>{address || 'Drag the pin to your exact position'}</Text>
+        <Text style={styles.category}>{categoryLabel(lang, category)}</Text>
+        <Text style={styles.label}>{t.confirmLocation}</Text>
+        <Text style={styles.address}>{address || t.dragPin}</Text>
 
         <Pressable
           style={styles.primary}
@@ -63,7 +87,7 @@ export default function LocationScreen() {
             })
           }
         >
-          <Text style={styles.primaryText}>Confirm & continue</Text>
+          <Text style={styles.primaryText}>{t.confirmContinue}</Text>
         </Pressable>
       </View>
     </View>
