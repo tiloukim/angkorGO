@@ -11,6 +11,7 @@ import { useProviderLocation } from '@/hooks/useProviderLocation';
 import { useTripPayment } from '@/hooks/usePayment';
 import { TrackingMap } from '@/components/TrackingMap';
 import { PaymentSheet } from '@/components/PaymentSheet';
+import { TripRating } from '@/components/TripRating';
 import type { Coords } from '@/lib/location';
 
 const COPY: Record<Language, Partial<Record<TripStatus, { title: string; sub: string }>>> = {
@@ -57,9 +58,9 @@ const TO_PICKUP: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived']
 interface Driver { driver_name: string | null; rating: number; vehicle_class: VehicleClass; plate_number: string; color: string | null }
 
 const L: Record<Language, Record<string, string>> = {
-  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver', cancelRide: 'Cancel ride?', keepWaiting: 'Keep waiting' },
-  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក', cancelRide: 'បោះបង់​ដំណើរ?', keepWaiting: 'រង់ចាំ​បន្ត' },
-  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待' },
+  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver', cancelRide: 'Cancel ride?', keepWaiting: 'Keep waiting', rateDriver: 'Rate your driver' },
+  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក', cancelRide: 'បោះបង់​ដំណើរ?', keepWaiting: 'រង់ចាំ​បន្ត', rateDriver: 'វាយតម្លៃអ្នកបើកបររបស់អ្នក' },
+  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待', rateDriver: '评价您的司机' },
 };
 
 export default function RideStatus() {
@@ -159,6 +160,10 @@ export default function RideStatus() {
       )}
       {status === 'completed' && payment && payment.status !== 'released' && (
         <PaymentSheet payment={payment} />
+      )}
+
+      {status === 'completed' && !(payment && payment.status !== 'released') && (
+        <TripRating tripId={id} title={L[lang].rateDriver} />
       )}
 
       {terminal && !(status === 'completed' && payment && payment.status !== 'released') && (

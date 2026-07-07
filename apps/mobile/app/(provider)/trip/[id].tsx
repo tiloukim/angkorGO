@@ -6,6 +6,7 @@ import type { TripStatus, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocationBroadcast } from '@/hooks/useLocationBroadcast';
 import { useLocale } from '@/lib/locale';
+import { TripRating } from '@/components/TripRating';
 
 const ACTIVE: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived', 'in_progress'];
 
@@ -40,9 +41,9 @@ const STEP_LABEL: Record<Language, Partial<Record<TripStatus, string>>> = {
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { pickup: 'Pick up', dropoff: 'Drop off', fare: 'Fare', navigate: 'Navigate ↗', back: 'Back to dashboard', couldNotEndTrip: 'Could not end trip', tripCompleted: 'Trip completed', fareSettled: 'Fare settled. Cashless rides are paid by the rider in-app.', updateFailed: 'Update failed' },
-  km: { pickup: 'ទទួល', dropoff: 'ចុះ', fare: 'តម្លៃ', navigate: 'នាំផ្លូវ ↗', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង', couldNotEndTrip: 'មិន​អាច​បញ្ចប់​ដំណើរ', tripCompleted: 'ដំណើរ​បាន​បញ្ចប់', fareSettled: 'ថ្លៃ​ដំណើរ​បាន​សង។ ដំណើរ​គ្មាន​សាច់ប្រាក់​ត្រូវ​បង់​ដោយ​អ្នក​ជិះ​ក្នុង​កម្មវិធី។', updateFailed: 'ធ្វើ​បច្ចុប្បន្នភាព​បរាជ័យ' },
-  zh: { pickup: '接客', dropoff: '下车', fare: '车费', navigate: '导航 ↗', back: '返回仪表板', couldNotEndTrip: '无法结束行程', tripCompleted: '行程已完成', fareSettled: '车费已结算。无现金行程由乘客在应用内支付。', updateFailed: '更新失败' },
+  en: { pickup: 'Pick up', dropoff: 'Drop off', fare: 'Fare', navigate: 'Navigate ↗', back: 'Back to dashboard', couldNotEndTrip: 'Could not end trip', tripCompleted: 'Trip completed', fareSettled: 'Fare settled. Cashless rides are paid by the rider in-app.', updateFailed: 'Update failed', rateRider: 'Rate your rider' },
+  km: { pickup: 'ទទួល', dropoff: 'ចុះ', fare: 'តម្លៃ', navigate: 'នាំផ្លូវ ↗', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង', couldNotEndTrip: 'មិន​អាច​បញ្ចប់​ដំណើរ', tripCompleted: 'ដំណើរ​បាន​បញ្ចប់', fareSettled: 'ថ្លៃ​ដំណើរ​បាន​សង។ ដំណើរ​គ្មាន​សាច់ប្រាក់​ត្រូវ​បង់​ដោយ​អ្នក​ជិះ​ក្នុង​កម្មវិធី។', updateFailed: 'ធ្វើ​បច្ចុប្បន្នភាព​បរាជ័យ', rateRider: 'វាយតម្លៃអ្នកជិះរបស់អ្នក' },
+  zh: { pickup: '接客', dropoff: '下车', fare: '车费', navigate: '导航 ↗', back: '返回仪表板', couldNotEndTrip: '无法结束行程', tripCompleted: '行程已完成', fareSettled: '车费已结算。无现金行程由乘客在应用内支付。', updateFailed: '更新失败', rateRider: '评价您的乘客' },
 };
 
 export default function DriverTrip() {
@@ -84,7 +85,8 @@ export default function DriverTrip() {
       const { error } = await supabase.rpc('settle_trip', { p_trip_id: id });
       if (error) return Alert.alert(L[lang].couldNotEndTrip, error.message);
       Alert.alert(L[lang].tripCompleted, L[lang].fareSettled);
-      return router.replace('/(provider)');
+      setStatus('completed'); // stay on-screen to rate the rider
+      return;
     }
     const patch: Record<string, unknown> = { status: step.to };
     if (step.to === 'in_progress') patch.started_at = new Date().toISOString();
@@ -109,9 +111,12 @@ export default function DriverTrip() {
       {fare != null && <Text style={styles.fare}>{L[lang].fare} ${Number(fare).toFixed(2)}</Text>}
 
       <View style={styles.actions}>
-        <Pressable style={styles.nav} onPress={navigateTo}>
-          <Text style={styles.navText}>{L[lang].navigate}</Text>
-        </Pressable>
+        {status === 'completed' && <TripRating tripId={id} title={L[lang].rateRider} />}
+        {ACTIVE.includes(status) && (
+          <Pressable style={styles.nav} onPress={navigateTo}>
+            <Text style={styles.navText}>{L[lang].navigate}</Text>
+          </Pressable>
+        )}
         {step && (
           <Pressable style={styles.primary} onPress={advance}>
             <Text style={styles.primaryText}>{(STEP_LABEL[lang] ?? STEP_LABEL.en)[status] ?? STEP_LABEL.en[status]}</Text>
