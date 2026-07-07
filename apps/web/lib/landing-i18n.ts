@@ -13,6 +13,7 @@ export type LandingCopy = {
   mockup: { hi: string; search: string; firstRide: string; welcome: string };
   quick: { topUp: string; coupons: string; invite: string; rewards: string };
   groups: { getAround: string; orderShop: string };
+  noResults: string;
   w: Record<string, string>;
   how: { title: string; steps: { title: string; body: string }[] };
   deal: { week: string; title: string; sub: string; cta: string; badge: string };
@@ -33,6 +34,7 @@ export const COPY: Record<Language, LandingCopy> = {
     mockup: { hi: 'Hi there 👋', search: 'What do you need today?', firstRide: 'First ride free', welcome: 'Welcome to AngkorGo' },
     quick: { topUp: 'Top up', coupons: 'Coupons', invite: 'Invite', rewards: 'Rewards' },
     groups: { getAround: 'Get around', orderShop: 'Order & shop' },
+    noResults: 'No matches — try another service',
     w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons' },
     how: {
       title: 'How AngkorGo works',
@@ -65,6 +67,7 @@ export const COPY: Record<Language, LandingCopy> = {
     mockup: { hi: 'សួស្តី 👋', search: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?', firstRide: 'ជិះលើកដំបូងឥតគិតថ្លៃ', welcome: 'សូមស្វាគមន៍មកកាន់ AngkorGo' },
     quick: { topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ', rewards: 'រង្វាន់' },
     groups: { getAround: 'ធ្វើដំណើរ', orderShop: 'កម្ម៉ង់ & ទិញ' },
+    noResults: 'គ្មានលទ្ធផល — សាកល្បងសេវាផ្សេង',
     w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង' },
     how: {
       title: 'របៀប AngkorGo ដំណើរការ',
@@ -97,6 +100,7 @@ export const COPY: Record<Language, LandingCopy> = {
     mockup: { hi: '你好 👋', search: '今天需要什么？', firstRide: '首程免费', welcome: '欢迎使用 AngkorGo' },
     quick: { topUp: '充值', coupons: '优惠券', invite: '邀请', rewards: '奖励' },
     groups: { getAround: '出行', orderShop: '订购 & 购物' },
+    noResults: '无匹配结果 — 试试其他服务',
     w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券' },
     how: {
       title: 'AngkorGo 如何运作',

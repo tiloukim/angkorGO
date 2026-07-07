@@ -120,6 +120,7 @@ function PhoneMockup({ t }: { t: LandingCopy }) {
 
 export default function Landing() {
   const [lang, setLang] = useState<Language>('en');
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('angkorgo.lang');
@@ -132,6 +133,18 @@ export default function Landing() {
   };
 
   const t = COPY[lang];
+
+  // Live search — match on the key + the English and current-language labels,
+  // so typing "food" works in any language.
+  const q = query.trim().toLowerCase();
+  const matches = (key: string) =>
+    !q ||
+    key.toLowerCase().includes(q) ||
+    (COPY.en.w[key]?.toLowerCase().includes(q) ?? false) ||
+    (t.w[key]?.toLowerCase().includes(q) ?? false);
+  const filteredGroups = GROUPS
+    .map((g) => ({ ...g, items: g.items.filter((it) => matches(it.key)) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <div className="min-h-screen bg-white text-black">
@@ -180,37 +193,52 @@ export default function Landing() {
       <section id="services" className="bg-white pb-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="-mt-10 rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5 md:p-8">
-            <div className="mb-5 flex items-center gap-2 rounded-full bg-[#F5F6F7] px-5 py-3.5 text-black/45">
-              🔍 <span className="text-sm">{t.mockup.search}</span>
+            <div className="mb-5 flex items-center gap-2 rounded-full bg-[#F5F6F7] px-5 py-3.5">
+              <span>🔍</span>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t.mockup.search}
+                aria-label={t.mockup.search}
+                className="w-full bg-transparent text-sm text-black outline-none placeholder:text-black/45"
+              />
+              {query && (
+                <button onClick={() => setQuery('')} aria-label="Clear" className="text-black/40 hover:text-black">✕</button>
+              )}
             </div>
             {/* Quick actions */}
             <div className="mb-6 grid grid-cols-4 gap-3">
-              {QUICK.map((q) => (
-                <button key={q.key} className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95">
-                  <span>{q.icon}</span>
-                  <span className="hidden sm:inline">{t.quick[q.key as keyof LandingCopy['quick']]}</span>
+              {QUICK.map((qa) => (
+                <button key={qa.key} className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95">
+                  <span>{qa.icon}</span>
+                  <span className="hidden sm:inline">{t.quick[qa.key as keyof LandingCopy['quick']]}</span>
                 </button>
               ))}
             </div>
-            {/* Grouped category cards */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {GROUPS.map((g) => (
-                <div key={g.titleKey} className="rounded-2xl border border-black/5 bg-[#F5F6F7] p-5">
-                  <h3 className="mb-4 text-lg font-extrabold tracking-tight">{t.groups[g.titleKey as keyof LandingCopy['groups']]}</h3>
-                  <div className="flex gap-4">
-                    <div className="grid w-20 shrink-0 place-items-center rounded-2xl text-4xl" style={{ background: g.tile }}>{g.hero}</div>
-                    <div className="grid flex-1 grid-cols-3 gap-y-4">
-                      {g.items.map((it) => (
-                        <button key={it.key} className="group flex flex-col items-center gap-1.5">
-                          <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
-                          <span className="text-xs font-semibold text-black/70">{t.w[it.key]}</span>
-                        </button>
-                      ))}
+            {/* Grouped category cards (filtered by search) */}
+            {filteredGroups.length === 0 ? (
+              <div className="rounded-2xl border border-black/5 bg-[#F5F6F7] p-10 text-center text-black/50">{t.noResults}</div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredGroups.map((g) => (
+                  <div key={g.titleKey} className="rounded-2xl border border-black/5 bg-[#F5F6F7] p-5">
+                    <h3 className="mb-4 text-lg font-extrabold tracking-tight">{t.groups[g.titleKey as keyof LandingCopy['groups']]}</h3>
+                    <div className="flex gap-4">
+                      <div className="grid w-20 shrink-0 place-items-center rounded-2xl text-4xl" style={{ background: g.tile }}>{g.hero}</div>
+                      <div className="grid flex-1 grid-cols-3 gap-y-4">
+                        {g.items.map((it) => (
+                          <button key={it.key} className="group flex flex-col items-center gap-1.5">
+                            <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
+                            <span className="text-xs font-semibold text-black/70">{t.w[it.key]}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
