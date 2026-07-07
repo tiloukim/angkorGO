@@ -48,9 +48,14 @@ export default function HomeScreen() {
         {/* Green header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
-            <View>
-              <Text style={styles.hi}>Hi there 👋</Text>
-              <Text style={styles.loc}>📍 Phnom Penh ▾</Text>
+            <View style={styles.greetRow}>
+              <View style={styles.mascot}>
+                <Text style={styles.mascotEmoji}>🐘</Text>
+              </View>
+              <View>
+                <Text style={styles.hi}>Hi there 👋</Text>
+                <Text style={styles.loc}>📍 Phnom Penh ▾</Text>
+              </View>
             </View>
             <View style={styles.headerActions}>
               <Pressable onPress={nextLang} hitSlop={10} style={styles.langChip}>
@@ -80,24 +85,28 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Quick actions */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
-          <View style={styles.quickCard}>
-            <Text style={styles.quickLabel}>💳 Wallet</Text>
-            <Text style={styles.quickValue}>$0.00</Text>
-          </View>
-          <View style={styles.quickCard}>
-            <Text style={styles.quickLabel}>🗓️ Schedule</Text>
-            <Text style={styles.quickValue}>Book a ride</Text>
-          </View>
-          <View style={styles.quickCard}>
-            <Text style={styles.quickLabel}>🎁 Rewards</Text>
-            <Text style={styles.quickValue}>Join now</Text>
-          </View>
-        </ScrollView>
+        {/* Quick actions (WOWNOW-style strip) */}
+        <View style={styles.quickRow}>
+          {[
+            { icon: '💰', label: 'Top up', go: () => router.push('/(customer)/wallet') },
+            { icon: '🎟️', label: 'Coupons', go: () => router.push('/(customer)/wallet') },
+            { icon: '👥', label: 'Invite', go: () => router.push('/(customer)/account') },
+            { icon: '🎁', label: 'Rewards', go: () => router.push('/(customer)/wallet') },
+          ].map((q) => (
+            <Pressable key={q.label} style={styles.quickAction} onPress={q.go}>
+              <View style={styles.quickIcon}>
+                <Text style={styles.quickIconEmoji}>{q.icon}</Text>
+              </View>
+              <Text style={styles.quickActionLabel}>{q.label}</Text>
+            </Pressable>
+          ))}
+        </View>
 
         {/* Gold promo banner */}
         <View style={styles.promo}>
+          <View style={styles.ribbon}>
+            <Text style={styles.ribbonText}>50% OFF</Text>
+          </View>
           <View style={styles.promoTop}>
             <View style={{ flex: 1 }}>
               <Text style={styles.promoTitle}>Your first ride is on us</Text>
@@ -144,6 +153,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
   },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  greetRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  mascot: { width: 44, height: 44, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
+  mascotEmoji: { fontSize: 24 },
   hi: { color: '#fff', fontSize: 20, fontWeight: '800' },
   loc: { color: '#CFEAD9', fontSize: 13, marginTop: 3 },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -164,17 +176,21 @@ const styles = StyleSheet.create({
   iconEmoji: { fontSize: 28 },
   iconLabel: { color: theme.ink, fontSize: 12.5, fontWeight: '600', marginTop: 7 },
 
-  quickRow: { paddingHorizontal: 16, gap: 12, paddingBottom: 6 },
-  quickCard: {
-    backgroundColor: theme.card, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 16,
-    borderWidth: 1, borderColor: theme.border, minWidth: 130,
-  },
-  quickLabel: { color: theme.muted, fontSize: 12.5, fontWeight: '600' },
-  quickValue: { color: theme.ink, fontSize: 16, fontWeight: '800', marginTop: 4 },
+  quickRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 4, paddingBottom: 8 },
+  quickAction: { alignItems: 'center', gap: 6 },
+  quickIcon: { width: 52, height: 52, borderRadius: 999, backgroundColor: theme.card, borderWidth: 1, borderColor: theme.border, alignItems: 'center', justifyContent: 'center' },
+  quickIconEmoji: { fontSize: 22 },
+  quickActionLabel: { color: theme.ink, fontSize: 12, fontWeight: '600' },
 
   promo: {
     backgroundColor: theme.goldSoft, borderRadius: 20, margin: 16, padding: 18,
+    position: 'relative', overflow: 'hidden',
   },
+  ribbon: {
+    position: 'absolute', top: 14, right: -30, backgroundColor: theme.green,
+    paddingHorizontal: 36, paddingVertical: 4, transform: [{ rotate: '45deg' }],
+  },
+  ribbonText: { color: '#fff', fontSize: 12, fontWeight: '900' },
   promoTop: { flexDirection: 'row', alignItems: 'center' },
   promoTitle: { color: '#5B4200', fontSize: 20, fontWeight: '900' },
   promoSub: { color: '#8A6D1F', fontSize: 13, marginTop: 4 },

@@ -4,7 +4,16 @@
 import Link from 'next/link';
 import { Logo } from './components/Logo';
 import { AngkorWat } from './components/AngkorWat';
+import { Mascot } from './components/Mascot';
 import { PromoPoster, PROMOS } from './components/PromoPoster';
+
+// Quick actions (WOWNOW-style) under the search bar.
+const QUICK_ACTIONS = [
+  { icon: '💰', label: 'Top up' },
+  { icon: '🎟️', label: 'Coupons' },
+  { icon: '👥', label: 'Invite' },
+  { icon: '🎁', label: 'Rewards' },
+];
 
 // Super-app services (colorful pastel tiles, like Grab's icon grid).
 const SERVICES = [
@@ -95,8 +104,8 @@ export default function Landing() {
         <AngkorWat className="pointer-events-none absolute -bottom-4 left-0 w-[600px] max-w-none text-white/[0.06]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-6 pb-20 pt-10 md:grid-cols-2 md:pt-16">
           <div>
-            <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold text-[#CFEAD9]">
-              🇰🇭 Cambodia&apos;s everyday super-app
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold text-[#CFEAD9]">
+              <Mascot size={22} /> Meet Tuki · Cambodia&apos;s super-app
             </span>
             <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
               One app.<br />Every way to go.
@@ -122,8 +131,17 @@ export default function Landing() {
       <section id="services" className="bg-white pb-20">
         <div className="mx-auto max-w-6xl px-6">
           <div className="-mt-10 rounded-3xl bg-white p-6 shadow-xl ring-1 ring-black/5 md:p-8">
-            <div className="mb-6 flex items-center gap-2 rounded-full bg-[#F5F6F7] px-5 py-3.5 text-black/45">
+            <div className="mb-5 flex items-center gap-2 rounded-full bg-[#F5F6F7] px-5 py-3.5 text-black/45">
               🔍 <span className="text-sm">What do you need today?</span>
+            </div>
+            {/* Quick actions */}
+            <div className="mb-6 grid grid-cols-4 gap-3">
+              {QUICK_ACTIONS.map((q) => (
+                <button key={q.label} className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95">
+                  <span>{q.icon}</span>
+                  <span className="hidden sm:inline">{q.label}</span>
+                </button>
+              ))}
             </div>
             <div className="grid grid-cols-4 gap-3 sm:gap-5 md:grid-cols-8">
               {SERVICES.map((s) => (
@@ -171,6 +189,35 @@ export default function Landing() {
                 <p className="mt-2 text-sm text-black/60">{s.body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* WOWNOW-style bold launch-deal banner */}
+      <section className="bg-white pb-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="relative overflow-hidden rounded-3xl p-8 md:p-10" style={{ backgroundImage: 'linear-gradient(90deg,#FF6D00,#FFC400)' }}>
+            {/* rotated NEW ribbon */}
+            <span className="absolute right-[-38px] top-6 rotate-45 bg-grab px-12 py-1 text-xs font-black tracking-wider text-white shadow">
+              NEW
+            </span>
+            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="text-white">
+                <p className="text-sm font-bold uppercase tracking-wider text-white/90">Launch week</p>
+                <p className="mt-1 text-5xl font-black leading-none drop-shadow-sm md:text-7xl">
+                  Up to 66% OFF
+                </p>
+                <p className="mt-3 max-w-md text-white/90">
+                  Rides, food &amp; deliveries across Phnom Penh — plus a free first ride with Tuki.
+                </p>
+                <span className="mt-6 inline-block cursor-pointer rounded-xl bg-white px-6 py-3 text-base font-bold text-[#FF6D00] hover:bg-white/90">
+                  Grab the deals
+                </span>
+              </div>
+              <div className="shrink-0 rounded-full bg-white/15 p-3">
+                <Mascot size={128} />
+              </div>
+            </div>
           </div>
         </div>
       </section>

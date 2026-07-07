@@ -15,8 +15,8 @@ function RootNavigator() {
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!session) {
-      // Not signed in → force to login.
-      if (!inAuthGroup) router.replace('/(auth)/login');
+      // Not signed in → start at the welcome/language splash.
+      if (!inAuthGroup) router.replace('/(auth)/welcome');
       return;
     }
 
