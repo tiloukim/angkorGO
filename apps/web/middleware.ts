@@ -10,6 +10,14 @@ export async function middleware(request: NextRequest) {
   const STATIC_PUBLIC = ['/', '/privacy', '/terms', '/promos'];
   if (STATIC_PUBLIC.includes(request.nextUrl.pathname)) return NextResponse.next();
 
+  // Customer shop routes: browsing is public; login is enforced client-side at
+  // checkout. These are NOT admin-gated (unlike /dashboard etc.).
+  const CUSTOMER_PREFIXES = ['/food', '/rentals', '/stays', '/orders', '/bookings', '/account'];
+  const path = request.nextUrl.pathname;
+  if (CUSTOMER_PREFIXES.some((p) => path === p || path.startsWith(p + '/'))) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -28,7 +36,6 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  const path = request.nextUrl.pathname;
   // /login and /auth/* are the only non-static public routes; everything else is admin.
   const isLogin = path === '/login' || path.startsWith('/auth');
 

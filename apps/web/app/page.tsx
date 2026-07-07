@@ -19,22 +19,24 @@ const QUICK = [
   { icon: '🎁', key: 'rewards' },
 ] as const;
 
-const GROUPS = [
+// Items with `href` open the real web page; the rest show an app-only info modal.
+type GItem = { icon: string; key: string; href?: string };
+const GROUPS: { titleKey: string; hero: string; tile: string; items: GItem[] }[] = [
   {
     titleKey: 'getAround', hero: '🛺', tile: '#E4F7EC',
     items: [
-      { icon: '🛺', key: 'ride' }, { icon: '🚗', key: 'rent' }, { icon: '✈️', key: 'airport' },
+      { icon: '🛺', key: 'ride' }, { icon: '🚗', key: 'rent', href: '/rentals' }, { icon: '✈️', key: 'airport' },
       { icon: '🔧', key: 'repair' }, { icon: '🗓️', key: 'schedule' }, { icon: '🎡', key: 'spin' },
     ],
   },
   {
     titleKey: 'orderShop', hero: '🍜', tile: '#FFEEE0',
     items: [
-      { icon: '🍜', key: 'food' }, { icon: '🏠', key: 'stay' }, { icon: '🛒', key: 'mart' },
+      { icon: '🍜', key: 'food', href: '/food' }, { icon: '🏠', key: 'stay', href: '/stays' }, { icon: '🛒', key: 'mart' },
       { icon: '🥬', key: 'grocery' }, { icon: '🎟️', key: 'coupons' }, { icon: '🎁', key: 'rewards' },
     ],
   },
-] as const;
+];
 
 const SERVICES = [
   { icon: '🛺', key: 'ride', tile: '#E4F7EC' },
@@ -232,16 +234,23 @@ export default function Landing() {
                     <div className="flex gap-4">
                       <div className="grid w-20 shrink-0 place-items-center rounded-2xl text-4xl" style={{ background: g.tile }}>{g.hero}</div>
                       <div className="grid flex-1 grid-cols-3 gap-y-4">
-                        {g.items.map((it) => (
-                          <button
-                            key={it.key}
-                            onClick={() => setSelected({ icon: it.icon, label: t.w[it.key], key: it.key })}
-                            className="group flex flex-col items-center gap-1.5"
-                          >
-                            <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
-                            <span className="text-xs font-semibold text-black/70">{t.w[it.key]}</span>
-                          </button>
-                        ))}
+                        {g.items.map((it) =>
+                          it.href ? (
+                            <Link key={it.key} href={it.href} className="group flex flex-col items-center gap-1.5">
+                              <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
+                              <span className="text-xs font-semibold text-grab-dark">{t.w[it.key]}</span>
+                            </Link>
+                          ) : (
+                            <button
+                              key={it.key}
+                              onClick={() => setSelected({ icon: it.icon, label: t.w[it.key], key: it.key })}
+                              className="group flex flex-col items-center gap-1.5"
+                            >
+                              <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
+                              <span className="text-xs font-semibold text-black/70">{t.w[it.key]}</span>
+                            </button>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
