@@ -1,12 +1,13 @@
 // Food — order status + payment.
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { useOrderPayment } from '@/hooks/usePayment';
 import { PaymentSheet } from '@/components/PaymentSheet';
+import { RatingCard } from '@/components/RatingCard';
 
 type OrderStatus = 'placed' | 'accepted' | 'ready' | 'courier_assigned' | 'picked_up' | 'delivering' | 'delivered' | 'cancelled';
 
@@ -44,9 +45,9 @@ const COPY: Record<Language, Partial<Record<OrderStatus, { title: string; sub: s
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { backHome: 'Back to home' },
-  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម' },
-  zh: { backHome: '返回首页' },
+  en: { backHome: 'Back to home', rateRestaurant: 'Rate the restaurant', rateCourier: 'Rate your courier', cancelOrder: 'Cancel order', cancelOrderQ: 'Cancel this order?', keepOrder: 'Keep order' },
+  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម', rateRestaurant: 'វាយតម្លៃភោជនីយដ្ឋាន', rateCourier: 'វាយតម្លៃអ្នកដឹកជញ្ជូន', cancelOrder: 'បោះបង់ការបញ្ជាទិញ', cancelOrderQ: 'បោះបង់ការបញ្ជាទិញនេះ?', keepOrder: 'រក្សាការបញ្ជាទិញ' },
+  zh: { backHome: '返回首页', rateRestaurant: '评价餐厅', rateCourier: '评价配送员', cancelOrder: '取消订单', cancelOrderQ: '取消此订单？', keepOrder: '保留订单' },
 };
 
 export default function OrderStatus() {
@@ -73,22 +74,59 @@ export default function OrderStatus() {
     return () => { supabase.removeChannel(channel); };
   }, [id]);
 
+  async function submitReview(target: 'restaurant' | 'courier', rating: number, comment: string): Promise<string | null> {
+    const { error } = await supabase.rpc('submit_order_review', { p_order: id, p_target: target, p_rating: rating, p_comment: comment || null });
+    return error?.message ?? null;
+  }
+
+  function confirmCancel() {
+    Alert.alert(L[lang].cancelOrderQ, '', [
+      { text: L[lang].keepOrder, style: 'cancel' },
+      { text: L[lang].cancelOrder, style: 'destructive', onPress: async () => {
+          const { error } = await supabase.rpc('cancel_order', { p_order: id, p_reason: 'customer_cancelled' });
+          if (error) Alert.alert(error.message);
+        } },
+    ]);
+  }
+
   if (loading) return <View style={styles.container}><ActivityIndicator color="#00B14F" style={{ marginTop: 80 }} /></View>;
 
   const copy = COPY[lang][status] ?? COPY.en[status]!;
   const active = !['delivered', 'cancelled'].includes(status);
   const needsPay = payment && payment.status !== 'released' && status !== 'cancelled';
+  const canCancel = ['placed', 'accepted', 'ready', 'courier_assigned'].includes(status);
+
+  // Delivered → collect ratings.
+  if (status === 'delivered' && !needsPay) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={{ padding: 24, paddingTop: 72, paddingBottom: 40 }}>
+        <Text style={styles.title}>{copy.title}</Text>
+        <Text style={styles.sub}>{copy.sub}</Text>
+        {total != null && <Text style={[styles.total, { textAlign: 'center' }]}>${total.toFixed(2)}</Text>}
+        <RatingCard title={L[lang].rateRestaurant} onSubmit={(r, c) => submitReview('restaurant', r, c)} />
+        <RatingCard title={L[lang].rateCourier} onSubmit={(r, c) => submitReview('courier', r, c)} />
+        <Pressable style={[styles.primary, { marginTop: 16 }]} onPress={() => router.replace('/(customer)')}>
+          <Text style={styles.primaryText}>{L[lang].backHome}</Text>
+        </Pressable>
+      </ScrollView>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.center}>
-        {active && status !== 'delivered' && <ActivityIndicator size="large" color="#00B14F" style={{ marginBottom: 24 }} />}
+        {active && <ActivityIndicator size="large" color="#00B14F" style={{ marginBottom: 24 }} />}
         <Text style={styles.title}>{copy.title}</Text>
         <Text style={styles.sub}>{copy.sub}</Text>
         {total != null && <Text style={styles.total}>${total.toFixed(2)}</Text>}
       </View>
 
       {needsPay && <PaymentSheet payment={payment!} />}
+      {!needsPay && canCancel && (
+        <Pressable style={styles.cancel} onPress={confirmCancel}>
+          <Text style={styles.cancelText}>{L[lang].cancelOrder}</Text>
+        </Pressable>
+      )}
       {!needsPay && !active && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
           <Text style={styles.primaryText}>{L[lang].backHome}</Text>
@@ -106,4 +144,6 @@ const styles = StyleSheet.create({
   total: { color: '#00B14F', fontSize: 30, fontWeight: '800', marginTop: 16 },
   primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
+  cancel: { padding: 16, alignItems: 'center' },
+  cancelText: { color: '#E5484D', fontWeight: '600' },
 });
