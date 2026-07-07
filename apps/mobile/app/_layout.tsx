@@ -13,7 +13,10 @@ function RootNavigator() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
+    // expo-router types `segments` as a narrow tuple per known routes; index
+    // it as a plain string[] for our group/screen checks.
+    const seg = segments as string[];
+    const inAuthGroup = seg[0] === '(auth)';
 
     if (!session) {
       // Not signed in → start at the welcome/language splash.
@@ -23,7 +26,7 @@ function RootNavigator() {
 
     // Signed in but hasn't finished onboarding → role selection.
     if (profile && !profile.onboarded) {
-      if (segments[1] !== 'role') router.replace('/(auth)/role');
+      if (seg[1] !== 'role') router.replace('/(auth)/role');
       return;
     }
 

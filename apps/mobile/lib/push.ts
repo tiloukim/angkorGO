@@ -7,6 +7,10 @@ import { supabase } from './supabase';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
+    // shouldShowAlert is the legacy field name; banner/list are the SDK 52+
+    // replacements. Include all three so the handler type-checks across the
+    // installed expo-notifications typings.
+    shouldShowAlert: true,
     shouldShowBanner: true,
     shouldShowList: true,
     shouldPlaySound: true,
