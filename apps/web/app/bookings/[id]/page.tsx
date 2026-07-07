@@ -23,6 +23,12 @@ export default function BookingStatusPage() {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
 
+  async function cancel() {
+    if (!confirm('Cancel this booking?')) return;
+    const { error } = await createClient().rpc('cancel_booking', { p_booking: id, p_reason: 'guest_cancelled' });
+    if (error) alert(error.message);
+  }
+
   useEffect(() => {
     const supabase = createClient();
     const load = () =>
@@ -86,6 +92,12 @@ export default function BookingStatusPage() {
                 </div>
               )}
             </div>
+
+            {(booking.status === 'requested' || booking.status === 'confirmed') && (
+              <button onClick={cancel} className="mt-6 block text-sm font-semibold text-danger hover:underline">
+                Cancel booking
+              </button>
+            )}
 
             <Link href="/" className="mt-8 inline-block text-sm font-semibold text-grab hover:text-grab-dark">
               ← Back to home

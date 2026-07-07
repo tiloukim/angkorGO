@@ -1,6 +1,6 @@
 // Generic booking status + payment — shared by Vehicle Rental and Stay.
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { BookingStatus, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
@@ -36,9 +36,9 @@ const COPY: Record<Language, Partial<Record<BookingStatus, { title: string; sub:
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { backHome: 'Back to home' },
-  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម' },
-  zh: { backHome: '返回首页' },
+  en: { backHome: 'Back to home', cancelBooking: 'Cancel booking', cancelBookingQ: 'Cancel this booking?', keepBooking: 'Keep booking' },
+  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម', cancelBooking: 'បោះបង់ការកក់', cancelBookingQ: 'បោះបង់ការកក់នេះ?', keepBooking: 'រក្សាការកក់' },
+  zh: { backHome: '返回首页', cancelBooking: '取消预订', cancelBookingQ: '取消此预订？', keepBooking: '保留预订' },
 };
 
 export default function BookingStatus() {
@@ -69,6 +69,17 @@ export default function BookingStatus() {
 
   const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY.en.requested!;
   const needsPay = (status === 'confirmed' || status === 'in_progress') && payment && payment.status !== 'released';
+  const canCancel = status === 'requested' || status === 'confirmed';
+
+  function confirmCancel() {
+    Alert.alert(L[lang].cancelBookingQ, '', [
+      { text: L[lang].keepBooking, style: 'cancel' },
+      { text: L[lang].cancelBooking, style: 'destructive', onPress: async () => {
+          const { error } = await supabase.rpc('cancel_booking', { p_booking: id, p_reason: 'guest_cancelled' });
+          if (error) Alert.alert(error.message);
+        } },
+    ]);
+  }
 
   return (
     <View style={styles.container}>
@@ -79,6 +90,11 @@ export default function BookingStatus() {
       </View>
 
       {needsPay && <PaymentSheet payment={payment!} />}
+      {canCancel && (
+        <Pressable style={styles.cancel} onPress={confirmCancel}>
+          <Text style={styles.cancelText}>{L[lang].cancelBooking}</Text>
+        </Pressable>
+      )}
       {!needsPay && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
           <Text style={styles.primaryText}>{L[lang].backHome}</Text>
@@ -96,4 +112,6 @@ const styles = StyleSheet.create({
   total: { color: '#00B14F', fontSize: 32, fontWeight: '800', marginTop: 16 },
   primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
+  cancel: { padding: 16, alignItems: 'center' },
+  cancelText: { color: '#E5484D', fontWeight: '600' },
 });
