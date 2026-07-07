@@ -13,6 +13,8 @@ import {
 } from '@angkorgo/shared';
 import { theme, tileColors } from '../../lib/theme';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
+import { Mascot } from '@/components/Mascot';
+import { TukiTukTuk } from '@/components/TukiTukTuk';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -70,7 +72,7 @@ export default function HomeScreen() {
           <View style={styles.headerRow}>
             <View style={styles.greetRow}>
               <View style={styles.mascot}>
-                <Text style={styles.mascotEmoji}>🐘</Text>
+                <Mascot size={40} />
               </View>
               <View>
                 <Text style={styles.hi}>Hi there 👋</Text>
@@ -140,7 +142,7 @@ export default function HomeScreen() {
               <Text style={styles.promoTitle}>Your first ride is on us</Text>
               <Text style={styles.promoSub}>Welcome to AngkorGo — Cambodia&apos;s super-app</Text>
             </View>
-            <Text style={styles.promoWat}>🛕</Text>
+            <TukiTukTuk width={132} />
           </View>
           <View style={styles.subPromos}>
             {subPromos.map((p) => (

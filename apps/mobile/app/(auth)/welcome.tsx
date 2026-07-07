@@ -5,6 +5,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LANGUAGES, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
+import { TukiTukTuk } from '@/components/TukiTukTuk';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 
@@ -16,9 +17,7 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       {/* Branded hero */}
       <View style={styles.hero}>
-        <View style={styles.mascot}>
-          <Text style={styles.mascotEmoji}>🐘</Text>
-        </View>
+        <TukiTukTuk width={300} />
         <Text style={styles.brand}>AngkorGo</Text>
         <Text style={styles.tagline}>Cambodia&apos;s everyday super-app</Text>
       </View>
