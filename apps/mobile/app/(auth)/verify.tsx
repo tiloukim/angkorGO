@@ -4,9 +4,19 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useAuth } from '@/lib/auth';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { invalidCode: 'Invalid code' },
+  km: { invalidCode: 'កូដ​មិន​ត្រឹមត្រូវ' },
+  zh: { invalidCode: '验证码无效' },
+};
 
 export default function VerifyScreen() {
   const { email } = useLocalSearchParams<{ email: string }>();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const { verifyEmailOtp, sendEmailOtp } = useAuth();
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
@@ -18,7 +28,7 @@ export default function VerifyScreen() {
       await verifyEmailOtp(email, code);
       // Navigation handled by RootNavigator once the session updates.
     } catch (e: any) {
-      Alert.alert('Invalid code', e.message);
+      Alert.alert(t.invalidCode, e.message);
     } finally {
       setBusy(false);
     }

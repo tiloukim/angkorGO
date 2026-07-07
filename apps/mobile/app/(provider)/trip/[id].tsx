@@ -40,9 +40,9 @@ const STEP_LABEL: Record<Language, Partial<Record<TripStatus, string>>> = {
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { pickup: 'Pick up', dropoff: 'Drop off', fare: 'Fare', navigate: 'Navigate ↗', back: 'Back to dashboard' },
-  km: { pickup: 'ទទួល', dropoff: 'ចុះ', fare: 'តម្លៃ', navigate: 'នាំផ្លូវ ↗', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង' },
-  zh: { pickup: '接客', dropoff: '下车', fare: '车费', navigate: '导航 ↗', back: '返回仪表板' },
+  en: { pickup: 'Pick up', dropoff: 'Drop off', fare: 'Fare', navigate: 'Navigate ↗', back: 'Back to dashboard', couldNotEndTrip: 'Could not end trip', tripCompleted: 'Trip completed', fareSettled: 'Fare settled. Cashless rides are paid by the rider in-app.', updateFailed: 'Update failed' },
+  km: { pickup: 'ទទួល', dropoff: 'ចុះ', fare: 'តម្លៃ', navigate: 'នាំផ្លូវ ↗', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង', couldNotEndTrip: 'មិន​អាច​បញ្ចប់​ដំណើរ', tripCompleted: 'ដំណើរ​បាន​បញ្ចប់', fareSettled: 'ថ្លៃ​ដំណើរ​បាន​សង។ ដំណើរ​គ្មាន​សាច់ប្រាក់​ត្រូវ​បង់​ដោយ​អ្នក​ជិះ​ក្នុង​កម្មវិធី។', updateFailed: 'ធ្វើ​បច្ចុប្បន្នភាព​បរាជ័យ' },
+  zh: { pickup: '接客', dropoff: '下车', fare: '车费', navigate: '导航 ↗', back: '返回仪表板', couldNotEndTrip: '无法结束行程', tripCompleted: '行程已完成', fareSettled: '车费已结算。无现金行程由乘客在应用内支付。', updateFailed: '更新失败' },
 };
 
 export default function DriverTrip() {
@@ -82,14 +82,14 @@ export default function DriverTrip() {
     if (step.to === 'completed') {
       // Settle the fare (cash → ledger, cashless → pending payment) + complete.
       const { error } = await supabase.rpc('settle_trip', { p_trip_id: id });
-      if (error) return Alert.alert('Could not end trip', error.message);
-      Alert.alert('Trip completed', 'Fare settled. Cashless rides are paid by the rider in-app.');
+      if (error) return Alert.alert(L[lang].couldNotEndTrip, error.message);
+      Alert.alert(L[lang].tripCompleted, L[lang].fareSettled);
       return router.replace('/(provider)');
     }
     const patch: Record<string, unknown> = { status: step.to };
     if (step.to === 'in_progress') patch.started_at = new Date().toISOString();
     const { error } = await supabase.from('trips').update(patch).eq('id', id);
-    if (error) return Alert.alert('Update failed', error.message);
+    if (error) return Alert.alert(L[lang].updateFailed, error.message);
   }
 
   function navigateTo() {

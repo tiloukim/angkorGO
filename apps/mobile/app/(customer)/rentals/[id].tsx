@@ -18,16 +18,19 @@ const L: Record<Language, Record<string, string>> = {
     perDay: '/ day', seats: 'seats', dates: 'Dates', startPh: 'Start YYYY-MM-DD', endPh: 'End YYYY-MM-DD',
     days: 'days', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)', total: 'Total',
     request: 'Request to book', back: 'Back',
+    pickValidDates: 'Pick valid dates', pickValidDatesMsg: 'Use YYYY-MM-DD; end must be after start.', couldNotBook: 'Could not book',
   },
   km: {
     perDay: '/ ថ្ងៃ', seats: 'កៅអី', dates: 'កាលបរិច្ឆេទ', startPh: 'ចាប់ផ្តើម YYYY-MM-DD', endPh: 'បញ្ចប់ YYYY-MM-DD',
     days: 'ថ្ងៃ', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)', total: 'សរុប',
     request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
+    pickValidDates: 'ជ្រើស​កាលបរិច្ឆេទ​ត្រឹមត្រូវ', pickValidDatesMsg: 'ប្រើ YYYY-MM-DD; ថ្ងៃបញ្ចប់​ត្រូវ​នៅ​ក្រោយ​ថ្ងៃ​ចាប់ផ្តើម។', couldNotBook: 'មិន​អាច​កក់',
   },
   zh: {
     perDay: '/ 天', seats: '座位', dates: '日期', startPh: '开始 YYYY-MM-DD', endPh: '结束 YYYY-MM-DD',
     days: '天', cleaningFee: '清洁费', deposit: '押金（可退）', total: '总计',
     request: '请求预订', back: '返回',
+    pickValidDates: '请选择有效日期', pickValidDatesMsg: '使用 YYYY-MM-DD；结束日期须晚于开始日期。', couldNotBook: '无法预订',
   },
 };
 
@@ -51,13 +54,13 @@ export default function ListingDetail() {
 
   async function book() {
     if (!l) return;
-    if (days < 1) return Alert.alert('Pick valid dates', 'Use YYYY-MM-DD; end must be after start.');
+    if (days < 1) return Alert.alert(t.pickValidDates, t.pickValidDatesMsg);
     setBusy(true);
     const { data: bookingId, error } = await supabase.rpc('create_booking', {
       p_listing: l.id, p_start: start, p_end: end, p_guests: 1,
     });
     setBusy(false);
-    if (error || !bookingId) return Alert.alert('Could not book', error?.message ?? '');
+    if (error || !bookingId) return Alert.alert(t.couldNotBook, error?.message ?? '');
     router.replace({ pathname: '/(customer)/booking/[id]', params: { id: bookingId as string } });
   }
 

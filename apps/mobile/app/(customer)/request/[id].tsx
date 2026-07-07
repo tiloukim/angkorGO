@@ -52,9 +52,9 @@ const COPY: Record<Language, Partial<Record<RequestStatus, { title: string; sub:
 const TRACKING: RequestStatus[] = ['accepted', 'en_route', 'arrived', 'in_progress'];
 
 const L: Record<Language, Record<string, string>> = {
-  en: { cancelRequest: 'Cancel request', backHome: 'Back to home' },
-  km: { cancelRequest: 'បោះបង់សំណើ', backHome: 'ត្រឡប់ទៅទំព័រដើម' },
-  zh: { cancelRequest: '取消请求', backHome: '返回首页' },
+  en: { cancelRequest: 'Cancel request', backHome: 'Back to home', cancelRequestQ: 'Cancel request?', keepWaiting: 'Keep waiting', cancel: 'Cancel' },
+  km: { cancelRequest: 'បោះបង់សំណើ', backHome: 'ត្រឡប់ទៅទំព័រដើម', cancelRequestQ: 'បោះបង់​ការ​ស្នើ?', keepWaiting: 'រង់ចាំ​បន្ត', cancel: 'បោះបង់' },
+  zh: { cancelRequest: '取消请求', backHome: '返回首页', cancelRequestQ: '取消请求？', keepWaiting: '继续等待', cancel: '取消' },
 };
 
 export default function RequestStatusScreen() {
@@ -129,9 +129,9 @@ export default function RequestStatusScreen() {
       </View>
 
       {searching && (
-        <Pressable style={styles.cancel} onPress={() => Alert.alert('Cancel request?', '', [
-          { text: 'Keep waiting', style: 'cancel' },
-          { text: 'Cancel', style: 'destructive', onPress: cancel },
+        <Pressable style={styles.cancel} onPress={() => Alert.alert(L[lang].cancelRequestQ, '', [
+          { text: L[lang].keepWaiting, style: 'cancel' },
+          { text: L[lang].cancel, style: 'destructive', onPress: cancel },
         ])}>
           <Text style={styles.cancelText}>{L[lang].cancelRequest}</Text>
         </Pressable>

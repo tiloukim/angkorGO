@@ -4,12 +4,21 @@ import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { ServiceCategory } from '@angkorgo/shared';
+import type { ServiceCategory, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { uploadRequestImages, MAX_REQUEST_IMAGES } from '@/lib/uploads';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { requestFailed: 'Request failed', tryAgain: 'Please try again' },
+  km: { requestFailed: 'ស្នើ​បរាជ័យ', tryAgain: 'សូម​ព្យាយាម​ម្តង​ទៀត' },
+  zh: { requestFailed: '请求失败', tryAgain: '请重试' },
+};
 
 export default function PhotosScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const { category, lat, lng, address } = useLocalSearchParams<{
     category: ServiceCategory; lat: string; lng: string; address: string;
   }>();
@@ -50,7 +59,7 @@ export default function PhotosScreen() {
       // 4) Go to the live status/tracking screen.
       router.replace({ pathname: '/(customer)/request/[id]', params: { id: requestId as string } });
     } catch (e: any) {
-      Alert.alert('Request failed', e.message ?? 'Please try again');
+      Alert.alert(t.requestFailed, e.message ?? t.tryAgain);
       setBusy(false);
     }
   }

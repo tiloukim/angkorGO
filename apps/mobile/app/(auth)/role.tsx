@@ -3,9 +3,18 @@
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '@/lib/auth';
-import type { UserRole } from '@angkorgo/shared';
+import { useLocale } from '@/lib/locale';
+import type { UserRole, Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { couldNotSave: 'Could not save' },
+  km: { couldNotSave: 'មិន​អាច​រក្សា​ទុក' },
+  zh: { couldNotSave: '无法保存' },
+};
 
 export default function RoleScreen() {
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const { setRole } = useAuth();
   const [busy, setBusy] = useState<UserRole | null>(null);
 
@@ -14,7 +23,7 @@ export default function RoleScreen() {
     try {
       await setRole(role);
     } catch (e: any) {
-      Alert.alert('Could not save', e.message);
+      Alert.alert(t.couldNotSave, e.message);
       setBusy(null);
     }
   }

@@ -3,11 +3,21 @@ import { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, TextInput, FlatList, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { enterAmount: 'Enter an amount', withdrawalFailed: 'Withdrawal failed' },
+  km: { enterAmount: 'បញ្ចូល​ចំនួន​ទឹកប្រាក់', withdrawalFailed: 'ដក​ប្រាក់​បរាជ័យ' },
+  zh: { enterAmount: '请输入金额', withdrawalFailed: '提现失败' },
+};
 
 interface Withdrawal { id: string; amount: number; status: string; requested_at: string }
 
 export default function WalletScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [balance, setBalance] = useState(0);
   const [ledger, setLedger] = useState(0);
   const [amount, setAmount] = useState('');
@@ -27,11 +37,11 @@ export default function WalletScreen() {
 
   async function withdraw() {
     const value = Number(amount);
-    if (!value || value <= 0) return Alert.alert('Enter an amount');
+    if (!value || value <= 0) return Alert.alert(t.enterAmount);
     const { error } = await supabase.rpc('request_withdrawal', {
       p_amount: value, p_method: 'aba_payway', p_destination: 'default',
     });
-    if (error) return Alert.alert('Withdrawal failed', error.message);
+    if (error) return Alert.alert(t.withdrawalFailed, error.message);
     setAmount('');
     load();
   }

@@ -57,9 +57,9 @@ const TO_PICKUP: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived']
 interface Driver { driver_name: string | null; rating: number; vehicle_class: VehicleClass; plate_number: string; color: string | null }
 
 const L: Record<Language, Record<string, string>> = {
-  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver' },
-  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក' },
-  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机' },
+  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver', cancelRide: 'Cancel ride?', keepWaiting: 'Keep waiting' },
+  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក', cancelRide: 'បោះបង់​ដំណើរ?', keepWaiting: 'រង់ចាំ​បន្ត' },
+  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待' },
 };
 
 export default function RideStatus() {
@@ -150,9 +150,9 @@ export default function RideStatus() {
         <Text style={styles.sub}>{copy.sub}</Text>
       </View>
       {searching && (
-        <Pressable style={styles.cancel} onPress={() => Alert.alert('Cancel ride?', '', [
-          { text: 'Keep waiting', style: 'cancel' },
-          { text: 'Cancel', style: 'destructive', onPress: cancel },
+        <Pressable style={styles.cancel} onPress={() => Alert.alert(L[lang].cancelRide, '', [
+          { text: L[lang].keepWaiting, style: 'cancel' },
+          { text: L[lang].cancel, style: 'destructive', onPress: cancel },
         ])}>
           <Text style={styles.cancelText}>{L[lang].cancel}</Text>
         </Pressable>

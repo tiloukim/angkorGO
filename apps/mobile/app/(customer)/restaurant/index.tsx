@@ -2,11 +2,36 @@
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
+import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { getCurrentCoords, coordsToAddress } from '@/lib/location';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    failed: 'Failed',
+    enterName: 'Enter a name',
+    enterItemNamePrice: 'Enter item name and price',
+    dispatched: 'Dispatched',
+  },
+  km: {
+    failed: 'បរាជ័យ',
+    enterName: 'បញ្ចូល​ឈ្មោះ',
+    enterItemNamePrice: 'បញ្ចូល​ឈ្មោះ​និង​តម្លៃ',
+    dispatched: 'បាន​បញ្ជូន',
+  },
+  zh: {
+    failed: '失败',
+    enterName: '请输入名称',
+    enterItemNamePrice: '请输入名称和价格',
+    dispatched: '已派送',
+  },
+};
 
 export default function Restaurant() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [rest, setRest] = useState<any>(null);
   const [menu, setMenu] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -35,7 +60,7 @@ export default function Restaurant() {
   useEffect(() => { load(); }, [load]);
 
   async function createRestaurant() {
-    if (!name.trim()) return Alert.alert('Enter a name');
+    if (!name.trim()) return Alert.alert(t.enterName);
     const { data: { user } } = await supabase.auth.getUser();
     const c = await getCurrentCoords();
     const address = await coordsToAddress(c);
@@ -43,16 +68,16 @@ export default function Restaurant() {
       owner_id: user!.id, name: name.trim(), cuisine: cuisine || null, address,
       lat: c.lat, lng: c.lng, status: 'active', is_open: true,
     });
-    if (error) return Alert.alert('Failed', error.message);
+    if (error) return Alert.alert(t.failed, error.message);
     load();
   }
 
   async function addItem() {
-    if (!itemName.trim() || !Number(itemPrice)) return Alert.alert('Enter item name and price');
+    if (!itemName.trim() || !Number(itemPrice)) return Alert.alert(t.enterItemNamePrice);
     const { error } = await supabase.from('menu_items').insert({
       restaurant_id: rest.id, name: itemName.trim(), price: Number(itemPrice),
     });
-    if (error) return Alert.alert('Failed', error.message);
+    if (error) return Alert.alert(t.failed, error.message);
     setItemName(''); setItemPrice(''); load();
   }
 
@@ -63,14 +88,14 @@ export default function Restaurant() {
 
   async function accept(orderId: string) {
     const { error } = await supabase.rpc('accept_order', { p_order: orderId });
-    if (error) return Alert.alert('Failed', error.message);
+    if (error) return Alert.alert(t.failed, error.message);
     load();
   }
 
   async function ready(orderId: string) {
     const { data, error } = await supabase.rpc('dispatch_order', { p_order: orderId });
-    if (error) return Alert.alert('Failed', error.message);
-    Alert.alert('Dispatched', `Offered to ${data ?? 0} nearby couriers.`);
+    if (error) return Alert.alert(t.failed, error.message);
+    Alert.alert(t.dispatched, `Offered to ${data ?? 0} nearby couriers.`);
     load();
   }
 

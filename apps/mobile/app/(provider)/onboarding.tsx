@@ -4,10 +4,37 @@ import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { SERVICE_CATEGORIES, categoryLabel, type ServiceCategory } from '@angkorgo/shared';
+import { SERVICE_CATEGORIES, categoryLabel, type ServiceCategory, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { uploadProviderDocument } from '@/lib/uploads';
 import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    uploadFailed: 'Upload failed',
+    selectCategory: 'Select at least one service category',
+    submitted: 'Submitted',
+    submittedMsg: 'Your application is under review. You will be notified once approved.',
+    ok: 'OK',
+    couldNotSubmit: 'Could not submit',
+  },
+  km: {
+    uploadFailed: 'ការ​ផ្ទុក​ឡើង​បរាជ័យ',
+    selectCategory: 'ជ្រើស​យ៉ាង​ហោច​ណាស់​មួយ​ប្រភេទ​សេវា',
+    submitted: 'បាន​ដាក់​ស្នើ',
+    submittedMsg: 'ពាក្យ​សុំ​របស់​អ្នក​កំពុង​ត្រួតពិនិត្យ។ អ្នក​នឹង​ត្រូវ​ជូន​ដំណឹង​នៅ​ពេល​អនុម័ត។',
+    ok: 'យល់​ព្រម',
+    couldNotSubmit: 'មិន​អាច​ដាក់​ស្នើ​បាន',
+  },
+  zh: {
+    uploadFailed: '上传失败',
+    selectCategory: '请至少选择一项服务类别',
+    submitted: '已提交',
+    submittedMsg: '您的申请正在审核中，通过后将通知您。',
+    ok: '确定',
+    couldNotSubmit: '无法提交',
+  },
+};
 
 const DOCS = [
   { type: 'national_id', label: 'National ID' },
@@ -19,6 +46,7 @@ const DOCS = [
 export default function OnboardingScreen() {
   const router = useRouter();
   const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [providerId, setProviderId] = useState<string | null>(null);
   const [businessName, setBusinessName] = useState('');
   const [selected, setSelected] = useState<Set<ServiceCategory>>(new Set());
@@ -47,13 +75,13 @@ export default function OnboardingScreen() {
       await uploadProviderDocument(providerId, type as any, res.assets[0].uri);
       setUploaded((u) => ({ ...u, [type]: true }));
     } catch (e: any) {
-      Alert.alert('Upload failed', e.message);
+      Alert.alert(t.uploadFailed, e.message);
     }
   }
 
   async function submit() {
     if (!providerId) return;
-    if (selected.size === 0) return Alert.alert('Select at least one service category');
+    if (selected.size === 0) return Alert.alert(t.selectCategory);
     setSaving(true);
     try {
       await supabase.from('providers').update({ business_name: businessName }).eq('id', providerId);
@@ -62,11 +90,11 @@ export default function OnboardingScreen() {
       await supabase.from('provider_services').insert(
         [...selected].map((category) => ({ provider_id: providerId, category })),
       );
-      Alert.alert('Submitted', 'Your application is under review. You will be notified once approved.', [
-        { text: 'OK', onPress: () => router.replace('/(provider)') },
+      Alert.alert(t.submitted, t.submittedMsg, [
+        { text: t.ok, onPress: () => router.replace('/(provider)') },
       ]);
     } catch (e: any) {
-      Alert.alert('Could not submit', e.message);
+      Alert.alert(t.couldNotSubmit, e.message);
     } finally {
       setSaving(false);
     }

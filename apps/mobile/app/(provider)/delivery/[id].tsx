@@ -34,6 +34,8 @@ const L: Record<Language, Record<string, string>> = {
     deliveryFee: 'Delivery fee',
     navigate: 'Navigate ↗',
     back: 'Back to dashboard',
+    updateFailed: 'Update failed',
+    deliveredAlert: 'Delivered',
   },
   km: {
     courier_assigned: 'បានចាត់តាំងអ្នកដឹក',
@@ -45,6 +47,8 @@ const L: Record<Language, Record<string, string>> = {
     deliveryFee: 'ថ្លៃដឹកជញ្ជូន',
     navigate: 'នាំផ្លូវ ↗',
     back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង',
+    updateFailed: 'ធ្វើ​បច្ចុប្បន្នភាព​បរាជ័យ',
+    deliveredAlert: 'បាន​ដឹក​ជញ្ជូន',
   },
   zh: {
     courier_assigned: '已分配骑手',
@@ -56,6 +60,8 @@ const L: Record<Language, Record<string, string>> = {
     deliveryFee: '配送费',
     navigate: '导航 ↗',
     back: '返回仪表板',
+    updateFailed: '更新失败',
+    deliveredAlert: '已送达',
   },
 };
 
@@ -90,8 +96,8 @@ export default function Delivery() {
     const step = NEXT[status];
     if (!step) return;
     const { error } = await supabase.rpc('advance_order', { p_order: id, p_to: step.to });
-    if (error) return Alert.alert('Update failed', error.message);
-    if (step.to === 'delivered') { Alert.alert('Delivered', `Delivery fee $${Number(order?.delivery_fee ?? 0).toFixed(2)} added to your wallet.`); router.replace('/(provider)'); }
+    if (error) return Alert.alert(t.updateFailed, error.message);
+    if (step.to === 'delivered') { Alert.alert(t.deliveredAlert, `Delivery fee $${Number(order?.delivery_fee ?? 0).toFixed(2)} added to your wallet.`); router.replace('/(provider)'); }
   }
 
   function navigate() {

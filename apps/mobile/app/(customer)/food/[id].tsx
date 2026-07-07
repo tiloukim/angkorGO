@@ -10,9 +10,9 @@ import type { Language } from '@angkorgo/shared';
 interface Item { id: string; name: string; description: string | null; price: number; category: string | null }
 
 const L: Record<Language, Record<string, string>> = {
-  en: { add: 'Add', placeOrder: 'Place order', items: 'items', empty: 'No menu items yet.' },
-  km: { add: 'បន្ថែម', placeOrder: 'បញ្ជាទិញ', items: 'មុខ', empty: 'មិន​ទាន់​មាន​មុខ​ម្ហូប​នៅ​ឡើយ។' },
-  zh: { add: '添加', placeOrder: '下单', items: '件', empty: '暂无菜单项目。' },
+  en: { add: 'Add', placeOrder: 'Place order', items: 'items', empty: 'No menu items yet.', couldNotOrder: 'Could not place order' },
+  km: { add: 'បន្ថែម', placeOrder: 'បញ្ជាទិញ', items: 'មុខ', empty: 'មិន​ទាន់​មាន​មុខ​ម្ហូប​នៅ​ឡើយ។', couldNotOrder: 'មិន​អាច​បញ្ជាទិញ' },
+  zh: { add: '添加', placeOrder: '下单', items: '件', empty: '暂无菜单项目。', couldNotOrder: '无法下单' },
 };
 
 export default function RestaurantMenu() {
@@ -50,7 +50,7 @@ export default function RestaurantMenu() {
       if (error || !orderId) throw error ?? new Error('Order failed');
       router.replace({ pathname: '/(customer)/food/order/[id]', params: { id: orderId as string } });
     } catch (e: any) {
-      Alert.alert('Could not place order', e.message);
+      Alert.alert(t.couldNotOrder, e.message);
       setBusy(false);
     }
   }

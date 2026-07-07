@@ -19,18 +19,21 @@ const L: Record<Language, Record<string, string>> = {
     amenities: 'Amenities', datesGuests: 'Dates & guests', checkInPh: 'Check-in YYYY-MM-DD', checkOutPh: 'Check-out YYYY-MM-DD',
     guestsPh: 'Guests', nights: 'nights', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)',
     total: 'Total', request: 'Request to book', back: 'Back',
+    pickValidDates: 'Pick valid dates', pickValidDatesMsg: 'Use YYYY-MM-DD; check-out after check-in.', couldNotBook: 'Could not book',
   },
   km: {
     perNight: '/ យប់', beds: 'គ្រែ', baths: 'បន្ទប់ទឹក', upTo: 'រហូតដល់', guestsWord: 'ភ្ញៀវ',
     amenities: 'សម្ភារៈ', datesGuests: 'កាលបរិច្ឆេទ និងភ្ញៀវ', checkInPh: 'ចូលស្នាក់ YYYY-MM-DD', checkOutPh: 'ចាកចេញ YYYY-MM-DD',
     guestsPh: 'ភ្ញៀវ', nights: 'យប់', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)',
     total: 'សរុប', request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
+    pickValidDates: 'ជ្រើស​កាលបរិច្ឆេទ​ត្រឹមត្រូវ', pickValidDatesMsg: 'ប្រើ YYYY-MM-DD; ចាកចេញ​ត្រូវ​នៅ​ក្រោយ​ចូលស្នាក់។', couldNotBook: 'មិន​អាច​កក់',
   },
   zh: {
     perNight: '/ 晚', beds: '床', baths: '浴室', upTo: '最多', guestsWord: '位客人',
     amenities: '设施', datesGuests: '日期和客人', checkInPh: '入住 YYYY-MM-DD', checkOutPh: '退房 YYYY-MM-DD',
     guestsPh: '客人', nights: '晚', cleaningFee: '清洁费', deposit: '押金（可退）',
     total: '总计', request: '请求预订', back: '返回',
+    pickValidDates: '请选择有效日期', pickValidDatesMsg: '使用 YYYY-MM-DD；退房须晚于入住。', couldNotBook: '无法预订',
   },
 };
 
@@ -55,13 +58,13 @@ export default function StayDetail() {
 
   async function book() {
     if (!l) return;
-    if (nights < 1) return Alert.alert('Pick valid dates', 'Use YYYY-MM-DD; check-out after check-in.');
+    if (nights < 1) return Alert.alert(t.pickValidDates, t.pickValidDatesMsg);
     setBusy(true);
     const { data: bookingId, error } = await supabase.rpc('create_booking', {
       p_listing: l.id, p_start: checkIn, p_end: checkOut, p_guests: Number(guests) || 1,
     });
     setBusy(false);
-    if (error || !bookingId) return Alert.alert('Could not book', error?.message ?? '');
+    if (error || !bookingId) return Alert.alert(t.couldNotBook, error?.message ?? '');
     router.replace({ pathname: '/(customer)/booking/[id]', params: { id: bookingId as string } });
   }
 

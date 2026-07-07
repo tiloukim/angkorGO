@@ -4,10 +4,31 @@ import { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import { VEHICLE_CLASSES, VEHICLE_LABELS, type VehicleClass } from '@angkorgo/shared';
+import { VEHICLE_CLASSES, VEHICLE_LABELS, type VehicleClass, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { uploadVehiclePhoto } from '@/lib/uploads';
 import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    enterPlate: 'Enter the plate number',
+    vehicleAdded: 'Vehicle added',
+    vehicleAddedMsg: 'It will receive rides once an admin verifies it.',
+    couldNotAdd: 'Could not add',
+  },
+  km: {
+    enterPlate: 'បញ្ចូល​លេខ​ស្លាក',
+    vehicleAdded: 'បាន​បន្ថែម​យានយន្ត',
+    vehicleAddedMsg: 'វា​នឹង​ទទួល​ការ​ជិះ​នៅ​ពេល​អ្នក​គ្រប់គ្រង​ផ្ទៀងផ្ទាត់​វា។',
+    couldNotAdd: 'មិន​អាច​បន្ថែម​បាន',
+  },
+  zh: {
+    enterPlate: '请输入车牌号',
+    vehicleAdded: '已添加车辆',
+    vehicleAddedMsg: '管理员验证后即可开始接单。',
+    couldNotAdd: '无法添加',
+  },
+};
 
 interface Vehicle {
   id: string; class: VehicleClass; make_model: string | null; plate_number: string;
@@ -17,6 +38,7 @@ interface Vehicle {
 export default function VehiclesScreen() {
   const router = useRouter();
   const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [providerId, setProviderId] = useState<string | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [cls, setCls] = useState<VehicleClass>('moto');
@@ -42,7 +64,7 @@ export default function VehiclesScreen() {
 
   async function add() {
     if (!providerId) return;
-    if (!plate.trim()) return Alert.alert('Enter the plate number');
+    if (!plate.trim()) return Alert.alert(t.enterPlate);
     setBusy(true);
     try {
       let photo_url: string | null = null;
@@ -53,10 +75,10 @@ export default function VehiclesScreen() {
       });
       if (error) throw error;
       setMakeModel(''); setPlate(''); setColor(''); setPhoto(null);
-      Alert.alert('Vehicle added', 'It will receive rides once an admin verifies it.');
+      Alert.alert(t.vehicleAdded, t.vehicleAddedMsg);
       load();
     } catch (e: any) {
-      Alert.alert('Could not add', e.message);
+      Alert.alert(t.couldNotAdd, e.message);
     } finally {
       setBusy(false);
     }

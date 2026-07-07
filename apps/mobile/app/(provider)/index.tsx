@@ -13,12 +13,34 @@ import { useLocale } from '@/lib/locale';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
 import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
 import { useCourierOffers, type CourierOffer } from '@/hooks/useCourierOffers';
-import type { Provider } from '@angkorgo/shared';
+import type { Provider, Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    tooLate: 'Too late',
+    reqTaken: 'This request was taken by another provider.',
+    rideTaken: 'This ride was taken by another driver.',
+    deliveryTaken: 'This delivery was taken.',
+  },
+  km: {
+    tooLate: 'យឺត​ពេល',
+    reqTaken: 'សំណើ​នេះ​ត្រូវ​បាន​អ្នក​ផ្តល់​សេវា​ផ្សេង​យក។',
+    rideTaken: 'ដំណើរ​នេះ​ត្រូវ​បាន​អ្នក​បើកបរ​ផ្សេង​យក។',
+    deliveryTaken: 'ការ​ដឹក​ជញ្ជូន​នេះ​ត្រូវ​បាន​យក។',
+  },
+  zh: {
+    tooLate: '来晚了',
+    reqTaken: '该请求已被其他服务商接走。',
+    rideTaken: '该行程已被其他司机接走。',
+    deliveryTaken: '该配送已被接走。',
+  },
+};
 
 export default function ProviderDashboard() {
   const router = useRouter();
   const { signOut } = useAuth();
   const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [provider, setProvider] = useState<Provider | null>(null);
   const { offers, refresh } = useProviderOffers(provider?.id);
   const { offers: rideOffers, refresh: refreshRides } = useTripOffers(provider?.id);
@@ -38,7 +60,7 @@ export default function ProviderDashboard() {
 
   async function accept(o: Offer) {
     const { error } = await supabase.rpc('accept_assignment', { p_assignment_id: o.assignment_id });
-    if (error) { Alert.alert('Too late', 'This request was taken by another provider.'); refresh(); return; }
+    if (error) { Alert.alert(t.tooLate, t.reqTaken); refresh(); return; }
     router.push({ pathname: '/(provider)/job/[id]', params: { id: o.request_id } });
   }
 
@@ -49,7 +71,7 @@ export default function ProviderDashboard() {
 
   async function acceptRide(o: TripOffer) {
     const { error } = await supabase.rpc('accept_trip', { p_offer_id: o.offer_id });
-    if (error) { Alert.alert('Too late', 'This ride was taken by another driver.'); refreshRides(); return; }
+    if (error) { Alert.alert(t.tooLate, t.rideTaken); refreshRides(); return; }
     router.push({ pathname: '/(provider)/trip/[id]', params: { id: o.trip_id } });
   }
 
@@ -60,7 +82,7 @@ export default function ProviderDashboard() {
 
   async function acceptFood(o: CourierOffer) {
     const { error } = await supabase.rpc('accept_order_offer', { p_offer: o.offer_id });
-    if (error) { Alert.alert('Too late', 'This delivery was taken.'); refreshFood(); return; }
+    if (error) { Alert.alert(t.tooLate, t.deliveryTaken); refreshFood(); return; }
     router.push({ pathname: '/(provider)/delivery/[id]', params: { id: o.order_id } });
   }
 

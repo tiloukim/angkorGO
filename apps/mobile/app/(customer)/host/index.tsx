@@ -2,10 +2,20 @@
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet, FlatList, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { failed: 'Failed' },
+  km: { failed: 'បរាជ័យ' },
+  zh: { failed: '失败' },
+};
 
 export default function HostDashboard() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [listings, setListings] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
 
@@ -24,7 +34,7 @@ export default function HostDashboard() {
 
   async function respond(id: string, action: 'confirm' | 'decline') {
     const { error } = await supabase.rpc(`${action}_booking`, { p_booking: id });
-    if (error) return Alert.alert('Failed', error.message);
+    if (error) return Alert.alert(t.failed, error.message);
     load();
   }
 

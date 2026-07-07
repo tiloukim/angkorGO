@@ -3,21 +3,43 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Platform, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    enterValidEmail: 'Enter a valid email',
+    couldNotSendCode: 'Could not send code',
+    signInFailed: 'Sign in failed',
+  },
+  km: {
+    enterValidEmail: 'បញ្ចូល​អ៊ីមែល​ត្រឹមត្រូវ',
+    couldNotSendCode: 'មិន​អាច​ផ្ញើ​កូដ',
+    signInFailed: 'ចូល​បរាជ័យ',
+  },
+  zh: {
+    enterValidEmail: '请输入有效邮箱',
+    couldNotSendCode: '无法发送验证码',
+    signInFailed: '登录失败',
+  },
+};
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const { sendEmailOtp, signInWithGoogle, signInWithApple } = useAuth();
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
 
   async function onEmail() {
-    if (!email.includes('@')) return Alert.alert('Enter a valid email');
+    if (!email.includes('@')) return Alert.alert(t.enterValidEmail);
     setBusy(true);
     try {
       await sendEmailOtp(email.trim());
       router.push({ pathname: '/(auth)/verify', params: { email: email.trim() } });
     } catch (e: any) {
-      Alert.alert('Could not send code', e.message);
+      Alert.alert(t.couldNotSendCode, e.message);
     } finally {
       setBusy(false);
     }
@@ -25,7 +47,7 @@ export default function LoginScreen() {
 
   async function wrap(fn: () => Promise<void>) {
     setBusy(true);
-    try { await fn(); } catch (e: any) { Alert.alert('Sign in failed', e.message); }
+    try { await fn(); } catch (e: any) { Alert.alert(t.signInFailed, e.message); }
     finally { setBusy(false); }
   }
 

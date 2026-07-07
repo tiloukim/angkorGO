@@ -3,12 +3,36 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { ListingType } from '@angkorgo/shared';
+import type { ListingType, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { uploadListingPhoto } from '@/lib/uploads';
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    addTitleRate: 'Add a title and rate',
+    listingPublished: 'Listing published',
+    availableToGuests: 'It is now available to guests.',
+    couldNotPublish: 'Could not publish',
+  },
+  km: {
+    addTitleRate: 'បញ្ចូល​ចំណងជើង​និង​តម្លៃ',
+    listingPublished: 'បាន​បង្ហោះ',
+    availableToGuests: 'ឥឡូវ​អាច​ប្រើ​បាន​សម្រាប់​ភ្ញៀវ។',
+    couldNotPublish: 'មិន​អាច​បង្ហោះ',
+  },
+  zh: {
+    addTitleRate: '请输入标题和价格',
+    listingPublished: '已发布',
+    availableToGuests: '现已向房客开放。',
+    couldNotPublish: '无法发布',
+  },
+};
 
 export default function NewListing() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const params = useLocalSearchParams<{ type?: string }>();
   const [type, setType] = useState<ListingType>(params.type === 'place' ? 'place' : 'vehicle');
   const [title, setTitle] = useState('');
@@ -36,7 +60,7 @@ export default function NewListing() {
   }
 
   async function create() {
-    if (!title.trim() || !Number(rate)) return Alert.alert('Add a title and rate');
+    if (!title.trim() || !Number(rate)) return Alert.alert(t.addTitleRate);
     setBusy(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -53,10 +77,10 @@ export default function NewListing() {
         address: address || null, photos, status: 'active', attributes,
       });
       if (error) throw error;
-      Alert.alert('Listing published', 'It is now available to guests.');
+      Alert.alert(t.listingPublished, t.availableToGuests);
       router.replace('/(customer)/host');
     } catch (e: any) {
-      Alert.alert('Could not publish', e.message);
+      Alert.alert(t.couldNotPublish, e.message);
     } finally {
       setBusy(false);
     }

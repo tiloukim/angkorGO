@@ -46,9 +46,9 @@ const PAY_STATUS: Record<Language, Record<string, string>> = {
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { customerLocation: 'Customer location', invoice: 'Invoice', amount: 'Amount (USD)', sendInvoice: 'Send invoice', back: 'Back to dashboard' },
-  km: { customerLocation: 'ទីតាំងអតិថិជន', invoice: 'វិក្កយបត្រ', amount: 'ចំនួនទឹកប្រាក់ (USD)', sendInvoice: 'ផ្ញើវិក្កយបត្រ', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង' },
-  zh: { customerLocation: '客户位置', invoice: '发票', amount: '金额 (USD)', sendInvoice: '发送发票', back: '返回仪表板' },
+  en: { customerLocation: 'Customer location', invoice: 'Invoice', amount: 'Amount (USD)', sendInvoice: 'Send invoice', back: 'Back to dashboard', updateFailed: 'Update failed', enterAmount: 'Enter an amount', invoiceFailed: 'Invoice failed', invoiceSent: 'Invoice sent', waitingForPayment: 'Waiting for the customer to pay.' },
+  km: { customerLocation: 'ទីតាំងអតិថិជន', invoice: 'វិក្កយបត្រ', amount: 'ចំនួនទឹកប្រាក់ (USD)', sendInvoice: 'ផ្ញើវិក្កយបត្រ', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង', updateFailed: 'ធ្វើ​បច្ចុប្បន្នភាព​បរាជ័យ', enterAmount: 'បញ្ចូល​ចំនួន​ទឹកប្រាក់', invoiceFailed: 'វិក្កយបត្រ​បរាជ័យ', invoiceSent: 'បាន​ផ្ញើ​វិក្កយបត្រ', waitingForPayment: 'កំពុង​រង់ចាំ​អតិថិជន​បង់​ប្រាក់។' },
+  zh: { customerLocation: '客户位置', invoice: '发票', amount: '金额 (USD)', sendInvoice: '发送发票', back: '返回仪表板', updateFailed: '更新失败', enterAmount: '请输入金额', invoiceFailed: '账单失败', invoiceSent: '账单已发送', waitingForPayment: '等待客户付款。' },
 };
 
 export default function JobScreen() {
@@ -83,17 +83,17 @@ export default function JobScreen() {
     const step = NEXT[status];
     if (!step) return;
     const { error } = await supabase.from('service_requests').update({ status: step.to }).eq('id', id);
-    if (error) return Alert.alert('Update failed', error.message);
+    if (error) return Alert.alert(L[lang].updateFailed, error.message);
   }
 
   async function sendInvoice() {
     const value = Number(amount);
-    if (!value || value <= 0) return Alert.alert('Enter an amount');
+    if (!value || value <= 0) return Alert.alert(L[lang].enterAmount);
     const { error } = await supabase.rpc('create_invoice', {
       p_request_id: id, p_amount: value, p_currency: 'USD',
     });
-    if (error) return Alert.alert('Invoice failed', error.message);
-    Alert.alert('Invoice sent', 'Waiting for the customer to pay.');
+    if (error) return Alert.alert(L[lang].invoiceFailed, error.message);
+    Alert.alert(L[lang].invoiceSent, L[lang].waitingForPayment);
   }
 
   const step = NEXT[status];

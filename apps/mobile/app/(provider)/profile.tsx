@@ -4,10 +4,19 @@ import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-nativ
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { DeleteAccountButton } from '@/components/DeleteAccountButton';
-import type { Provider } from '@angkorgo/shared';
+import { useLocale } from '@/lib/locale';
+import type { Provider, Language } from '@angkorgo/shared';
+
+const L: Record<Language, Record<string, string>> = {
+  en: { saveFailed: 'Save failed', saved: 'Saved' },
+  km: { saveFailed: 'រក្សាទុក​បរាជ័យ', saved: 'បាន​រក្សាទុក' },
+  zh: { saveFailed: '保存失败', saved: '已保存' },
+};
 
 export default function ProviderProfile() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [provider, setProvider] = useState<Provider | null>(null);
   const [bio, setBio] = useState('');
 
@@ -21,7 +30,7 @@ export default function ProviderProfile() {
   async function save() {
     if (!provider) return;
     const { error } = await supabase.from('providers').update({ bio }).eq('id', provider.id);
-    Alert.alert(error ? 'Save failed' : 'Saved', error?.message ?? '');
+    Alert.alert(error ? t.saveFailed : t.saved, error?.message ?? '');
   }
 
   return (

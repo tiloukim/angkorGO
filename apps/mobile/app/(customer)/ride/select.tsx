@@ -3,15 +3,24 @@ import { useEffect, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { VEHICLE_LABELS, usdToKhr, type VehicleClass } from '@angkorgo/shared';
+import { VEHICLE_LABELS, usdToKhr, type VehicleClass, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { fetchRoute, type Route } from '@/lib/directions';
 
 type Fare = { class: VehicleClass; fare: number; currency: string };
 const METHODS = [{ key: 'cash', label: 'Cash' }, { key: 'khqr', label: 'KHQR' }] as const;
 
+const L: Record<Language, Record<string, string>> = {
+  en: { couldNotRequestRide: 'Could not request ride' },
+  km: { couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ' },
+  zh: { couldNotRequestRide: '无法叫车' },
+};
+
 export default function RideSelect() {
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const p = useLocalSearchParams<Record<string, string>>();
   const pickup = { lat: Number(p.plat), lng: Number(p.plng) };
   const dropoff = { lat: Number(p.dlat), lng: Number(p.dlng) };
@@ -57,7 +66,7 @@ export default function RideSelect() {
       p_est_distance_km: distance, p_est_duration_min: duration, p_est_fare: selected.fare,
       p_surge: surge, p_payment_method: method, p_polyline: route?.polyline ?? null,
     });
-    if (error || !tripId) { setBusy(false); return Alert.alert('Could not request ride', error?.message ?? ''); }
+    if (error || !tripId) { setBusy(false); return Alert.alert(t.couldNotRequestRide, error?.message ?? ''); }
     // Fan out offers to nearby drivers.
     await supabase.rpc('dispatch_trip', { p_trip_id: tripId });
     router.replace({ pathname: '/(customer)/ride/[id]', params: { id: tripId as string } });
