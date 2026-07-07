@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Logo } from './components/Logo';
 import { AngkorWat } from './components/AngkorWat';
 import { Mascot } from './components/Mascot';
+import { TukiTukTuk } from './components/TukiTukTuk';
 import { PromoPoster, PROMOS } from './components/PromoPoster';
 
 // Quick actions (WOWNOW-style) under the search bar.
@@ -240,8 +241,8 @@ export default function Landing() {
                   Grab the deals
                 </span>
               </div>
-              <div className="shrink-0 rounded-full bg-white/15 p-3">
-                <Mascot size={128} />
+              <div className="shrink-0 drop-shadow-lg">
+                <TukiTukTuk size={240} />
               </div>
             </div>
           </div>
