@@ -4,12 +4,22 @@ import { View, Text, Image, Pressable, StyleSheet, ScrollView, Alert, ActivityIn
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { getCurrentCoords, coordsToAddress } from '@/lib/location';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 
 interface Item { id: string; name: string; description: string | null; price: number; category: string | null }
+
+const L: Record<Language, Record<string, string>> = {
+  en: { add: 'Add', placeOrder: 'Place order', items: 'items', empty: 'No menu items yet.' },
+  km: { add: 'បន្ថែម', placeOrder: 'បញ្ជាទិញ', items: 'មុខ', empty: 'មិន​ទាន់​មាន​មុខ​ម្ហូប​នៅ​ឡើយ។' },
+  zh: { add: '添加', placeOrder: '下单', items: '件', empty: '暂无菜单项目。' },
+};
 
 export default function RestaurantMenu() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [name, setName] = useState('');
   const [items, setItems] = useState<Item[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
@@ -63,17 +73,17 @@ export default function RestaurantMenu() {
                 <Pressable style={styles.qtyBtn} onPress={() => add(it.id)}><Text style={styles.qtyText}>＋</Text></Pressable>
               </View>
             ) : (
-              <Pressable style={styles.addBtn} onPress={() => add(it.id)}><Text style={styles.addText}>Add</Text></Pressable>
+              <Pressable style={styles.addBtn} onPress={() => add(it.id)}><Text style={styles.addText}>{t.add}</Text></Pressable>
             )}
           </View>
         ))}
-        {items.length === 0 && <Text style={styles.empty}>No menu items yet.</Text>}
+        {items.length === 0 && <Text style={styles.empty}>{t.empty}</Text>}
       </ScrollView>
 
       {count > 0 && (
         <View style={styles.checkout}>
           <Pressable style={[styles.checkoutBtn, busy && { opacity: 0.6 }]} onPress={checkout} disabled={busy}>
-            {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.checkoutText}>Place order · {count} items · ${subtotal.toFixed(2)}</Text>}
+            {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.checkoutText}>{t.placeOrder} · {count} {t.items} · ${subtotal.toFixed(2)}</Text>}
           </Pressable>
         </View>
       )}

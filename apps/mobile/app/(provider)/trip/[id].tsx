@@ -2,23 +2,53 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { TripStatus } from '@angkorgo/shared';
+import type { TripStatus, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocationBroadcast } from '@/hooks/useLocationBroadcast';
+import { useLocale } from '@/lib/locale';
 
 const ACTIVE: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived', 'in_progress'];
 
 // Forward transitions the driver drives. Completion → payment/fare settle is R6.
-const NEXT: Partial<Record<TripStatus, { to: TripStatus; label: string }>> = {
-  matched:         { to: 'driver_arriving', label: 'Start driving to pickup' },
-  driver_arriving: { to: 'driver_arrived',  label: "I've arrived at pickup" },
-  driver_arrived:  { to: 'in_progress',     label: 'Start trip' },
-  in_progress:     { to: 'completed',       label: 'End trip' },
+const NEXT: Partial<Record<TripStatus, { to: TripStatus }>> = {
+  matched:         { to: 'driver_arriving' },
+  driver_arriving: { to: 'driver_arrived' },
+  driver_arrived:  { to: 'in_progress' },
+  in_progress:     { to: 'completed' },
+};
+
+// Trilingual copy for the driver's next-action button, keyed by current status.
+const STEP_LABEL: Record<Language, Partial<Record<TripStatus, string>>> = {
+  en: {
+    matched:         'Start driving to pickup',
+    driver_arriving: "I've arrived at pickup",
+    driver_arrived:  'Start trip',
+    in_progress:     'End trip',
+  },
+  km: {
+    matched:         'ចាប់ផ្តើមបើកទៅកន្លែងទទួល',
+    driver_arriving: 'ខ្ញុំបានមកដល់កន្លែងទទួល',
+    driver_arrived:  'ចាប់ផ្តើមដំណើរ',
+    in_progress:     'បញ្ចប់ដំណើរ',
+  },
+  zh: {
+    matched:         '开始前往接客点',
+    driver_arriving: '我已到达接客点',
+    driver_arrived:  '开始行程',
+    in_progress:     '结束行程',
+  },
+};
+
+const L: Record<Language, Record<string, string>> = {
+  en: { pickup: 'Pick up', dropoff: 'Drop off', fare: 'Fare', navigate: 'Navigate ↗', back: 'Back to dashboard' },
+  km: { pickup: 'ទទួល', dropoff: 'ចុះ', fare: 'តម្លៃ', navigate: 'នាំផ្លូវ ↗', back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង' },
+  zh: { pickup: '接客', dropoff: '下车', fare: '车费', navigate: '导航 ↗', back: '返回仪表板' },
 };
 
 export default function DriverTrip() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
   const [status, setStatus] = useState<TripStatus>('matched');
   const [pickup, setPickup] = useState<{ lat: number; lng: number; address: string } | null>(null);
   const [dropoff, setDropoff] = useState('');
@@ -75,21 +105,21 @@ export default function DriverTrip() {
   return (
     <View style={styles.container}>
       <Text style={styles.status}>{status.replace('_', ' ').toUpperCase()}</Text>
-      <Text style={styles.label}>{status === 'in_progress' ? 'Drop off' : 'Pick up'}</Text>
+      <Text style={styles.label}>{status === 'in_progress' ? L[lang].dropoff : L[lang].pickup}</Text>
       <Text style={styles.addr}>{status === 'in_progress' ? dropoff : pickup?.address}</Text>
-      {fare != null && <Text style={styles.fare}>Fare ${Number(fare).toFixed(2)}</Text>}
+      {fare != null && <Text style={styles.fare}>{L[lang].fare} ${Number(fare).toFixed(2)}</Text>}
 
       <View style={styles.actions}>
         <Pressable style={styles.nav} onPress={navigateTo}>
-          <Text style={styles.navText}>Navigate ↗</Text>
+          <Text style={styles.navText}>{L[lang].navigate}</Text>
         </Pressable>
         {step && (
           <Pressable style={styles.primary} onPress={advance}>
-            <Text style={styles.primaryText}>{step.label}</Text>
+            <Text style={styles.primaryText}>{(STEP_LABEL[lang] ?? STEP_LABEL.en)[status] ?? STEP_LABEL.en[status]}</Text>
           </Pressable>
         )}
         <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}>
-          <Text style={styles.backText}>Back to dashboard</Text>
+          <Text style={styles.backText}>{L[lang].back}</Text>
         </Pressable>
       </View>
     </View>

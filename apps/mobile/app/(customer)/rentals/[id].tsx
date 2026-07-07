@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 
 interface Listing {
   id: string; title: string; description: string | null; price_per_unit: number;
@@ -11,9 +13,29 @@ interface Listing {
 
 const isDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
 
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    perDay: '/ day', seats: 'seats', dates: 'Dates', startPh: 'Start YYYY-MM-DD', endPh: 'End YYYY-MM-DD',
+    days: 'days', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)', total: 'Total',
+    request: 'Request to book', back: 'Back',
+  },
+  km: {
+    perDay: '/ ថ្ងៃ', seats: 'កៅអី', dates: 'កាលបរិច្ឆេទ', startPh: 'ចាប់ផ្តើម YYYY-MM-DD', endPh: 'បញ្ចប់ YYYY-MM-DD',
+    days: 'ថ្ងៃ', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)', total: 'សរុប',
+    request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
+  },
+  zh: {
+    perDay: '/ 天', seats: '座位', dates: '日期', startPh: '开始 YYYY-MM-DD', endPh: '结束 YYYY-MM-DD',
+    days: '天', cleaningFee: '清洁费', deposit: '押金（可退）', total: '总计',
+    request: '请求预订', back: '返回',
+  },
+};
+
 export default function ListingDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [l, setL] = useState<Listing | null>(null);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -46,30 +68,30 @@ export default function ListingDetail() {
       {l.photos?.[0] && <Image source={{ uri: l.photos[0] }} style={styles.photo} />}
       <Text style={styles.title}>{l.title}</Text>
       {l.address ? <Text style={styles.addr}>{l.address}</Text> : null}
-      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} / day</Text>
+      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} {t.perDay}</Text>
       {l.description ? <Text style={styles.desc}>{l.description}</Text> : null}
-      {l.attributes?.seats ? <Text style={styles.attr}>{l.attributes.seats} seats · {l.attributes.transmission ?? ''} · {l.attributes.year ?? ''}</Text> : null}
+      {l.attributes?.seats ? <Text style={styles.attr}>{l.attributes.seats} {t.seats} · {l.attributes.transmission ?? ''} · {l.attributes.year ?? ''}</Text> : null}
 
-      <Text style={styles.label}>Dates</Text>
+      <Text style={styles.label}>{t.dates}</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder="Start YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={start} onChangeText={setStart} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="End YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={end} onChangeText={setEnd} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder={t.startPh} placeholderTextColor="#9AA0A6" value={start} onChangeText={setStart} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder={t.endPh} placeholderTextColor="#9AA0A6" value={end} onChangeText={setEnd} autoCapitalize="none" />
       </View>
 
       {days > 0 && (
         <View style={styles.summary}>
-          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${days} days`} value={`$${subtotal.toFixed(2)}`} />
-          {Number(l.cleaning_fee) > 0 && <Row label="Cleaning fee" value={`$${Number(l.cleaning_fee).toFixed(2)}`} />}
-          {Number(l.deposit) > 0 && <Row label="Deposit (refundable)" value={`$${Number(l.deposit).toFixed(2)}`} />}
-          <Row label="Total" value={`$${total.toFixed(2)}`} bold />
+          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${days} ${t.days}`} value={`$${subtotal.toFixed(2)}`} />
+          {Number(l.cleaning_fee) > 0 && <Row label={t.cleaningFee} value={`$${Number(l.cleaning_fee).toFixed(2)}`} />}
+          {Number(l.deposit) > 0 && <Row label={t.deposit} value={`$${Number(l.deposit).toFixed(2)}`} />}
+          <Row label={t.total} value={`$${total.toFixed(2)}`} bold />
         </View>
       )}
 
       <Pressable style={[styles.primary, busy && { opacity: 0.6 }]} onPress={book} disabled={busy}>
-        <Text style={styles.primaryText}>Request to book</Text>
+        <Text style={styles.primaryText}>{t.request}</Text>
       </Pressable>
       <Pressable style={styles.back} onPress={() => router.back()}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </ScrollView>
   );

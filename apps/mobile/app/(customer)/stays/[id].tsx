@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
+import type { Language } from '@angkorgo/shared';
 
 interface Listing {
   id: string; title: string; description: string | null; price_per_unit: number;
@@ -11,9 +13,32 @@ interface Listing {
 
 const isDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
 
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    perNight: '/ night', beds: 'beds', baths: 'baths', upTo: 'up to', guestsWord: 'guests',
+    amenities: 'Amenities', datesGuests: 'Dates & guests', checkInPh: 'Check-in YYYY-MM-DD', checkOutPh: 'Check-out YYYY-MM-DD',
+    guestsPh: 'Guests', nights: 'nights', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)',
+    total: 'Total', request: 'Request to book', back: 'Back',
+  },
+  km: {
+    perNight: '/ យប់', beds: 'គ្រែ', baths: 'បន្ទប់ទឹក', upTo: 'រហូតដល់', guestsWord: 'ភ្ញៀវ',
+    amenities: 'សម្ភារៈ', datesGuests: 'កាលបរិច្ឆេទ និងភ្ញៀវ', checkInPh: 'ចូលស្នាក់ YYYY-MM-DD', checkOutPh: 'ចាកចេញ YYYY-MM-DD',
+    guestsPh: 'ភ្ញៀវ', nights: 'យប់', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)',
+    total: 'សរុប', request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
+  },
+  zh: {
+    perNight: '/ 晚', beds: '床', baths: '浴室', upTo: '最多', guestsWord: '位客人',
+    amenities: '设施', datesGuests: '日期和客人', checkInPh: '入住 YYYY-MM-DD', checkOutPh: '退房 YYYY-MM-DD',
+    guestsPh: '客人', nights: '晚', cleaningFee: '清洁费', deposit: '押金（可退）',
+    total: '总计', request: '请求预订', back: '返回',
+  },
+};
+
 export default function StayDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [l, setL] = useState<Listing | null>(null);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -47,34 +72,34 @@ export default function StayDetail() {
       {l.photos?.[0] && <Image source={{ uri: l.photos[0] }} style={styles.photo} />}
       <Text style={styles.title}>{l.title}</Text>
       {l.address ? <Text style={styles.addr}>{l.address}</Text> : null}
-      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} / night</Text>
-      {l.attributes?.beds ? <Text style={styles.attr}>{l.attributes.beds} beds · {l.attributes.baths ?? '?'} baths · up to {l.attributes.max_guests ?? '?'} guests</Text> : null}
+      <Text style={styles.price}>${Number(l.price_per_unit).toFixed(2)} {t.perNight}</Text>
+      {l.attributes?.beds ? <Text style={styles.attr}>{l.attributes.beds} {t.beds} · {l.attributes.baths ?? '?'} {t.baths} · {t.upTo} {l.attributes.max_guests ?? '?'} {t.guestsWord}</Text> : null}
       {l.description ? <Text style={styles.desc}>{l.description}</Text> : null}
       {Array.isArray(l.attributes?.amenities) && l.attributes.amenities.length > 0 && (
-        <Text style={styles.attr}>Amenities: {l.attributes.amenities.join(', ')}</Text>
+        <Text style={styles.attr}>{t.amenities}: {l.attributes.amenities.join(', ')}</Text>
       )}
 
-      <Text style={styles.label}>Dates & guests</Text>
+      <Text style={styles.label}>{t.datesGuests}</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder="Check-in YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={checkIn} onChangeText={setCheckIn} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="Check-out YYYY-MM-DD" placeholderTextColor="#9AA0A6" value={checkOut} onChangeText={setCheckOut} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder={t.checkInPh} placeholderTextColor="#9AA0A6" value={checkIn} onChangeText={setCheckIn} autoCapitalize="none" />
+        <TextInput style={styles.input} placeholder={t.checkOutPh} placeholderTextColor="#9AA0A6" value={checkOut} onChangeText={setCheckOut} autoCapitalize="none" />
       </View>
-      <TextInput style={[styles.input, { marginHorizontal: 24, marginTop: 10 }]} placeholder="Guests" placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
+      <TextInput style={[styles.input, { marginHorizontal: 24, marginTop: 10 }]} placeholder={t.guestsPh} placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
 
       {nights > 0 && (
         <View style={styles.summary}>
-          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${nights} nights`} value={`$${subtotal.toFixed(2)}`} />
-          {Number(l.cleaning_fee) > 0 && <Row label="Cleaning fee" value={`$${Number(l.cleaning_fee).toFixed(2)}`} />}
-          {Number(l.deposit) > 0 && <Row label="Deposit (refundable)" value={`$${Number(l.deposit).toFixed(2)}`} />}
-          <Row label="Total" value={`$${total.toFixed(2)}`} bold />
+          <Row label={`$${Number(l.price_per_unit).toFixed(2)} × ${nights} ${t.nights}`} value={`$${subtotal.toFixed(2)}`} />
+          {Number(l.cleaning_fee) > 0 && <Row label={t.cleaningFee} value={`$${Number(l.cleaning_fee).toFixed(2)}`} />}
+          {Number(l.deposit) > 0 && <Row label={t.deposit} value={`$${Number(l.deposit).toFixed(2)}`} />}
+          <Row label={t.total} value={`$${total.toFixed(2)}`} bold />
         </View>
       )}
 
       <Pressable style={[styles.primary, busy && { opacity: 0.6 }]} onPress={book} disabled={busy}>
-        <Text style={styles.primaryText}>Request to book</Text>
+        <Text style={styles.primaryText}>{t.request}</Text>
       </Pressable>
       <Pressable style={styles.back} onPress={() => router.back()}>
-        <Text style={styles.backText}>Back</Text>
+        <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </ScrollView>
   );

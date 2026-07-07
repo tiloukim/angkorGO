@@ -3,35 +3,69 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { TripStatus, VehicleClass } from '@angkorgo/shared';
+import type { TripStatus, VehicleClass, Language } from '@angkorgo/shared';
 import { VEHICLE_LABELS } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { useProviderLocation } from '@/hooks/useProviderLocation';
 import { useTripPayment } from '@/hooks/usePayment';
 import { TrackingMap } from '@/components/TrackingMap';
 import { PaymentSheet } from '@/components/PaymentSheet';
 import type { Coords } from '@/lib/location';
 
-const COPY: Partial<Record<TripStatus, { title: string; sub: string }>> = {
-  requested:       { title: 'Requesting…', sub: 'Creating your trip' },
-  searching:       { title: 'Finding a driver…', sub: 'Matching you with the nearest driver' },
-  matched:         { title: 'Driver found!', sub: 'Your driver is getting ready' },
-  driver_arriving: { title: 'Driver on the way', sub: 'Meet at your pickup point' },
-  driver_arrived:  { title: 'Driver has arrived', sub: 'Your ride is waiting' },
-  in_progress:     { title: 'On the trip', sub: 'Heading to your destination' },
-  completed:       { title: 'Arrived', sub: 'Thanks for riding with AngkorGo' },
-  cancelled:       { title: 'Cancelled', sub: 'This trip was cancelled' },
-  expired:         { title: 'No driver available', sub: 'Please try again' },
-  no_drivers:      { title: 'No drivers nearby', sub: 'Please try again in a moment' },
+const COPY: Record<Language, Partial<Record<TripStatus, { title: string; sub: string }>>> = {
+  en: {
+    requested:       { title: 'Requesting…', sub: 'Creating your trip' },
+    searching:       { title: 'Finding a driver…', sub: 'Matching you with the nearest driver' },
+    matched:         { title: 'Driver found!', sub: 'Your driver is getting ready' },
+    driver_arriving: { title: 'Driver on the way', sub: 'Meet at your pickup point' },
+    driver_arrived:  { title: 'Driver has arrived', sub: 'Your ride is waiting' },
+    in_progress:     { title: 'On the trip', sub: 'Heading to your destination' },
+    completed:       { title: 'Arrived', sub: 'Thanks for riding with AngkorGo' },
+    cancelled:       { title: 'Cancelled', sub: 'This trip was cancelled' },
+    expired:         { title: 'No driver available', sub: 'Please try again' },
+    no_drivers:      { title: 'No drivers nearby', sub: 'Please try again in a moment' },
+  },
+  km: {
+    requested:       { title: 'កំពុងស្នើសុំ…', sub: 'កំពុងបង្កើតដំណើររបស់អ្នក' },
+    searching:       { title: 'កំពុងស្វែងរកអ្នកបើកបរ…', sub: 'កំពុងផ្គូផ្គងអ្នកជាមួយអ្នកបើកបរនៅជិតបំផុត' },
+    matched:         { title: 'រកឃើញអ្នកបើកបរ!', sub: 'អ្នកបើកបររបស់អ្នកកំពុងរៀបចំ' },
+    driver_arriving: { title: 'អ្នកបើកបរកំពុងមក', sub: 'ជួបគ្នានៅចំណុចទទួល' },
+    driver_arrived:  { title: 'អ្នកបើកបរបានមកដល់', sub: 'ជិះរបស់អ្នកកំពុងរង់ចាំ' },
+    in_progress:     { title: 'កំពុងធ្វើដំណើរ', sub: 'កំពុងទៅកាន់គោលដៅរបស់អ្នក' },
+    completed:       { title: 'បានមកដល់', sub: 'អរគុណដែលបានជិះជាមួយ AngkorGo' },
+    cancelled:       { title: 'បានលុបចោល', sub: 'ដំណើរនេះត្រូវបានលុបចោល' },
+    expired:         { title: 'គ្មានអ្នកបើកបរ', sub: 'សូមព្យាយាមម្តងទៀត' },
+    no_drivers:      { title: 'គ្មានអ្នកបើកបរនៅជិត', sub: 'សូមព្យាយាមម្តងទៀតបន្តិចទៀត' },
+  },
+  zh: {
+    requested:       { title: '正在请求…', sub: '正在创建您的行程' },
+    searching:       { title: '正在寻找司机…', sub: '正在为您匹配最近的司机' },
+    matched:         { title: '已找到司机！', sub: '您的司机正在准备中' },
+    driver_arriving: { title: '司机正在前往', sub: '请在上车点会合' },
+    driver_arrived:  { title: '司机已到达', sub: '您的车已在等候' },
+    in_progress:     { title: '行程进行中', sub: '正在前往您的目的地' },
+    completed:       { title: '已到达', sub: '感谢您乘坐 AngkorGo' },
+    cancelled:       { title: '已取消', sub: '此行程已被取消' },
+    expired:         { title: '暂无可用司机', sub: '请重试' },
+    no_drivers:      { title: '附近没有司机', sub: '请稍后重试' },
+  },
 };
 
 const TO_PICKUP: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived'];
 
 interface Driver { driver_name: string | null; rating: number; vehicle_class: VehicleClass; plate_number: string; color: string | null }
 
+const L: Record<Language, Record<string, string>> = {
+  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver' },
+  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក' },
+  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机' },
+};
+
 export default function RideStatus() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
   const [status, setStatus] = useState<TripStatus>('searching');
   const [driverId, setDriverId] = useState<string | null>(null);
   const [pickup, setPickup] = useState<Coords | null>(null);
@@ -78,7 +112,7 @@ export default function RideStatus() {
     router.replace('/(customer)');
   }
 
-  const copy = COPY[status] ?? COPY.searching!;
+  const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY[lang].searching ?? COPY.en.searching!;
   const searching = status === 'searching' || status === 'requested';
   const terminal = status === 'completed' || status === 'cancelled' || status === 'expired' || status === 'no_drivers';
   const target = status === 'in_progress' ? dropoff : pickup;
@@ -94,9 +128,9 @@ export default function RideStatus() {
           {driver && (
             <View style={styles.driverCard}>
               <View style={{ flex: 1 }}>
-                <Text style={styles.driverName}>{driver.driver_name ?? 'Your driver'} · ⭐ {Number(driver.rating).toFixed(1)}</Text>
+                <Text style={styles.driverName}>{driver.driver_name ?? L[lang].yourDriver} · ⭐ {Number(driver.rating).toFixed(1)}</Text>
                 <Text style={styles.driverVeh}>
-                  {VEHICLE_LABELS.en[driver.vehicle_class]} · {driver.plate_number}{driver.color ? ` · ${driver.color}` : ''}
+                  {VEHICLE_LABELS[lang][driver.vehicle_class]} · {driver.plate_number}{driver.color ? ` · ${driver.color}` : ''}
                 </Text>
               </View>
               <Text style={styles.driverFare}>${Number(fare ?? 0).toFixed(2)}</Text>
@@ -120,7 +154,7 @@ export default function RideStatus() {
           { text: 'Keep waiting', style: 'cancel' },
           { text: 'Cancel', style: 'destructive', onPress: cancel },
         ])}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText}>{L[lang].cancel}</Text>
         </Pressable>
       )}
       {status === 'completed' && payment && payment.status !== 'released' && (
@@ -129,7 +163,7 @@ export default function RideStatus() {
 
       {terminal && !(status === 'completed' && payment && payment.status !== 'released') && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
-          <Text style={styles.primaryText}>Back to home</Text>
+          <Text style={styles.primaryText}>{L[lang].backHome}</Text>
         </Pressable>
       )}
     </View>

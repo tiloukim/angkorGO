@@ -4,19 +4,66 @@ import { View, Text, StyleSheet, Pressable, Alert, Linking } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useLocationBroadcast } from '@/hooks/useLocationBroadcast';
+import { useLocale } from '@/lib/locale';
+import { type Language } from '@angkorgo/shared';
 
 type OrderStatus = 'courier_assigned' | 'picked_up' | 'delivering' | 'delivered';
 const ACTIVE = ['courier_assigned', 'picked_up', 'delivering'];
 
-const NEXT: Partial<Record<OrderStatus, { to: OrderStatus; label: string }>> = {
-  courier_assigned: { to: 'picked_up',  label: 'Picked up food' },
-  picked_up:        { to: 'delivering', label: 'Start delivery' },
-  delivering:       { to: 'delivered',  label: 'Delivered' },
+const NEXT: Partial<Record<OrderStatus, { to: OrderStatus }>> = {
+  courier_assigned: { to: 'picked_up' },
+  picked_up:        { to: 'delivering' },
+  delivering:       { to: 'delivered' },
+};
+
+// Next-step button label per status, trilingual.
+const NEXT_LABEL: Record<Language, Partial<Record<OrderStatus, string>>> = {
+  en: { courier_assigned: 'Picked up food', picked_up: 'Start delivery',  delivering: 'Delivered' },
+  km: { courier_assigned: 'យកម្ហូបរួច',      picked_up: 'ចាប់ផ្តើមដឹកជញ្ជូន', delivering: 'បានដឹកជញ្ជូន' },
+  zh: { courier_assigned: '已取餐',          picked_up: '开始配送',        delivering: '已送达' },
+};
+
+const L: Record<Language, Record<string, string>> = {
+  en: {
+    courier_assigned: 'COURIER ASSIGNED',
+    picked_up: 'PICKED UP',
+    delivering: 'DELIVERING',
+    delivered: 'DELIVERED',
+    pickFrom: 'Pick up from',
+    deliverTo: 'Deliver to',
+    deliveryFee: 'Delivery fee',
+    navigate: 'Navigate ↗',
+    back: 'Back to dashboard',
+  },
+  km: {
+    courier_assigned: 'បានចាត់តាំងអ្នកដឹក',
+    picked_up: 'បានយករួច',
+    delivering: 'កំពុងដឹកជញ្ជូន',
+    delivered: 'បានដឹកជញ្ជូន',
+    pickFrom: 'យកពី',
+    deliverTo: 'ដឹកទៅ',
+    deliveryFee: 'ថ្លៃដឹកជញ្ជូន',
+    navigate: 'នាំផ្លូវ ↗',
+    back: 'ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង',
+  },
+  zh: {
+    courier_assigned: '已分配骑手',
+    picked_up: '已取餐',
+    delivering: '配送中',
+    delivered: '已送达',
+    pickFrom: '取餐地点',
+    deliverTo: '送达地点',
+    deliveryFee: '配送费',
+    navigate: '导航 ↗',
+    back: '返回仪表板',
+  },
 };
 
 export default function Delivery() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
+  const t = L[lang] ?? L.en;
   const [status, setStatus] = useState<OrderStatus>('courier_assigned');
   const [order, setOrder] = useState<any>(null);
 
@@ -57,18 +104,19 @@ export default function Delivery() {
 
   const step = NEXT[status];
   const toPickup = status === 'courier_assigned';
+  const stepLabel = (NEXT_LABEL[lang] ?? NEXT_LABEL.en)[status];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.status}>{status.replace('_', ' ').toUpperCase()}</Text>
-      <Text style={styles.label}>{toPickup ? 'Pick up from' : 'Deliver to'}</Text>
+      <Text style={styles.status}>{t[status] ?? status.replace('_', ' ').toUpperCase()}</Text>
+      <Text style={styles.label}>{toPickup ? t.pickFrom : t.deliverTo}</Text>
       <Text style={styles.addr}>{toPickup ? order?.restaurants?.name : order?.delivery_address}</Text>
-      {order?.delivery_fee != null && <Text style={styles.fee}>Delivery fee ${Number(order.delivery_fee).toFixed(2)}</Text>}
+      {order?.delivery_fee != null && <Text style={styles.fee}>{t.deliveryFee} ${Number(order.delivery_fee).toFixed(2)}</Text>}
 
       <View style={styles.actions}>
-        <Pressable style={styles.nav} onPress={navigate}><Text style={styles.navText}>Navigate ↗</Text></Pressable>
-        {step && <Pressable style={styles.primary} onPress={advance}><Text style={styles.primaryText}>{step.label}</Text></Pressable>}
-        <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}><Text style={styles.backText}>Back to dashboard</Text></Pressable>
+        <Pressable style={styles.nav} onPress={navigate}><Text style={styles.navText}>{t.navigate}</Text></Pressable>
+        {step && <Pressable style={styles.primary} onPress={advance}><Text style={styles.primaryText}>{stepLabel}</Text></Pressable>}
+        <Pressable style={styles.back} onPress={() => router.replace('/(provider)')}><Text style={styles.backText}>{t.back}</Text></Pressable>
       </View>
     </View>
   );

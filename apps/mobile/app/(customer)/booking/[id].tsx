@@ -2,23 +2,49 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { BookingStatus } from '@angkorgo/shared';
+import type { BookingStatus, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { useBookingPayment } from '@/hooks/usePayment';
 import { PaymentSheet } from '@/components/PaymentSheet';
 
-const COPY: Partial<Record<BookingStatus, { title: string; sub: string }>> = {
-  requested:   { title: 'Request sent', sub: 'Waiting for the host to confirm' },
-  confirmed:   { title: 'Confirmed!', sub: 'Complete payment to lock in your booking' },
-  declined:    { title: 'Declined', sub: 'The host declined this request' },
-  cancelled:   { title: 'Cancelled', sub: 'This booking was cancelled' },
-  in_progress: { title: 'Booking active', sub: 'Enjoy your stay' },
-  completed:   { title: 'Completed', sub: 'Thanks for booking with AngkorGo' },
+const COPY: Record<Language, Partial<Record<BookingStatus, { title: string; sub: string }>>> = {
+  en: {
+    requested:   { title: 'Request sent', sub: 'Waiting for the host to confirm' },
+    confirmed:   { title: 'Confirmed!', sub: 'Complete payment to lock in your booking' },
+    declined:    { title: 'Declined', sub: 'The host declined this request' },
+    cancelled:   { title: 'Cancelled', sub: 'This booking was cancelled' },
+    in_progress: { title: 'Booking active', sub: 'Enjoy your stay' },
+    completed:   { title: 'Completed', sub: 'Thanks for booking with AngkorGo' },
+  },
+  km: {
+    requested:   { title: 'បានផ្ញើសំណើ', sub: 'កំពុងរង់ចាំម្ចាស់ផ្ទះបញ្ជាក់' },
+    confirmed:   { title: 'បានបញ្ជាក់!', sub: 'បំពេញការទូទាត់ដើម្បីចាក់សោការកក់របស់អ្នក' },
+    declined:    { title: 'បានបដិសេធ', sub: 'ម្ចាស់ផ្ទះបានបដិសេធសំណើនេះ' },
+    cancelled:   { title: 'បានលុបចោល', sub: 'ការកក់នេះត្រូវបានលុបចោល' },
+    in_progress: { title: 'ការកក់កំពុងដំណើរការ', sub: 'សូមរីករាយនឹងការស្នាក់នៅ' },
+    completed:   { title: 'បានបញ្ចប់', sub: 'សូមអរគុណដែលបានកក់ជាមួយ AngkorGo' },
+  },
+  zh: {
+    requested:   { title: '请求已发送', sub: '等待房东确认' },
+    confirmed:   { title: '已确认！', sub: '完成付款以锁定您的预订' },
+    declined:    { title: '已拒绝', sub: '房东拒绝了此请求' },
+    cancelled:   { title: '已取消', sub: '此预订已取消' },
+    in_progress: { title: '预订进行中', sub: '祝您入住愉快' },
+    completed:   { title: '已完成', sub: '感谢您通过 AngkorGo 预订' },
+  },
+};
+
+const L: Record<Language, Record<string, string>> = {
+  en: { backHome: 'Back to home' },
+  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម' },
+  zh: { backHome: '返回首页' },
 };
 
 export default function BookingStatus() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
   const [status, setStatus] = useState<BookingStatus>('requested');
   const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +67,7 @@ export default function BookingStatus() {
 
   if (loading) return <View style={styles.container}><ActivityIndicator color="#00B14F" style={{ marginTop: 80 }} /></View>;
 
-  const copy = COPY[status] ?? COPY.requested!;
+  const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY.en.requested!;
   const needsPay = (status === 'confirmed' || status === 'in_progress') && payment && payment.status !== 'released';
 
   return (
@@ -55,7 +81,7 @@ export default function BookingStatus() {
       {needsPay && <PaymentSheet payment={payment!} />}
       {!needsPay && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
-          <Text style={styles.primaryText}>Back to home</Text>
+          <Text style={styles.primaryText}>{L[lang].backHome}</Text>
         </Pressable>
       )}
     </View>

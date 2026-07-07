@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { RequestStatus } from '@angkorgo/shared';
+import type { RequestStatus, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 import { useProviderLocation } from '@/hooks/useProviderLocation';
 import { usePayment } from '@/hooks/usePayment';
 import { TrackingMap } from '@/components/TrackingMap';
@@ -12,23 +13,54 @@ import { PaymentSheet } from '@/components/PaymentSheet';
 import { ReviewPrompt } from '@/components/ReviewPrompt';
 import type { Coords } from '@/lib/location';
 
-const COPY: Partial<Record<RequestStatus, { title: string; sub: string }>> = {
-  pending:     { title: 'Submitting…', sub: 'Creating your request' },
-  dispatching: { title: 'Finding help nearby…', sub: 'Contacting providers around you' },
-  accepted:    { title: 'A provider accepted!', sub: 'They are preparing to head your way' },
-  en_route:    { title: 'On the way', sub: 'Your provider is driving to you' },
-  arrived:     { title: 'Provider has arrived', sub: 'Meet them at your vehicle' },
-  in_progress: { title: 'Work in progress', sub: 'Your provider is helping now' },
-  completed:   { title: 'Completed', sub: 'Thanks for using AngkorGo' },
-  expired:     { title: 'No provider available', sub: 'Nobody accepted in time — please try again' },
-  cancelled:   { title: 'Cancelled', sub: 'This request was cancelled' },
+const COPY: Record<Language, Partial<Record<RequestStatus, { title: string; sub: string }>>> = {
+  en: {
+    pending:     { title: 'Submitting…', sub: 'Creating your request' },
+    dispatching: { title: 'Finding help nearby…', sub: 'Contacting providers around you' },
+    accepted:    { title: 'A provider accepted!', sub: 'They are preparing to head your way' },
+    en_route:    { title: 'On the way', sub: 'Your provider is driving to you' },
+    arrived:     { title: 'Provider has arrived', sub: 'Meet them at your vehicle' },
+    in_progress: { title: 'Work in progress', sub: 'Your provider is helping now' },
+    completed:   { title: 'Completed', sub: 'Thanks for using AngkorGo' },
+    expired:     { title: 'No provider available', sub: 'Nobody accepted in time — please try again' },
+    cancelled:   { title: 'Cancelled', sub: 'This request was cancelled' },
+  },
+  km: {
+    pending:     { title: 'កំពុងដាក់ស្នើ…', sub: 'កំពុងបង្កើតសំណើរបស់អ្នក' },
+    dispatching: { title: 'កំពុងស្វែងរកជំនួយនៅជិត…', sub: 'កំពុងទាក់ទងអ្នកផ្តល់សេវានៅជុំវិញអ្នក' },
+    accepted:    { title: 'អ្នកផ្តល់សេវាបានទទួល!', sub: 'ពួកគេកំពុងរៀបចំធ្វើដំណើរមករកអ្នក' },
+    en_route:    { title: 'កំពុងធ្វើដំណើរមក', sub: 'អ្នកផ្តល់សេវាកំពុងបើកបរមករកអ្នក' },
+    arrived:     { title: 'អ្នកផ្តល់សេវាបានមកដល់', sub: 'ជួបពួកគេនៅរថយន្តរបស់អ្នក' },
+    in_progress: { title: 'កំពុងធ្វើការ', sub: 'អ្នកផ្តល់សេវាកំពុងជួយឥឡូវនេះ' },
+    completed:   { title: 'បានបញ្ចប់', sub: 'អរគុណដែលបានប្រើ AngkorGo' },
+    expired:     { title: 'គ្មានអ្នកផ្តល់សេវា', sub: 'គ្មាននរណាទទួលទាន់ពេល — សូមព្យាយាមម្តងទៀត' },
+    cancelled:   { title: 'បានលុបចោល', sub: 'សំណើនេះត្រូវបានលុបចោល' },
+  },
+  zh: {
+    pending:     { title: '正在提交…', sub: '正在创建您的请求' },
+    dispatching: { title: '正在寻找附近的帮助…', sub: '正在联系您周围的服务人员' },
+    accepted:    { title: '有服务人员已接单！', sub: '他们正准备前往您所在位置' },
+    en_route:    { title: '正在前往', sub: '服务人员正驾车前来' },
+    arrived:     { title: '服务人员已到达', sub: '请在您的车辆旁会合' },
+    in_progress: { title: '正在处理中', sub: '服务人员正在为您提供帮助' },
+    completed:   { title: '已完成', sub: '感谢您使用 AngkorGo' },
+    expired:     { title: '暂无可用服务人员', sub: '无人及时接单 — 请重试' },
+    cancelled:   { title: '已取消', sub: '此请求已被取消' },
+  },
 };
 
 const TRACKING: RequestStatus[] = ['accepted', 'en_route', 'arrived', 'in_progress'];
 
+const L: Record<Language, Record<string, string>> = {
+  en: { cancelRequest: 'Cancel request', backHome: 'Back to home' },
+  km: { cancelRequest: 'បោះបង់សំណើ', backHome: 'ត្រឡប់ទៅទំព័រដើម' },
+  zh: { cancelRequest: '取消请求', backHome: '返回首页' },
+};
+
 export default function RequestStatusScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { lang } = useLocale();
   const [status, setStatus] = useState<RequestStatus>('dispatching');
   const [providerId, setProviderId] = useState<string | null>(null);
   const [pickup, setPickup] = useState<Coords | null>(null);
@@ -63,7 +95,7 @@ export default function RequestStatusScreen() {
     router.replace('/(customer)');
   }
 
-  const copy = COPY[status] ?? COPY.dispatching!;
+  const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY[lang].dispatching ?? COPY.en.dispatching!;
   const searching = status === 'pending' || status === 'dispatching';
   const tracking = TRACKING.includes(status) && pickup;
   const terminal = status === 'completed' || status === 'expired' || status === 'cancelled';
@@ -101,7 +133,7 @@ export default function RequestStatusScreen() {
           { text: 'Keep waiting', style: 'cancel' },
           { text: 'Cancel', style: 'destructive', onPress: cancel },
         ])}>
-          <Text style={styles.cancelText}>Cancel request</Text>
+          <Text style={styles.cancelText}>{L[lang].cancelRequest}</Text>
         </Pressable>
       )}
 
@@ -111,7 +143,7 @@ export default function RequestStatusScreen() {
 
       {terminal && status !== 'completed' && (
         <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
-          <Text style={styles.primaryText}>Back to home</Text>
+          <Text style={styles.primaryText}>{L[lang].backHome}</Text>
         </Pressable>
       )}
     </View>
