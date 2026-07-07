@@ -14,25 +14,25 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-60 shrink-0 border-r border-[#1F2A40] bg-[#0B1220] p-5">
+    <div className="flex min-h-screen bg-white">
+      <aside className="w-60 shrink-0 border-r border-black/10 bg-[#f6f6f6] p-5">
         <div className="mb-8">
-          <p className="text-lg font-extrabold text-white">AngkorGo</p>
-          <p className="text-xs text-[#8FA3BF]">Admin Console</p>
+          <p className="text-xl font-extrabold tracking-tight text-black">AngkorGo</p>
+          <p className="text-xs font-medium text-black/45">Admin Console</p>
         </div>
         <nav className="space-y-1">
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
-              className="block rounded-lg px-3 py-2 text-sm text-[#8FA3BF] hover:bg-[#151E30] hover:text-white"
+              className="block rounded-lg px-3 py-2 text-sm font-medium text-black/60 hover:bg-black/5 hover:text-black"
             >
               {n.label}
             </Link>
           ))}
         </nav>
       </aside>
-      <div className="flex-1 bg-[#0B1220]">{children}</div>
+      <div className="flex-1 bg-white">{children}</div>
     </div>
   );
 }

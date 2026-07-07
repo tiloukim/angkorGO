@@ -65,13 +65,13 @@ function LoginForm() {
   }
 
   return (
-    <main className="min-h-screen grid place-items-center bg-[#0B1220] text-white p-6">
+    <main className="min-h-screen grid place-items-center bg-white text-black p-6">
       <div className="w-full max-w-sm">
-        <h1 className="text-3xl font-extrabold text-center">AngkorGo</h1>
-        <p className="text-center text-[#8FA3BF] mt-1 mb-8">Admin Console</p>
+        <h1 className="text-4xl font-extrabold text-center tracking-tight">AngkorGo</h1>
+        <p className="text-center text-black/50 mt-1 mb-8 font-medium">Admin Console</p>
 
         {notAdmin && (
-          <p className="mb-4 rounded-lg bg-red-950 border border-red-800 p-3 text-sm text-red-300">
+          <p className="mb-4 rounded-xl bg-danger/8 border border-danger/25 p-3 text-sm font-medium text-danger">
             That account is not an administrator.
           </p>
         )}
@@ -81,9 +81,9 @@ function LoginForm() {
             <input
               type="email" required placeholder="admin@angkorgo.ai" value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl bg-[#151E30] border border-[#1F2A40] p-4 outline-none"
+              className="w-full rounded-xl bg-[#f6f6f6] border border-black/10 p-4 outline-none focus:border-black"
             />
-            <button className="w-full rounded-xl bg-[#F04438] p-4 font-bold">Send code</button>
+            <button className="w-full rounded-xl bg-black p-4 font-bold text-white hover:bg-black/85">Send code</button>
           </form>
         ) : (
           <form onSubmit={verify} className="space-y-3">
@@ -91,23 +91,25 @@ function LoginForm() {
               inputMode="numeric" maxLength={10} placeholder="Enter code" value={code}
               onChange={(e) => setCode(e.target.value.replace(/\s/g, ''))}
               autoFocus
-              className="w-full rounded-xl bg-[#151E30] border border-[#1F2A40] p-4 text-center text-2xl tracking-[0.3em] outline-none"
+              className="w-full rounded-xl bg-[#f6f6f6] border border-black/10 p-4 text-center text-2xl tracking-[0.3em] outline-none focus:border-black"
             />
-            <button className="w-full rounded-xl bg-[#F04438] p-4 font-bold">Verify</button>
+            <button className="w-full rounded-xl bg-black p-4 font-bold text-white hover:bg-black/85">Verify</button>
           </form>
         )}
 
-        <div className="my-5 text-center text-[#5B6B84]">or</div>
-        <button onClick={google} className="w-full rounded-xl bg-[#151E30] border border-[#1F2A40] p-4 font-semibold">
+        <div className="my-5 flex items-center gap-3 text-xs font-medium text-black/40">
+          <span className="h-px flex-1 bg-black/10" />or<span className="h-px flex-1 bg-black/10" />
+        </div>
+        <button onClick={google} className="w-full rounded-xl bg-white border border-black/15 p-4 font-semibold hover:bg-[#f6f6f6]">
           Continue with Google
         </button>
 
-        {msg && <p className="mt-4 text-sm text-red-400 text-center">{msg}</p>}
+        {msg && <p className="mt-4 text-sm text-danger text-center">{msg}</p>}
 
         {signedInAs && (
-          <p className="mt-6 text-center text-sm text-[#5B6B84]">
+          <p className="mt-6 text-center text-sm text-black/50">
             Signed in as {signedInAs} ·{' '}
-            <button onClick={signOut} className="text-[#F04438] hover:underline">Sign out</button>
+            <button onClick={signOut} className="font-semibold text-danger hover:underline">Sign out</button>
           </p>
         )}
       </div>

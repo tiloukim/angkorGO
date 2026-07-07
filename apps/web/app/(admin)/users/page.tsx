@@ -12,29 +12,29 @@ export default async function UsersPage() {
 
   return (
     <main className="p-8">
-      <h1 className="mb-6 text-2xl font-bold text-white">Users</h1>
-      <div className="overflow-hidden rounded-xl border border-[#1F2A40]">
+      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Users</h1>
+      <div className="overflow-hidden rounded-2xl border border-black/10">
         <table className="w-full text-sm">
-          <thead className="bg-[#151E30] text-left text-[#8FA3BF]">
+          <thead className="bg-[#f6f6f6] text-left text-black/50">
             <tr>
-              <th className="p-3">Name</th><th className="p-3">Phone</th>
-              <th className="p-3">Role</th><th className="p-3">Status</th><th className="p-3" />
+              <th className="p-3 font-semibold">Name</th><th className="p-3 font-semibold">Phone</th>
+              <th className="p-3 font-semibold">Role</th><th className="p-3 font-semibold">Status</th><th className="p-3" />
             </tr>
           </thead>
           <tbody>
             {(users ?? []).map((u) => (
-              <tr key={u.id} className="border-t border-[#1F2A40] text-white">
-                <td className="p-3">{u.full_name ?? '—'}</td>
-                <td className="p-3 text-[#8FA3BF]">{u.phone ?? '—'}</td>
+              <tr key={u.id} className="border-t border-black/10">
+                <td className="p-3 font-medium">{u.full_name ?? '—'}</td>
+                <td className="p-3 text-black/55">{u.phone ?? '—'}</td>
                 <td className="p-3 capitalize">{u.role}</td>
                 <td className="p-3">
-                  <span className={u.is_suspended ? 'text-[#F04438]' : 'text-[#10B981]'}>
+                  <span className={`font-semibold ${u.is_suspended ? 'text-danger' : 'text-brand'}`}>
                     {u.is_suspended ? 'Suspended' : 'Active'}
                   </span>
                 </td>
                 <td className="p-3 text-right">
                   <form action={setUserSuspended.bind(null, u.id, !u.is_suspended)}>
-                    <button className="rounded-lg border border-[#1F2A40] px-3 py-1.5 text-xs text-white hover:border-[#F04438]">
+                    <button className="rounded-lg border border-black/15 px-3 py-1.5 text-xs font-semibold hover:border-black">
                       {u.is_suspended ? 'Reinstate' : 'Suspend'}
                     </button>
                   </form>

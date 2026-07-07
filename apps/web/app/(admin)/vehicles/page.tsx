@@ -22,26 +22,26 @@ export default async function VehiclesPage() {
 
   return (
     <main className="p-8">
-      <h1 className="mb-6 text-2xl font-bold text-white">Vehicle Approvals</h1>
+      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Vehicle Approvals</h1>
 
-      <h2 className="mb-3 text-sm font-semibold uppercase text-[#8FA3BF]">Pending ({pending.length})</h2>
-      {!pending.length && <p className="text-[#8FA3BF]">No vehicles awaiting verification.</p>}
+      <h2 className="mb-3 text-sm font-semibold uppercase text-black/45">Pending ({pending.length})</h2>
+      {!pending.length && <p className="text-black/55">No vehicles awaiting verification.</p>}
       <div className="space-y-3">
         {pending.map((v: any) => (
-          <div key={v.id} className="flex items-center justify-between rounded-xl border border-[#1F2A40] bg-[#151E30] p-4">
+          <div key={v.id} className="flex items-center justify-between rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
             <div className="flex items-center gap-4">
               {v.photo_url && signed[v.photo_url] && (
-                <a href={signed[v.photo_url]} target="_blank" className="text-xs text-[#F04438]">photo ↗</a>
+                <a href={signed[v.photo_url]} target="_blank" className="text-xs text-danger">photo ↗</a>
               )}
               <div>
-                <p className="font-bold text-white capitalize">{v.class} · {v.plate_number}</p>
-                <p className="text-sm text-[#8FA3BF]">
+                <p className="font-bold capitalize">{v.class} · {v.plate_number}</p>
+                <p className="text-sm text-black/55">
                   {v.make_model ?? '—'}{v.color ? ` · ${v.color}` : ''} · {v.providers?.business_name ?? v.providers?.profiles?.full_name ?? 'Driver'}
                 </p>
               </div>
             </div>
             <form action={setVehicleVerified.bind(null, v.id, true)}>
-              <button className="rounded-lg bg-[#10B981] px-4 py-2 text-sm font-semibold text-white">Verify</button>
+              <button className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white">Verify</button>
             </form>
           </div>
         ))}
@@ -49,13 +49,13 @@ export default async function VehiclesPage() {
 
       {verified.length > 0 && (
         <>
-          <h2 className="mb-3 mt-8 text-sm font-semibold uppercase text-[#8FA3BF]">Verified ({verified.length})</h2>
+          <h2 className="mb-3 mt-8 text-sm font-semibold uppercase text-black/45">Verified ({verified.length})</h2>
           <div className="space-y-2">
             {verified.map((v: any) => (
-              <div key={v.id} className="flex items-center justify-between rounded-lg border border-[#1F2A40] bg-[#151E30] p-3 text-sm">
-                <span className="text-white capitalize">{v.class} · {v.plate_number}</span>
+              <div key={v.id} className="flex items-center justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+                <span className="capitalize">{v.class} · {v.plate_number}</span>
                 <form action={setVehicleVerified.bind(null, v.id, false)}>
-                  <button className="text-xs text-[#8FA3BF] hover:text-[#F04438]">Unverify</button>
+                  <button className="text-xs text-black/55 hover:text-danger">Unverify</button>
                 </form>
               </div>
             ))}

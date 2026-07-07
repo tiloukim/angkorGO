@@ -21,29 +21,29 @@ export default async function DisputesPage() {
 
   return (
     <main className="p-8">
-      <h1 className="mb-6 text-2xl font-bold text-white">Dispute Center</h1>
+      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Dispute Center</h1>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold uppercase text-[#8FA3BF]">Failed / refunded payments</h2>
-        {!payments?.length && <p className="text-sm text-[#8FA3BF]">None.</p>}
+        <h2 className="mb-3 text-sm font-semibold uppercase text-black/45">Failed / refunded payments</h2>
+        {!payments?.length && <p className="text-sm text-black/55">None.</p>}
         <div className="space-y-2">
           {(payments ?? []).map((p) => (
-            <div key={p.id} className="flex justify-between rounded-lg border border-[#1F2A40] bg-[#151E30] p-3 text-sm">
-              <span className="text-white">${Number(p.amount).toFixed(2)} {p.currency}</span>
-              <span className="text-[#F04438]">{p.status}</span>
+            <div key={p.id} className="flex justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+              <span>${Number(p.amount).toFixed(2)} {p.currency}</span>
+              <span className="text-danger">{p.status}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase text-[#8FA3BF]">Expired / cancelled requests</h2>
-        {!requests?.length && <p className="text-sm text-[#8FA3BF]">None.</p>}
+        <h2 className="mb-3 text-sm font-semibold uppercase text-black/45">Expired / cancelled requests</h2>
+        {!requests?.length && <p className="text-sm text-black/55">None.</p>}
         <div className="space-y-2">
           {(requests ?? []).map((r) => (
-            <div key={r.id} className="flex justify-between rounded-lg border border-[#1F2A40] bg-[#151E30] p-3 text-sm">
-              <span className="text-white capitalize">{r.category.replace('_', ' ')}</span>
-              <span className="text-[#C79A5B] capitalize">{r.status}</span>
+            <div key={r.id} className="flex justify-between rounded-lg border border-black/10 bg-[#f6f6f6] p-3 text-sm">
+              <span className="capitalize">{r.category.replace('_', ' ')}</span>
+              <span className="text-[#b26b00] capitalize">{r.status}</span>
             </div>
           ))}
         </div>

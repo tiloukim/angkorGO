@@ -22,41 +22,41 @@ export default async function ProvidersPage() {
 
   return (
     <main className="p-8">
-      <h1 className="mb-6 text-2xl font-bold text-white">Provider Approvals</h1>
+      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Provider Approvals</h1>
 
-      {!providers?.length && <p className="text-[#8FA3BF]">No providers awaiting review. 🎉</p>}
+      {!providers?.length && <p className="text-black/55">No providers awaiting review. 🎉</p>}
 
       <div className="space-y-4">
         {(providers ?? []).map((p: any) => (
-          <div key={p.id} className="rounded-xl border border-[#1F2A40] bg-[#151E30] p-5">
+          <div key={p.id} className="rounded-2xl border border-black/10 bg-[#f6f6f6] p-5">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-lg font-bold text-white">{p.business_name ?? p.profiles?.full_name ?? 'Unnamed'}</p>
-                <p className="text-sm text-[#8FA3BF]">{p.profiles?.full_name} · {p.profiles?.phone ?? 'no phone'}</p>
-                <p className="mt-2 text-xs text-[#8FA3BF]">
+                <p className="text-lg font-bold">{p.business_name ?? p.profiles?.full_name ?? 'Unnamed'}</p>
+                <p className="text-sm text-black/55">{p.profiles?.full_name} · {p.profiles?.phone ?? 'no phone'}</p>
+                <p className="mt-2 text-xs text-black/55">
                   Services: {(p.provider_services ?? []).map((s: any) => s.category).join(', ') || 'none selected'}
                 </p>
               </div>
               <div className="flex gap-2">
                 <form action={approveProvider.bind(null, p.id)}>
-                  <button className="rounded-lg bg-[#10B981] px-4 py-2 text-sm font-semibold text-white">Approve</button>
+                  <button className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white">Approve</button>
                 </form>
                 <form action={rejectProvider.bind(null, p.id)}>
-                  <button className="rounded-lg bg-[#F04438] px-4 py-2 text-sm font-semibold text-white">Reject</button>
+                  <button className="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white">Reject</button>
                 </form>
               </div>
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
               {(p.provider_documents ?? []).length === 0 && (
-                <span className="text-xs text-[#C79A5B]">⚠ No documents uploaded</span>
+                <span className="text-xs text-[#b26b00]">⚠ No documents uploaded</span>
               )}
               {(p.provider_documents ?? []).map((d: any) => (
                 <a
                   key={d.file_url}
                   href={signed[d.file_url] ?? '#'}
                   target="_blank"
-                  className="rounded-lg border border-[#1F2A40] bg-[#0B1220] px-3 py-1.5 text-xs text-white hover:border-[#F04438]"
+                  className="rounded-lg border border-black/10 bg-white px-3 py-1.5 text-xs hover:border-black"
                 >
                   {d.type.replace('_', ' ')} ↗
                 </a>

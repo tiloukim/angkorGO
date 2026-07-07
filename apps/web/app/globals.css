@@ -1,15 +1,33 @@
 @import 'tailwindcss';
 
+/* Uber / Uber Eats theme — white canvas, near-black ink, green accent. */
 :root {
-  --background: #0b1220;
-  --foreground: #ffffff;
-  --card: #151e30;
-  --muted-foreground: #8fa3bf;
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --muted: #f6f6f6;
+  --muted-foreground: #6b6b6b;
+  --border: #e8e8e8;
+  --brand: #06c167;   /* Uber Eats green */
+  --danger: #e11900;  /* Uber red */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-brand: var(--brand);
+  --color-danger: var(--danger);
+}
+
+/* Uber Move–style: heavy, tight, high-contrast headings. */
+body {
+  font-feature-settings: 'ss01';
+  letter-spacing: -0.01em;
+}
+h1, h2, h3 {
+  letter-spacing: -0.03em;
 }

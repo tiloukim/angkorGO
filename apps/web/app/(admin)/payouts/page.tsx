@@ -13,24 +13,24 @@ export default async function PayoutsPage() {
 
   return (
     <main className="p-8">
-      <h1 className="mb-6 text-2xl font-bold text-white">Payout Queue</h1>
-      {!rows?.length && <p className="text-[#8FA3BF]">No pending payouts.</p>}
+      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">Payout Queue</h1>
+      {!rows?.length && <p className="text-black/55">No pending payouts.</p>}
 
       <div className="space-y-3">
         {(rows ?? []).map((w: any) => (
-          <div key={w.id} className="flex items-center justify-between rounded-xl border border-[#1F2A40] bg-[#151E30] p-4">
+          <div key={w.id} className="flex items-center justify-between rounded-2xl border border-black/10 bg-[#f6f6f6] p-4">
             <div>
-              <p className="font-bold text-white">${Number(w.amount).toFixed(2)}</p>
-              <p className="text-sm text-[#8FA3BF]">
+              <p className="font-bold">${Number(w.amount).toFixed(2)}</p>
+              <p className="text-sm text-black/55">
                 {w.providers?.business_name ?? 'Provider'} · {w.method} · {w.destination}
               </p>
             </div>
             <div className="flex gap-2">
               <form action={processPayout.bind(null, w.id, 'paid')}>
-                <button className="rounded-lg bg-[#10B981] px-4 py-2 text-sm font-semibold text-white">Mark paid</button>
+                <button className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white">Mark paid</button>
               </form>
               <form action={processPayout.bind(null, w.id, 'rejected')}>
-                <button className="rounded-lg bg-[#F04438] px-4 py-2 text-sm font-semibold text-white">Reject</button>
+                <button className="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white">Reject</button>
               </form>
             </div>
           </div>
