@@ -7,6 +7,7 @@ import { categoryLabel, VEHICLE_LABELS } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { registerPushToken } from '@/lib/push';
+import { TukiTukTuk } from '@/components/TukiTukTuk';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
 import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
 import { useCourierOffers, type CourierOffer } from '@/hooks/useCourierOffers';
@@ -89,7 +90,11 @@ export default function ProviderDashboard() {
       )}
 
       {approved && !provider?.is_online && (
-        <Text style={styles.hint}>Go online to start receiving nearby rescue requests.</Text>
+        <View style={styles.idle}>
+          <TukiTukTuk width={230} />
+          <Text style={styles.idleTitle}>You&apos;re offline</Text>
+          <Text style={styles.hint}>Flip the switch to start receiving nearby requests.</Text>
+        </View>
       )}
 
       {approved && provider?.is_online && rideOffers.length > 0 && (
@@ -136,7 +141,12 @@ export default function ProviderDashboard() {
           <FlatList
             data={offers}
             keyExtractor={(o) => o.assignment_id}
-            ListEmptyComponent={<Text style={styles.empty}>Waiting for requests…</Text>}
+            ListEmptyComponent={
+              <View style={styles.idleSmall}>
+                <TukiTukTuk width={170} />
+                <Text style={styles.empty}>Waiting for requests…</Text>
+              </View>
+            }
             renderItem={({ item }) => (
               <View style={styles.offer}>
                 <View style={{ flex: 1 }}>
@@ -188,7 +198,10 @@ const styles = StyleSheet.create({
   banner: { backgroundColor: '#FFF4E5', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#FFD8A8', marginTop: 16 },
   bannerTitle: { color: '#FF6D00', fontSize: 16, fontWeight: '700' },
   bannerSub: { color: '#B26B00', fontSize: 14, marginTop: 4 },
-  hint: { color: '#7A7A7A', marginTop: 24 },
+  hint: { color: '#7A7A7A', marginTop: 4, textAlign: 'center' },
+  idle: { alignItems: 'center', marginTop: 36 },
+  idleTitle: { color: '#1C1C1C', fontSize: 18, fontWeight: '800', marginTop: 8 },
+  idleSmall: { alignItems: 'center', marginTop: 16 },
   section: { color: '#1C1C1C', fontSize: 16, fontWeight: '700', marginTop: 24, marginBottom: 12 },
   empty: { color: '#9AA0A6', marginTop: 20, textAlign: 'center' },
   offer: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#ECECEC' },
