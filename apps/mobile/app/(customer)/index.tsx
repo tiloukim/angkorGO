@@ -40,7 +40,7 @@ export default function HomeScreen() {
         { label: 'Airport', icon: '✈️', go: () => router.push('/(customer)/ride') },
         { label: 'Repair', icon: '🔧', go: () => onSelect('emergency_repair') },
         { label: 'Schedule', icon: '🗓️', go: () => router.push('/(customer)/ride') },
-        { label: 'Spin', icon: '🎡', go: () => router.push('/(customer)/wallet') },
+        { label: 'Spin', icon: '🎡', go: () => router.push('/(customer)/spin') },
       ],
     },
     {
