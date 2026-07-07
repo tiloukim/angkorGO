@@ -15,6 +15,36 @@ const QUICK_ACTIONS = [
   { icon: '🎁', label: 'Rewards' },
 ];
 
+// Grouped category cards (WOWNOW-style): a hero + labeled sub-icon grid.
+const GROUPS = [
+  {
+    title: 'Get around',
+    hero: '🛺',
+    tile: '#E4F7EC',
+    items: [
+      { icon: '🛺', label: 'Ride' },
+      { icon: '🚗', label: 'Rent' },
+      { icon: '✈️', label: 'Airport' },
+      { icon: '🔧', label: 'Repair' },
+      { icon: '🗓️', label: 'Schedule' },
+      { icon: '🎡', label: 'Spin' },
+    ],
+  },
+  {
+    title: 'Order & shop',
+    hero: '🍜',
+    tile: '#FFEEE0',
+    items: [
+      { icon: '🍜', label: 'Food' },
+      { icon: '🏠', label: 'Stay' },
+      { icon: '🛒', label: 'Mart' },
+      { icon: '🥬', label: 'Grocery' },
+      { icon: '🎟️', label: 'Coupons' },
+      { icon: '🎁', label: 'Rewards' },
+    ],
+  },
+];
+
 // Super-app services (colorful pastel tiles, like Grab's icon grid).
 const SERVICES = [
   { icon: '🛺', label: 'Ride', tile: '#E4F7EC', desc: 'Moto, tuk-tuk & car' },
@@ -143,34 +173,30 @@ export default function Landing() {
                 </button>
               ))}
             </div>
-            <div className="grid grid-cols-4 gap-3 sm:gap-5 md:grid-cols-8">
-              {SERVICES.map((s) => (
-                <button key={s.label} className="group flex flex-col items-center gap-2">
-                  <span
-                    className="grid h-16 w-16 place-items-center rounded-2xl text-3xl transition group-hover:scale-105"
-                    style={{ background: s.tile }}
-                  >
-                    {s.icon}
-                  </span>
-                  <span className="text-xs font-semibold text-black/70">{s.label}</span>
-                </button>
+            {/* Grouped category cards */}
+            <div className="grid gap-4 md:grid-cols-2">
+              {GROUPS.map((g) => (
+                <div key={g.title} className="rounded-2xl border border-black/5 bg-[#F5F6F7] p-5">
+                  <h3 className="mb-4 text-lg font-extrabold tracking-tight">{g.title}</h3>
+                  <div className="flex gap-4">
+                    <div
+                      className="grid w-20 shrink-0 place-items-center rounded-2xl text-4xl"
+                      style={{ background: g.tile }}
+                    >
+                      {g.hero}
+                    </div>
+                    <div className="grid flex-1 grid-cols-3 gap-y-4">
+                      {g.items.map((it) => (
+                        <button key={it.label} className="group flex flex-col items-center gap-1.5">
+                          <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
+                          <span className="text-xs font-semibold text-black/70">{it.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-
-          {/* Feature tiles */}
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {SERVICES.slice(0, 6).map((s) => (
-              <div key={s.label} className="flex items-center gap-4 rounded-2xl border border-black/5 bg-[#F5F6F7] p-5">
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-2xl" style={{ background: s.tile }}>
-                  {s.icon}
-                </span>
-                <div>
-                  <h3 className="text-lg font-extrabold tracking-tight">{s.label}</h3>
-                  <p className="text-sm text-black/55">{s.desc}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>

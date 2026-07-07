@@ -25,15 +25,35 @@ export default function HomeScreen() {
     router.push({ pathname: '/(customer)/request/location', params: { category } });
 
   // The super-app service grid (icon tiles).
-  const services: { label: string; icon: string; tile: string; go: () => void }[] = [
-    { label: 'Ride', icon: '🛺', tile: tileColors.green, go: () => router.push('/(customer)/ride') },
-    { label: 'Food', icon: '🍜', tile: tileColors.peach, go: () => router.push('/(customer)/food') },
-    { label: 'Rent', icon: '🚗', tile: tileColors.blue, go: () => router.push('/(customer)/rentals') },
-    { label: 'Stay', icon: '🏠', tile: tileColors.lavender, go: () => router.push('/(customer)/stays') },
-    { label: 'Repair', icon: '🔧', tile: tileColors.gold, go: () => onSelect('emergency_repair') },
-    { label: 'Host', icon: '🔑', tile: tileColors.mint, go: () => router.push('/(customer)/host') },
-    { label: 'Wallet', icon: '👛', tile: tileColors.pink, go: () => router.push('/(customer)/account') },
-    { label: 'More', icon: '⋯', tile: tileColors.sky, go: () => router.push('/(customer)/account') },
+  // Grouped category cards (WOWNOW-style): a hero + labeled sub-icon grid.
+  type Item = { label: string; icon: string; go: () => void };
+  const groups: { title: string; hero: string; tile: string; items: Item[] }[] = [
+    {
+      title: 'Get around',
+      hero: '🛺',
+      tile: tileColors.green,
+      items: [
+        { label: 'Ride', icon: '🛺', go: () => router.push('/(customer)/ride') },
+        { label: 'Rent', icon: '🚗', go: () => router.push('/(customer)/rentals') },
+        { label: 'Airport', icon: '✈️', go: () => router.push('/(customer)/ride') },
+        { label: 'Repair', icon: '🔧', go: () => onSelect('emergency_repair') },
+        { label: 'Schedule', icon: '🗓️', go: () => router.push('/(customer)/ride') },
+        { label: 'Spin', icon: '🎡', go: () => router.push('/(customer)/wallet') },
+      ],
+    },
+    {
+      title: 'Order & shop',
+      hero: '🍜',
+      tile: tileColors.peach,
+      items: [
+        { label: 'Food', icon: '🍜', go: () => router.push('/(customer)/food') },
+        { label: 'Stay', icon: '🏠', go: () => router.push('/(customer)/stays') },
+        { label: 'Mart', icon: '🛒', go: () => router.push('/(customer)/food') },
+        { label: 'Grocery', icon: '🥬', go: () => router.push('/(customer)/food') },
+        { label: 'Host', icon: '🔑', go: () => router.push('/(customer)/host') },
+        { label: 'Rewards', icon: '🎁', go: () => router.push('/(customer)/wallet') },
+      ],
+    },
   ];
 
   const subPromos = [
@@ -73,17 +93,25 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Service grid */}
-        <View style={styles.grid}>
-          {services.map((s) => (
-            <Pressable key={s.label} style={styles.gridItem} onPress={s.go}>
-              <View style={[styles.iconTile, { backgroundColor: s.tile }]}>
-                <Text style={styles.iconEmoji}>{s.icon}</Text>
+        {/* Grouped category cards */}
+        {groups.map((g) => (
+          <View key={g.title} style={styles.groupCard}>
+            <Text style={styles.groupTitle}>{g.title}</Text>
+            <View style={styles.groupBody}>
+              <View style={[styles.groupHero, { backgroundColor: g.tile }]}>
+                <Text style={styles.groupHeroEmoji}>{g.hero}</Text>
               </View>
-              <Text style={styles.iconLabel}>{s.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+              <View style={styles.groupGrid}>
+                {g.items.map((it) => (
+                  <Pressable key={it.label} style={styles.groupItem} onPress={it.go}>
+                    <Text style={styles.groupItemIcon}>{it.icon}</Text>
+                    <Text style={styles.groupItemLabel}>{it.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          </View>
+        ))}
 
         {/* Quick actions (WOWNOW-style strip) */}
         <View style={styles.quickRow}>
@@ -170,11 +198,15 @@ const styles = StyleSheet.create({
   searchIcon: { fontSize: 15 },
   searchText: { color: theme.muted, fontSize: 15 },
 
-  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 8, paddingTop: 18 },
-  gridItem: { width: '25%', alignItems: 'center', marginBottom: 18 },
-  iconTile: { width: 60, height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  iconEmoji: { fontSize: 28 },
-  iconLabel: { color: theme.ink, fontSize: 12.5, fontWeight: '600', marginTop: 7 },
+  groupCard: { backgroundColor: theme.card, borderRadius: 20, marginHorizontal: 16, marginTop: 16, padding: 16, borderWidth: 1, borderColor: theme.border },
+  groupTitle: { color: theme.ink, fontSize: 17, fontWeight: '800', marginBottom: 12 },
+  groupBody: { flexDirection: 'row', gap: 14, alignItems: 'stretch' },
+  groupHero: { width: 76, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  groupHeroEmoji: { fontSize: 40 },
+  groupGrid: { flex: 1, flexDirection: 'row', flexWrap: 'wrap' },
+  groupItem: { width: '33.333%', alignItems: 'center', paddingVertical: 8 },
+  groupItemIcon: { fontSize: 24 },
+  groupItemLabel: { color: theme.ink, fontSize: 11.5, fontWeight: '600', marginTop: 6 },
 
   quickRow: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 4, paddingBottom: 8 },
   quickAction: { alignItems: 'center', gap: 6 },
