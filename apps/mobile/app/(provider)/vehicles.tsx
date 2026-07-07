@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { VEHICLE_CLASSES, VEHICLE_LABELS, type VehicleClass } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { uploadVehiclePhoto } from '@/lib/uploads';
+import { useLocale } from '@/lib/locale';
 
 interface Vehicle {
   id: string; class: VehicleClass; make_model: string | null; plate_number: string;
@@ -15,6 +16,7 @@ interface Vehicle {
 
 export default function VehiclesScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
   const [providerId, setProviderId] = useState<string | null>(null);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [cls, setCls] = useState<VehicleClass>('moto');
@@ -67,7 +69,7 @@ export default function VehiclesScreen() {
       {vehicles.map((v) => (
         <View key={v.id} style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.vTitle}>{VEHICLE_LABELS.en[v.class]} · {v.plate_number}</Text>
+            <Text style={styles.vTitle}>{VEHICLE_LABELS[lang][v.class]} · {v.plate_number}</Text>
             {v.make_model ? <Text style={styles.vSub}>{v.make_model}{v.color ? ` · ${v.color}` : ''}</Text> : null}
           </View>
           <Text style={[styles.badge, v.verified ? { color: '#00B14F' } : { color: '#FF6D00' }]}>
@@ -80,7 +82,7 @@ export default function VehiclesScreen() {
       <View style={styles.chips}>
         {VEHICLE_CLASSES.map((c) => (
           <Pressable key={c} onPress={() => setCls(c)} style={[styles.chip, cls === c && styles.chipOn]}>
-            <Text style={[styles.chipText, cls === c && { color: '#fff' }]}>{VEHICLE_LABELS.en[c]}</Text>
+            <Text style={[styles.chipText, cls === c && { color: '#fff' }]}>{VEHICLE_LABELS[lang][c]}</Text>
           </Pressable>
         ))}
       </View>

@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, FlatList, Pressable, SectionList } from 'react-
 import { useRouter } from 'expo-router';
 import { categoryLabel, type RequestStatus, type ServiceCategory } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
+import { useLocale } from '@/lib/locale';
 
 interface Job { id: string; category: ServiceCategory; status: RequestStatus; address: string | null; created_at: string }
 
@@ -11,6 +12,7 @@ const ACTIVE: RequestStatus[] = ['accepted', 'en_route', 'arrived', 'in_progress
 
 export default function JobsScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
   const [jobs, setJobs] = useState<Job[]>([]);
 
   const load = useCallback(async () => {
@@ -44,7 +46,7 @@ export default function JobsScreen() {
             onPress={() => ACTIVE.includes(item.status) && router.push({ pathname: '/(provider)/job/[id]', params: { id: item.id } })}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowCat}>{categoryLabel('en', item.category)}</Text>
+              <Text style={styles.rowCat}>{categoryLabel(lang, item.category)}</Text>
               {item.address ? <Text style={styles.rowAddr} numberOfLines={1}>{item.address}</Text> : null}
             </View>
             <Text style={[styles.badge, item.status === 'completed' && { color: '#00B14F' }]}>

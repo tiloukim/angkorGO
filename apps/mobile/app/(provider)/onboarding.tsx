@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { SERVICE_CATEGORIES, categoryLabel, type ServiceCategory } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { uploadProviderDocument } from '@/lib/uploads';
+import { useLocale } from '@/lib/locale';
 
 const DOCS = [
   { type: 'national_id', label: 'National ID' },
@@ -17,6 +18,7 @@ const DOCS = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { lang } = useLocale();
   const [providerId, setProviderId] = useState<string | null>(null);
   const [businessName, setBusinessName] = useState('');
   const [selected, setSelected] = useState<Set<ServiceCategory>>(new Set());
@@ -84,7 +86,7 @@ export default function OnboardingScreen() {
       <View style={styles.chips}>
         {SERVICE_CATEGORIES.map((c) => (
           <Pressable key={c} onPress={() => toggle(c)} style={[styles.chip, selected.has(c) && styles.chipOn]}>
-            <Text style={[styles.chipText, selected.has(c) && styles.chipTextOn]}>{categoryLabel('en', c)}</Text>
+            <Text style={[styles.chipText, selected.has(c) && styles.chipTextOn]}>{categoryLabel(lang, c)}</Text>
           </Pressable>
         ))}
       </View>
