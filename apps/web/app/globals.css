@@ -34,11 +34,18 @@
   --color-gold-soft: var(--gold-soft);
 }
 
-/* Uber Move–style: heavy, tight, high-contrast headings. */
+/* Latin → Inter; Khmer glyphs → Noto Sans Khmer; CJK → system fallback. */
 body {
+  font-family: var(--font-inter), var(--font-khmer), system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-feature-settings: 'ss01';
   letter-spacing: -0.01em;
 }
 h1, h2, h3 {
   letter-spacing: -0.03em;
 }
+
+/* Khmer stacks subscript glyphs and needs breathing room — drop the tight
+   Latin tracking and give headings/paragraphs a taller line so nothing clips. */
+:lang(km) { letter-spacing: normal; }
+:lang(km) h1, :lang(km) h2, :lang(km) h3 { letter-spacing: normal; line-height: 1.5; }
+:lang(km) p { line-height: 1.7; }

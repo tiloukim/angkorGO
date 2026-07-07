@@ -121,6 +121,7 @@ function PhoneMockup({ t }: { t: LandingCopy }) {
 export default function Landing() {
   const [lang, setLang] = useState<Language>('en');
   const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<{ icon: string; label: string } | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('angkorgo.lang');
@@ -147,7 +148,7 @@ export default function Landing() {
     .filter((g) => g.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div lang={lang} className="min-h-screen bg-white text-black">
       {/* Green header */}
       <header className="sticky top-0 z-30 bg-grab-dark">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
@@ -180,7 +181,7 @@ export default function Landing() {
             </h1>
             <p className="mt-5 max-w-md text-lg text-white/70">{t.hero.sub}</p>
             <p className="mt-4 text-sm text-white/50">{t.hero.tagline}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div id="download" className="mt-8 flex flex-wrap gap-3 scroll-mt-24">
               <span className="cursor-pointer rounded-xl bg-white px-6 py-3.5 text-base font-bold text-grab-dark transition hover:bg-white/90"> {t.hero.ios}</span>
               <span className="cursor-pointer rounded-xl bg-grab px-6 py-3.5 text-base font-bold text-white transition hover:brightness-110">▸ {t.hero.android}</span>
             </div>
@@ -210,7 +211,11 @@ export default function Landing() {
             {/* Quick actions */}
             <div className="mb-6 grid grid-cols-4 gap-3">
               {QUICK.map((qa) => (
-                <button key={qa.key} className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95">
+                <button
+                  key={qa.key}
+                  onClick={() => setSelected({ icon: qa.icon, label: t.quick[qa.key as keyof LandingCopy['quick']] })}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-grab-soft px-3 py-2.5 text-sm font-semibold text-grab-dark hover:brightness-95"
+                >
                   <span>{qa.icon}</span>
                   <span className="hidden sm:inline">{t.quick[qa.key as keyof LandingCopy['quick']]}</span>
                 </button>
@@ -228,7 +233,11 @@ export default function Landing() {
                       <div className="grid w-20 shrink-0 place-items-center rounded-2xl text-4xl" style={{ background: g.tile }}>{g.hero}</div>
                       <div className="grid flex-1 grid-cols-3 gap-y-4">
                         {g.items.map((it) => (
-                          <button key={it.key} className="group flex flex-col items-center gap-1.5">
+                          <button
+                            key={it.key}
+                            onClick={() => setSelected({ icon: it.icon, label: t.w[it.key] })}
+                            className="group flex flex-col items-center gap-1.5"
+                          >
                             <span className="text-2xl transition group-hover:scale-110">{it.icon}</span>
                             <span className="text-xs font-semibold text-black/70">{t.w[it.key]}</span>
                           </button>
@@ -331,6 +340,23 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+
+      {/* Service tap → info modal */}
+      {selected && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-6" onClick={() => setSelected(null)}>
+          <div className="w-full max-w-sm rounded-3xl bg-white p-8 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-2xl bg-grab-soft text-4xl">{selected.icon}</div>
+            <h3 className="text-2xl font-extrabold tracking-tight">{selected.label}</h3>
+            <p className="mt-2 text-black/60">{t.service.body.replace('{name}', selected.label)}</p>
+            <button
+              onClick={() => { setSelected(null); document.getElementById('download')?.scrollIntoView({ behavior: 'smooth' }); }}
+              className="mt-6 w-full rounded-xl bg-grab px-6 py-3.5 text-base font-bold text-white hover:brightness-110"
+            >
+              {t.service.cta}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

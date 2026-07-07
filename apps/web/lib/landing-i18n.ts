@@ -14,6 +14,7 @@ export type LandingCopy = {
   quick: { topUp: string; coupons: string; invite: string; rewards: string };
   groups: { getAround: string; orderShop: string };
   noResults: string;
+  service: { body: string; cta: string };
   w: Record<string, string>;
   how: { title: string; steps: { title: string; body: string }[] };
   deal: { week: string; title: string; sub: string; cta: string; badge: string };
@@ -35,6 +36,7 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: 'Top up', coupons: 'Coupons', invite: 'Invite', rewards: 'Rewards' },
     groups: { getAround: 'Get around', orderShop: 'Order & shop' },
     noResults: 'No matches — try another service',
+    service: { body: '{name} is available in the AngkorGo super-app.', cta: 'Get the app' },
     w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons' },
     how: {
       title: 'How AngkorGo works',
@@ -68,6 +70,7 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ', rewards: 'រង្វាន់' },
     groups: { getAround: 'ធ្វើដំណើរ', orderShop: 'កម្ម៉ង់ & ទិញ' },
     noResults: 'គ្មានលទ្ធផល — សាកល្បងសេវាផ្សេង',
+    service: { body: '{name} មាននៅក្នុងកម្មវិធីរួម AngkorGo។', cta: 'ទាញយកកម្មវិធី' },
     w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង' },
     how: {
       title: 'របៀប AngkorGo ដំណើរការ',
@@ -101,6 +104,7 @@ export const COPY: Record<Language, LandingCopy> = {
     quick: { topUp: '充值', coupons: '优惠券', invite: '邀请', rewards: '奖励' },
     groups: { getAround: '出行', orderShop: '订购 & 购物' },
     noResults: '无匹配结果 — 试试其他服务',
+    service: { body: '{name} 已在 AngkorGo 超级应用中提供。', cta: '获取应用' },
     w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券' },
     how: {
       title: 'AngkorGo 如何运作',
