@@ -6,7 +6,6 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   SERVICE_CATEGORIES,
-  LANGUAGES,
   categoryLabel,
   type Language,
   type ServiceCategory,
@@ -15,13 +14,11 @@ import { theme, tileColors } from '../../lib/theme';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
 import { Mascot } from '@/components/Mascot';
 import { TukiTukTuk } from '@/components/TukiTukTuk';
+import { LocationLangBar } from '@/components/LocationLangBar';
 
 export default function HomeScreen() {
   const router = useRouter();
   const [lang, setLang] = useState<Language>('en');
-
-  const nextIndex = (LANGUAGES.findIndex((l) => l.code === lang) + 1) % LANGUAGES.length;
-  const nextLang = () => setLang(LANGUAGES[nextIndex].code);
 
   const onSelect = (category: ServiceCategory) =>
     router.push({ pathname: '/(customer)/request/location', params: { category } });
@@ -69,25 +66,17 @@ export default function HomeScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: TAB_BAR_SPACE + 16 }}>
         {/* Green header */}
         <View style={styles.header}>
-          <View style={styles.headerRow}>
-            <View style={styles.greetRow}>
-              <View style={styles.mascot}>
-                <Mascot size={40} />
-              </View>
-              <View>
-                <Text style={styles.hi}>Hi there 👋</Text>
-                <Text style={styles.loc}>📍 Phnom Penh ▾</Text>
-              </View>
-            </View>
-            <View style={styles.headerActions}>
-              <Pressable onPress={nextLang} hitSlop={10} style={styles.langChip}>
-                <Text style={styles.langText}>{LANGUAGES[nextIndex].code.toUpperCase()}</Text>
+          <LocationLangBar
+            lang={lang}
+            onLang={setLang}
+            right={
+              <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={10} style={styles.mascot}>
+                <Mascot size={38} />
               </Pressable>
-              <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={10} style={styles.avatar}>
-                <Text style={styles.avatarText}>A</Text>
-              </Pressable>
-            </View>
-          </View>
+            }
+          />
+
+          <Text style={styles.hi}>Hi there 👋</Text>
 
           <Pressable style={styles.search} onPress={() => router.push('/(customer)/ride')}>
             <Text style={styles.searchIcon}>🔍</Text>
@@ -186,7 +175,7 @@ const styles = StyleSheet.create({
   greetRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   mascot: { width: 44, height: 44, borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center' },
   mascotEmoji: { fontSize: 24 },
-  hi: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  hi: { color: '#fff', fontSize: 22, fontWeight: '800', marginTop: 16 },
   loc: { color: '#CFEAD9', fontSize: 13, marginTop: 3 },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   langChip: { backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
