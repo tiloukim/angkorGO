@@ -10,6 +10,12 @@
   --border: #e8e8e8;
   --brand: #06c167;   /* Uber Eats green */
   --danger: #e11900;  /* Uber red */
+  /* Grab-inspired super-app palette (consumer landing) */
+  --grab: #00b14f;
+  --grab-dark: #00693c;
+  --grab-soft: #e4f7ec;
+  --gold: #ffc400;
+  --gold-soft: #fff3c4;
 }
 
 @theme inline {
@@ -21,6 +27,11 @@
   --color-border: var(--border);
   --color-brand: var(--brand);
   --color-danger: var(--danger);
+  --color-grab: var(--grab);
+  --color-grab-dark: var(--grab-dark);
+  --color-grab-soft: var(--grab-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
 }
 
 /* Uber Move–style: heavy, tight, high-contrast headings. */

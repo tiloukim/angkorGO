@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 export default function CustomerLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0B1220' } }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F5F6F7' } }}>
       <Stack.Screen name="index" />
       <Stack.Screen name="account" />
       <Stack.Screen name="ride/index" />

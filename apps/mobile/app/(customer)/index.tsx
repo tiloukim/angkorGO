@@ -1,6 +1,6 @@
-// Customer emergency screen (Phase 3, Step 2) — the app's home.
-// Large, tourist-friendly category buttons in EN/KH. Tapping a category
-// starts the request flow: capture GPS → add photos → dispatch.
+// Customer super-app home — Grab-inspired.
+// Green header + search, colorful service grid, gold promo banner, and the
+// roadside-help categories. Tapping a service starts its flow.
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -8,107 +8,185 @@ import {
   SERVICE_CATEGORIES,
   LANGUAGES,
   categoryLabel,
-  t,
   type Language,
   type ServiceCategory,
 } from '@angkorgo/shared';
+import { theme, tileColors } from '../../lib/theme';
 
-export default function EmergencyScreen() {
+export default function HomeScreen() {
   const router = useRouter();
   const [lang, setLang] = useState<Language>('en');
 
-  // Cycle English → Khmer → Chinese; the toggle shows the language you'll switch to.
   const nextIndex = (LANGUAGES.findIndex((l) => l.code === lang) + 1) % LANGUAGES.length;
   const nextLang = () => setLang(LANGUAGES[nextIndex].code);
 
-  const onSelect = (category: ServiceCategory) => {
-    // Next step: location capture screen carries the chosen category forward.
+  const onSelect = (category: ServiceCategory) =>
     router.push({ pathname: '/(customer)/request/location', params: { category } });
-  };
+
+  // The super-app service grid (icon tiles).
+  const services: { label: string; icon: string; tile: string; go: () => void }[] = [
+    { label: 'Ride', icon: '🛺', tile: tileColors.green, go: () => router.push('/(customer)/ride') },
+    { label: 'Food', icon: '🍜', tile: tileColors.peach, go: () => router.push('/(customer)/food') },
+    { label: 'Rent', icon: '🚗', tile: tileColors.blue, go: () => router.push('/(customer)/rentals') },
+    { label: 'Stay', icon: '🏠', tile: tileColors.lavender, go: () => router.push('/(customer)/stays') },
+    { label: 'Repair', icon: '🔧', tile: tileColors.gold, go: () => onSelect('emergency_repair') },
+    { label: 'Host', icon: '🔑', tile: tileColors.mint, go: () => router.push('/(customer)/host') },
+    { label: 'Wallet', icon: '👛', tile: tileColors.pink, go: () => router.push('/(customer)/account') },
+    { label: 'More', icon: '⋯', tile: tileColors.sky, go: () => router.push('/(customer)/account') },
+  ];
+
+  const subPromos = [
+    { title: '50% off', sub: 'first ride', color: theme.greenSoft },
+    { title: 'Free', sub: 'repair callout', color: '#FFE8D6' },
+    { title: '$0', sub: 'delivery fees', color: '#FFF3C4' },
+  ];
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <Text style={styles.brand}>AngkorGo</Text>
-          <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={12}>
-            <Text style={styles.account}>Account</Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* Green header */}
+        <View style={styles.header}>
+          <View style={styles.headerRow}>
+            <View>
+              <Text style={styles.hi}>Hi there 👋</Text>
+              <Text style={styles.loc}>📍 Phnom Penh ▾</Text>
+            </View>
+            <View style={styles.headerActions}>
+              <Pressable onPress={nextLang} hitSlop={10} style={styles.langChip}>
+                <Text style={styles.langText}>{LANGUAGES[nextIndex].code.toUpperCase()}</Text>
+              </Pressable>
+              <Pressable onPress={() => router.push('/(customer)/account')} hitSlop={10} style={styles.avatar}>
+                <Text style={styles.avatarText}>A</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <Pressable style={styles.search} onPress={() => router.push('/(customer)/ride')}>
+            <Text style={styles.searchIcon}>🔍</Text>
+            <Text style={styles.searchText}>What do you need today?</Text>
           </Pressable>
         </View>
-        <Text style={styles.tagline}>{t(lang, 'tagline')}</Text>
-        <Pressable onPress={nextLang} hitSlop={12}>
-          <Text style={styles.langToggle}>{LANGUAGES[nextIndex].label}</Text>
-        </Pressable>
-      </View>
 
-      <Pressable style={styles.rideCard} onPress={() => router.push('/(customer)/ride')}>
-        <Text style={styles.rideIcon}>🛺</Text>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.rideTitle}>Get a ride</Text>
-          <Text style={styles.rideSub}>Moto · Tuk-tuk · Car</Text>
+        {/* Service grid */}
+        <View style={styles.grid}>
+          {services.map((s) => (
+            <Pressable key={s.label} style={styles.gridItem} onPress={s.go}>
+              <View style={[styles.iconTile, { backgroundColor: s.tile }]}>
+                <Text style={styles.iconEmoji}>{s.icon}</Text>
+              </View>
+              <Text style={styles.iconLabel}>{s.label}</Text>
+            </Pressable>
+          ))}
         </View>
-        <Text style={styles.rideArrow}>→</Text>
-      </Pressable>
 
-      <View style={styles.serviceRow}>
-        <Pressable style={styles.serviceCard} onPress={() => router.push('/(customer)/rentals')}>
-          <Text style={styles.rideIcon}>🚗</Text>
-          <Text style={styles.serviceTitle}>Rent</Text>
-          <Text style={styles.rentSub}>Cars & vans</Text>
-        </Pressable>
-        <Pressable style={styles.serviceCard} onPress={() => router.push('/(customer)/stays')}>
-          <Text style={styles.rideIcon}>🏠</Text>
-          <Text style={styles.serviceTitle}>Stay</Text>
-          <Text style={styles.rentSub}>Places to stay</Text>
-        </Pressable>
-        <Pressable style={styles.serviceCard} onPress={() => router.push('/(customer)/food')}>
-          <Text style={styles.rideIcon}>🍜</Text>
-          <Text style={styles.serviceTitle}>Food</Text>
-          <Text style={styles.rentSub}>Delivery</Text>
-        </Pressable>
-      </View>
+        {/* Quick actions */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
+          <View style={styles.quickCard}>
+            <Text style={styles.quickLabel}>💳 Wallet</Text>
+            <Text style={styles.quickValue}>$0.00</Text>
+          </View>
+          <View style={styles.quickCard}>
+            <Text style={styles.quickLabel}>🗓️ Schedule</Text>
+            <Text style={styles.quickValue}>Book a ride</Text>
+          </View>
+          <View style={styles.quickCard}>
+            <Text style={styles.quickLabel}>🎁 Rewards</Text>
+            <Text style={styles.quickValue}>Join now</Text>
+          </View>
+        </ScrollView>
 
-      <Text style={styles.prompt}>Roadside help</Text>
+        {/* Gold promo banner */}
+        <View style={styles.promo}>
+          <View style={styles.promoTop}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.promoTitle}>Your first ride is on us</Text>
+              <Text style={styles.promoSub}>Welcome to AngkorGo — Cambodia&apos;s super-app</Text>
+            </View>
+            <Text style={styles.promoWat}>🛕</Text>
+          </View>
+          <View style={styles.subPromos}>
+            {subPromos.map((p) => (
+              <View key={p.sub} style={[styles.subPromo, { backgroundColor: p.color }]}>
+                <Text style={styles.subPromoTitle}>{p.title}</Text>
+                <Text style={styles.subPromoSub}>{p.sub}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.grid}>
-        {SERVICE_CATEGORIES.map((c) => (
-          <Pressable key={c} style={styles.card} onPress={() => onSelect(c)}>
-            <Text style={styles.cardLabel}>{categoryLabel(lang, c)}</Text>
-          </Pressable>
-        ))}
+        {/* Roadside help */}
+        <Text style={styles.sectionTitle}>Roadside help</Text>
+        <View style={styles.rescueGrid}>
+          {SERVICE_CATEGORIES.map((c) => (
+            <Pressable key={c} style={styles.rescueCard} onPress={() => onSelect(c)}>
+              <View style={styles.rescueDot} />
+              <Text style={styles.rescueLabel}>{categoryLabel(lang, c)}</Text>
+            </Pressable>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0B1220', paddingTop: 64, paddingHorizontal: 16 },
-  header: { marginBottom: 24 },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  account: { color: '#8FA3BF', fontSize: 14, fontWeight: '600' },
-  brand: { color: '#fff', fontSize: 26, fontWeight: '800' },
-  tagline: { color: '#8FA3BF', fontSize: 15, marginTop: 4 },
-  langToggle: { color: '#F04438', fontSize: 14, marginTop: 8, fontWeight: '600' },
-  rideCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#F04438', borderRadius: 16, padding: 18, marginBottom: 12 },
-  serviceRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-  serviceCard: { flex: 1, backgroundColor: '#151E30', borderRadius: 16, padding: 18, borderWidth: 1, borderColor: '#1F2A40' },
-  serviceTitle: { color: '#fff', fontSize: 16, fontWeight: '800', marginTop: 8 },
-  rideIcon: { fontSize: 30 },
-  rideTitle: { color: '#fff', fontSize: 18, fontWeight: '800' },
-  rideSub: { color: '#FFE3E0', fontSize: 13, marginTop: 2 },
-  rentSub: { color: '#8FA3BF', fontSize: 13, marginTop: 2 },
-  rideArrow: { color: '#fff', fontSize: 22, fontWeight: '800' },
-  prompt: { color: '#fff', fontSize: 20, fontWeight: '700', marginBottom: 16 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
-  card: {
-    width: '48%',
-    backgroundColor: '#151E30',
-    borderRadius: 16,
-    paddingVertical: 28,
+  container: { flex: 1, backgroundColor: theme.bg },
+
+  header: {
+    backgroundColor: theme.greenDark,
+    paddingTop: 60,
     paddingHorizontal: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#1F2A40',
+    paddingBottom: 22,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
-  cardLabel: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  hi: { color: '#fff', fontSize: 20, fontWeight: '800' },
+  loc: { color: '#CFEAD9', fontSize: 13, marginTop: 3 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  langChip: { backgroundColor: 'rgba(255,255,255,0.18)', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
+  langText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  avatar: { width: 38, height: 38, borderRadius: 999, backgroundColor: theme.gold, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: '#1C1C1C', fontWeight: '800', fontSize: 16 },
+  search: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: '#fff', borderRadius: 999, paddingHorizontal: 16, paddingVertical: 14, marginTop: 18,
+  },
+  searchIcon: { fontSize: 15 },
+  searchText: { color: theme.muted, fontSize: 15 },
+
+  grid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 8, paddingTop: 18 },
+  gridItem: { width: '25%', alignItems: 'center', marginBottom: 18 },
+  iconTile: { width: 60, height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  iconEmoji: { fontSize: 28 },
+  iconLabel: { color: theme.ink, fontSize: 12.5, fontWeight: '600', marginTop: 7 },
+
+  quickRow: { paddingHorizontal: 16, gap: 12, paddingBottom: 6 },
+  quickCard: {
+    backgroundColor: theme.card, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 16,
+    borderWidth: 1, borderColor: theme.border, minWidth: 130,
+  },
+  quickLabel: { color: theme.muted, fontSize: 12.5, fontWeight: '600' },
+  quickValue: { color: theme.ink, fontSize: 16, fontWeight: '800', marginTop: 4 },
+
+  promo: {
+    backgroundColor: theme.goldSoft, borderRadius: 20, margin: 16, padding: 18,
+  },
+  promoTop: { flexDirection: 'row', alignItems: 'center' },
+  promoTitle: { color: '#5B4200', fontSize: 20, fontWeight: '900' },
+  promoSub: { color: '#8A6D1F', fontSize: 13, marginTop: 4 },
+  promoWat: { fontSize: 46 },
+  subPromos: { flexDirection: 'row', gap: 10, marginTop: 16 },
+  subPromo: { flex: 1, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 12 },
+  subPromoTitle: { color: theme.ink, fontSize: 16, fontWeight: '900' },
+  subPromoSub: { color: theme.muted, fontSize: 12, marginTop: 2 },
+
+  sectionTitle: { color: theme.ink, fontSize: 18, fontWeight: '800', marginTop: 8, marginBottom: 12, marginHorizontal: 16 },
+  rescueGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 },
+  rescueCard: {
+    width: '48%', backgroundColor: theme.card, borderRadius: 16, paddingVertical: 20, paddingHorizontal: 16,
+    marginBottom: 12, borderWidth: 1, borderColor: theme.border, flexDirection: 'row', alignItems: 'center', gap: 10,
+  },
+  rescueDot: { width: 10, height: 10, borderRadius: 999, backgroundColor: theme.green },
+  rescueLabel: { color: theme.ink, fontSize: 15, fontWeight: '700', flex: 1 },
 });
