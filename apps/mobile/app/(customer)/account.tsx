@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { DeleteAccountButton } from '@/components/DeleteAccountButton';
+import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -28,16 +29,15 @@ export default function AccountScreen() {
 
       <View style={{ marginTop: 'auto' }}>
         <DeleteAccountButton />
-        <Pressable style={styles.back} onPress={() => router.replace('/(customer)')}>
-          <Text style={styles.backText}>Back</Text>
-        </Pressable>
       </View>
+
+      <TabBar active="account" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72 },
+  container: { flex: 1, backgroundColor: '#F5F6F7', padding: 24, paddingTop: 72, paddingBottom: TAB_BAR_SPACE },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, borderWidth: 1, borderColor: '#ECECEC' },
   name: { color: '#1C1C1C', fontSize: 18, fontWeight: '700' },

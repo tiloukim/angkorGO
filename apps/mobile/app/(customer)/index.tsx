@@ -12,6 +12,7 @@ import {
   type ServiceCategory,
 } from '@angkorgo/shared';
 import { theme, tileColors } from '../../lib/theme';
+import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: TAB_BAR_SPACE + 16 }}>
         {/* Green header */}
         <View style={styles.header}>
           <View style={styles.headerRow}>
@@ -125,6 +126,8 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
+
+      <TabBar active="home" />
     </View>
   );
 }

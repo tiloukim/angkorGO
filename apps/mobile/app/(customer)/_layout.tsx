@@ -4,6 +4,8 @@ export default function CustomerLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F5F6F7' } }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="activity" />
+      <Stack.Screen name="wallet" />
       <Stack.Screen name="account" />
       <Stack.Screen name="ride/index" />
       <Stack.Screen name="ride/select" />
