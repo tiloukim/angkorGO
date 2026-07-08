@@ -1,11 +1,12 @@
 // Vehicle Rental — listing detail + date range → book.
 import { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
 import { BackButton } from '@/components/BackButton';
+import { DateField } from '@/components/DateField';
 
 interface Listing {
   id: string; title: string; description: string | null; price_per_unit: number;
@@ -16,19 +17,19 @@ const isDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse
 
 const L: Record<Language, Record<string, string>> = {
   en: {
-    perDay: '/ day', seats: 'seats', dates: 'Dates', startPh: 'Start YYYY-MM-DD', endPh: 'End YYYY-MM-DD',
+    perDay: '/ day', seats: 'seats', dates: 'Dates', startPh: 'Start date', endPh: 'End date',
     days: 'days', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)', total: 'Total',
     request: 'Request to book', back: 'Back',
     pickValidDates: 'Pick valid dates', pickValidDatesMsg: 'Use YYYY-MM-DD; end must be after start.', couldNotBook: 'Could not book',
   },
   km: {
-    perDay: '/ ថ្ងៃ', seats: 'កៅអី', dates: 'កាលបរិច្ឆេទ', startPh: 'ចាប់ផ្តើម YYYY-MM-DD', endPh: 'បញ្ចប់ YYYY-MM-DD',
+    perDay: '/ ថ្ងៃ', seats: 'កៅអី', dates: 'កាលបរិច្ឆេទ', startPh: 'ថ្ងៃចាប់ផ្តើម', endPh: 'ថ្ងៃបញ្ចប់',
     days: 'ថ្ងៃ', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)', total: 'សរុប',
     request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
     pickValidDates: 'ជ្រើស​កាលបរិច្ឆេទ​ត្រឹមត្រូវ', pickValidDatesMsg: 'ប្រើ YYYY-MM-DD; ថ្ងៃបញ្ចប់​ត្រូវ​នៅ​ក្រោយ​ថ្ងៃ​ចាប់ផ្តើម។', couldNotBook: 'មិន​អាច​កក់',
   },
   zh: {
-    perDay: '/ 天', seats: '座位', dates: '日期', startPh: '开始 YYYY-MM-DD', endPh: '结束 YYYY-MM-DD',
+    perDay: '/ 天', seats: '座位', dates: '日期', startPh: '开始日期', endPh: '结束日期',
     days: '天', cleaningFee: '清洁费', deposit: '押金（可退）', total: '总计',
     request: '请求预订', back: '返回',
     pickValidDates: '请选择有效日期', pickValidDatesMsg: '使用 YYYY-MM-DD；结束日期须晚于开始日期。', couldNotBook: '无法预订',
@@ -79,8 +80,9 @@ export default function ListingDetail() {
 
       <Text style={styles.label}>{t.dates}</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder={t.startPh} placeholderTextColor="#9AA0A6" value={start} onChangeText={setStart} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder={t.endPh} placeholderTextColor="#9AA0A6" value={end} onChangeText={setEnd} autoCapitalize="none" />
+        <DateField value={start} placeholder={t.startPh}
+          onChange={(v) => { setStart(v); if (end && end <= v) setEnd(''); }} />
+        <DateField value={end} placeholder={t.endPh} min={start || undefined} onChange={setEnd} />
       </View>
 
       {days > 0 && (
