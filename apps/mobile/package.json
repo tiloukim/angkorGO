@@ -5,6 +5,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
+    "start:driver": "EXPO_PUBLIC_APP_VARIANT=driver expo start",
     "android": "expo start --android",
     "ios": "expo start --ios"
   },

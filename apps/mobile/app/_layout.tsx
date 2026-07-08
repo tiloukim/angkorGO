@@ -2,13 +2,16 @@
 import { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
+import { useRef } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { LocaleProvider } from '@/lib/locale';
+import { IS_DRIVER_APP } from '@/lib/variant';
 
 function RootNavigator() {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, setRole } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const settingRole = useRef(false);
 
   useEffect(() => {
     if (loading) return;
@@ -21,6 +24,17 @@ function RootNavigator() {
     if (!session) {
       // Not signed in → start at the welcome/language splash.
       if (!inAuthGroup) router.replace('/(auth)/welcome');
+      return;
+    }
+
+    // Driver app (build variant): everyone is a provider — skip the role picker.
+    // Any signed-in account is (auto-)set to provider, then routed to (provider).
+    if (IS_DRIVER_APP) {
+      if (profile && profile.role !== 'provider') {
+        if (!settingRole.current) { settingRole.current = true; setRole('provider').catch(() => { settingRole.current = false; }); }
+        return;
+      }
+      if (profile && inAuthGroup) router.replace('/(provider)');
       return;
     }
 

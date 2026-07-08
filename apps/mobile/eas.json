@@ -14,6 +14,14 @@
       "channel": "production",
       "autoIncrement": true,
       "android": { "buildType": "app-bundle" }
+    },
+    "preview-driver": {
+      "extends": "preview",
+      "env": { "EXPO_PUBLIC_APP_VARIANT": "driver" }
+    },
+    "production-driver": {
+      "extends": "production",
+      "env": { "EXPO_PUBLIC_APP_VARIANT": "driver" }
     }
   },
   "submit": {
