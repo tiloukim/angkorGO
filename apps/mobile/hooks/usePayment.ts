@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Payment } from '@angkorgo/shared';
 
-function usePaymentBy(column: 'request_id' | 'trip_id' | 'booking_id' | 'order_id', value: string | undefined) {
+function usePaymentBy(column: 'request_id' | 'trip_id' | 'booking_id' | 'order_id' | 'parcel_id', value: string | undefined) {
   const [payment, setPayment] = useState<Payment | null>(null);
 
   useEffect(() => {
@@ -39,4 +39,8 @@ export function useBookingPayment(bookingId: string | undefined) {
 
 export function useOrderPayment(orderId: string | undefined) {
   return usePaymentBy('order_id', orderId);
+}
+
+export function useParcelPayment(parcelId: string | undefined) {
+  return usePaymentBy('parcel_id', parcelId);
 }

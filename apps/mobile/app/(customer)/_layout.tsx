@@ -21,6 +21,8 @@ export default function CustomerLayout() {
       <Stack.Screen name="food/index" />
       <Stack.Screen name="food/[id]" />
       <Stack.Screen name="food/order/[id]" />
+      <Stack.Screen name="express/index" />
+      <Stack.Screen name="express/[id]" />
       <Stack.Screen name="restaurant/index" />
       <Stack.Screen name="request/location" />
       <Stack.Screen name="request/photos" />

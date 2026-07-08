@@ -13,6 +13,7 @@ import { useLocale } from '@/lib/locale';
 import { useProviderOffers, type Offer } from '@/hooks/useProviderOffers';
 import { useTripOffers, type TripOffer } from '@/hooks/useTripOffers';
 import { useCourierOffers, type CourierOffer } from '@/hooks/useCourierOffers';
+import { useParcelOffers, type ParcelOffer } from '@/hooks/useParcelOffers';
 import type { Provider, Language } from '@angkorgo/shared';
 
 const L: Record<Language, Record<string, string>> = {
@@ -31,6 +32,8 @@ const L: Record<Language, Record<string, string>> = {
     flipSwitch: 'Flip the switch to start receiving nearby requests.',
     rideRequests: 'Ride requests',
     deliveryRequests: 'Delivery requests',
+    parcelRequests: 'Parcel requests',
+    parcelTaken: 'This parcel was taken.',
     roadsideRequests: 'Roadside requests',
     waiting: 'Waiting for requests…',
     pickup: 'Pickup',
@@ -57,6 +60,8 @@ const L: Record<Language, Record<string, string>> = {
     flipSwitch: 'បើក​កុងតាក់​ដើម្បី​ចាប់ផ្តើម​ទទួល​សំណើ​នៅ​ជិត។',
     rideRequests: 'សំណើ​ដំណើរ',
     deliveryRequests: 'សំណើ​ដឹកជញ្ជូន',
+    parcelRequests: 'សំណើ​កញ្ចប់',
+    parcelTaken: 'កញ្ចប់​នេះ​ត្រូវ​បាន​យក។',
     roadsideRequests: 'សំណើ​ជំនួយ​តាម​ផ្លូវ',
     waiting: 'កំពុង​រង់ចាំ​សំណើ…',
     pickup: 'ទទួល',
@@ -83,6 +88,8 @@ const L: Record<Language, Record<string, string>> = {
     flipSwitch: '打开开关以开始接收附近的请求。',
     rideRequests: '行程请求',
     deliveryRequests: '配送请求',
+    parcelRequests: '包裹请求',
+    parcelTaken: '该包裹已被接走。',
     roadsideRequests: '道路救援请求',
     waiting: '正在等待请求…',
     pickup: '取货',
@@ -105,6 +112,7 @@ export default function ProviderDashboard() {
   const { offers, refresh } = useProviderOffers(provider?.id);
   const { offers: rideOffers, refresh: refreshRides } = useTripOffers(provider?.id);
   const { offers: foodOffers, refresh: refreshFood } = useCourierOffers(provider?.id);
+  const { offers: parcelOffers, refresh: refreshParcels } = useParcelOffers(provider?.id);
 
   async function load() {
     const { data } = await supabase.from('providers').select('*').single();
@@ -150,6 +158,17 @@ export default function ProviderDashboard() {
   async function rejectFood(o: CourierOffer) {
     await supabase.from('courier_offers').update({ status: 'rejected' }).eq('id', o.offer_id);
     refreshFood();
+  }
+
+  async function acceptParcel(o: ParcelOffer) {
+    const { error } = await supabase.rpc('accept_parcel_offer', { p_offer: o.offer_id });
+    if (error) { Alert.alert(t.tooLate, t.parcelTaken); refreshParcels(); return; }
+    router.push({ pathname: '/(provider)/parcel/[id]', params: { id: o.parcel_id } });
+  }
+
+  async function rejectParcel(o: ParcelOffer) {
+    await supabase.rpc('reject_parcel_offer', { p_offer: o.offer_id });
+    refreshParcels();
   }
 
   const approved = provider?.status === 'approved';
@@ -219,6 +238,23 @@ export default function ProviderDashboard() {
               </View>
               <Pressable style={styles.reject} onPress={() => rejectFood(item)}><Text style={styles.rejectText}>{t.skip}</Text></Pressable>
               <Pressable style={styles.accept} onPress={() => acceptFood(item)}><Text style={styles.acceptText}>{t.accept}</Text></Pressable>
+            </View>
+          ))}
+        </>
+      )}
+
+      {approved && provider?.is_online && parcelOffers.length > 0 && (
+        <>
+          <Text style={styles.section}>{t.parcelRequests} ({parcelOffers.length})</Text>
+          {parcelOffers.map((item) => (
+            <View key={item.offer_id} style={styles.offer}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.offerCat}>📦 {item.pickup ?? t.pickup} · ${Number(item.fee ?? 0).toFixed(2)}</Text>
+                <Text style={styles.offerMeta}>{item.distance_km ?? '?'} km to pickup · ~{item.eta_minutes ?? '?'} min</Text>
+                {item.dropoff ? <Text style={styles.offerAddr} numberOfLines={1}>→ {item.dropoff}</Text> : null}
+              </View>
+              <Pressable style={styles.reject} onPress={() => rejectParcel(item)}><Text style={styles.rejectText}>{t.skip}</Text></Pressable>
+              <Pressable style={styles.accept} onPress={() => acceptParcel(item)}><Text style={styles.acceptText}>{t.accept}</Text></Pressable>
             </View>
           ))}
         </>

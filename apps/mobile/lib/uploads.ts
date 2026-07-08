@@ -53,6 +53,16 @@ export async function uploadListingPhoto(userId: string, localUri: string): Prom
   return supabase.storage.from('listings').getPublicUrl(path).data.publicUrl;
 }
 
+// Upload a parcel or proof-of-delivery photo to the public `parcels` bucket.
+export async function uploadParcelPhoto(userId: string, localUri: string): Promise<string> {
+  const path = `${userId}/${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from('parcels')
+    .upload(path, await readBytes(localUri), { contentType: 'image/jpeg', upsert: true });
+  if (error) throw error;
+  return supabase.storage.from('parcels').getPublicUrl(path).data.publicUrl;
+}
+
 export const MAX_REQUEST_IMAGES = 10;
 
 // Uploads one local file URI into request-images/{requestId}/{name}.jpg and

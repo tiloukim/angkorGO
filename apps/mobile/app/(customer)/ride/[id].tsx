@@ -137,6 +137,14 @@ export default function RideStatus() {
               <Text style={styles.driverFare}>${Number(fare ?? 0).toFixed(2)}</Text>
             </View>
           )}
+          {TO_PICKUP.includes(status) && (
+            <Pressable style={styles.cancel} onPress={() => Alert.alert(L[lang].cancelRide, '', [
+              { text: L[lang].keepWaiting, style: 'cancel' },
+              { text: L[lang].cancel, style: 'destructive', onPress: cancel },
+            ])}>
+              <Text style={styles.cancelText}>{L[lang].cancelRide}</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     );
