@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
 import { BackButton } from '@/components/BackButton';
+import { DateField } from '@/components/DateField';
 
 interface Listing {
   id: string; title: string; description: string | null; price_per_unit: number;
@@ -17,21 +18,21 @@ const isDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse
 const L: Record<Language, Record<string, string>> = {
   en: {
     perNight: '/ night', beds: 'beds', baths: 'baths', upTo: 'up to', guestsWord: 'guests',
-    amenities: 'Amenities', datesGuests: 'Dates & guests', checkInPh: 'Check-in YYYY-MM-DD', checkOutPh: 'Check-out YYYY-MM-DD',
+    amenities: 'Amenities', datesGuests: 'Dates & guests', checkInPh: 'Check-in', checkOutPh: 'Check-out',
     guestsPh: 'Guests', nights: 'nights', cleaningFee: 'Cleaning fee', deposit: 'Deposit (refundable)',
     total: 'Total', request: 'Request to book', back: 'Back',
     pickValidDates: 'Pick valid dates', pickValidDatesMsg: 'Use YYYY-MM-DD; check-out after check-in.', couldNotBook: 'Could not book',
   },
   km: {
     perNight: '/ យប់', beds: 'គ្រែ', baths: 'បន្ទប់ទឹក', upTo: 'រហូតដល់', guestsWord: 'ភ្ញៀវ',
-    amenities: 'សម្ភារៈ', datesGuests: 'កាលបរិច្ឆេទ និងភ្ញៀវ', checkInPh: 'ចូលស្នាក់ YYYY-MM-DD', checkOutPh: 'ចាកចេញ YYYY-MM-DD',
+    amenities: 'សម្ភារៈ', datesGuests: 'កាលបរិច្ឆេទ និងភ្ញៀវ', checkInPh: 'ចូលស្នាក់', checkOutPh: 'ចាកចេញ',
     guestsPh: 'ភ្ញៀវ', nights: 'យប់', cleaningFee: 'ថ្លៃសម្អាត', deposit: 'ប្រាក់កក់ (សងវិញបាន)',
     total: 'សរុប', request: 'ស្នើសុំកក់', back: 'ថយក្រោយ',
     pickValidDates: 'ជ្រើស​កាលបរិច្ឆេទ​ត្រឹមត្រូវ', pickValidDatesMsg: 'ប្រើ YYYY-MM-DD; ចាកចេញ​ត្រូវ​នៅ​ក្រោយ​ចូលស្នាក់។', couldNotBook: 'មិន​អាច​កក់',
   },
   zh: {
     perNight: '/ 晚', beds: '床', baths: '浴室', upTo: '最多', guestsWord: '位客人',
-    amenities: '设施', datesGuests: '日期和客人', checkInPh: '入住 YYYY-MM-DD', checkOutPh: '退房 YYYY-MM-DD',
+    amenities: '设施', datesGuests: '日期和客人', checkInPh: '入住', checkOutPh: '退房',
     guestsPh: '客人', nights: '晚', cleaningFee: '清洁费', deposit: '押金（可退）',
     total: '总计', request: '请求预订', back: '返回',
     pickValidDates: '请选择有效日期', pickValidDatesMsg: '使用 YYYY-MM-DD；退房须晚于入住。', couldNotBook: '无法预订',
@@ -86,8 +87,9 @@ export default function StayDetail() {
 
       <Text style={styles.label}>{t.datesGuests}</Text>
       <View style={styles.dates}>
-        <TextInput style={styles.input} placeholder={t.checkInPh} placeholderTextColor="#9AA0A6" value={checkIn} onChangeText={setCheckIn} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder={t.checkOutPh} placeholderTextColor="#9AA0A6" value={checkOut} onChangeText={setCheckOut} autoCapitalize="none" />
+        <DateField value={checkIn} placeholder={t.checkInPh}
+          onChange={(v) => { setCheckIn(v); if (checkOut && checkOut <= v) setCheckOut(''); }} />
+        <DateField value={checkOut} placeholder={t.checkOutPh} min={checkIn || undefined} onChange={setCheckOut} />
       </View>
       <TextInput style={[styles.input, { marginHorizontal: 24, marginTop: 10 }]} placeholder={t.guestsPh} placeholderTextColor="#9AA0A6" keyboardType="number-pad" value={guests} onChangeText={setGuests} />
 
