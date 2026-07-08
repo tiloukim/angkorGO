@@ -36,9 +36,9 @@ const COPY: Record<Language, Partial<Record<BookingStatus, { title: string; sub:
 };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { backHome: 'Back to home', cancelBooking: 'Cancel booking', cancelBookingQ: 'Cancel this booking?', keepBooking: 'Keep booking' },
-  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម', cancelBooking: 'បោះបង់ការកក់', cancelBookingQ: 'បោះបង់ការកក់នេះ?', keepBooking: 'រក្សាការកក់' },
-  zh: { backHome: '返回首页', cancelBooking: '取消预订', cancelBookingQ: '取消此预订？', keepBooking: '保留预订' },
+  en: { backHome: 'Back to home', cancelBooking: 'Cancel booking', cancelBookingQ: 'Cancel this booking?', keepBooking: 'Keep booking', paid: 'Paid ✓ · Booking secured' },
+  km: { backHome: 'ត្រឡប់ទៅទំព័រដើម', cancelBooking: 'បោះបង់ការកក់', cancelBookingQ: 'បោះបង់ការកក់នេះ?', keepBooking: 'រក្សាការកក់', paid: 'បានបង់ ✓ · ការកក់ត្រូវបានធានា' },
+  zh: { backHome: '返回首页', cancelBooking: '取消预订', cancelBookingQ: '取消此预订？', keepBooking: '保留预订', paid: '已支付 ✓ · 预订已锁定' },
 };
 
 export default function BookingStatus() {
@@ -69,7 +69,8 @@ export default function BookingStatus() {
 
   const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY.en.requested!;
   const needsPay = (status === 'confirmed' || status === 'in_progress') && payment && payment.status !== 'released';
-  const canCancel = status === 'requested' || status === 'confirmed';
+  const paid = payment?.status === 'released';
+  const canCancel = (status === 'requested' || status === 'confirmed') && !paid;
 
   function confirmCancel() {
     Alert.alert(L[lang].cancelBookingQ, '', [
@@ -85,7 +86,7 @@ export default function BookingStatus() {
     <View style={styles.container}>
       <View style={styles.center}>
         <Text style={styles.title}>{copy.title}</Text>
-        <Text style={styles.sub}>{copy.sub}</Text>
+        <Text style={[styles.sub, paid && styles.paid]}>{paid ? L[lang].paid : copy.sub}</Text>
         {total != null && <Text style={styles.total}>${total.toFixed(2)}</Text>}
       </View>
 
@@ -109,6 +110,7 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', textAlign: 'center' },
   sub: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 8 },
+  paid: { color: '#00B14F', fontWeight: '800' },
   total: { color: '#00B14F', fontSize: 32, fontWeight: '800', marginTop: 16 },
   primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },
   primaryText: { color: '#fff', fontWeight: '700' },
