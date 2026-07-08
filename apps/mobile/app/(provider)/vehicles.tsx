@@ -2,11 +2,11 @@
 // until an admin approves it; only verified+active vehicles receive ride offers.
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { VEHICLE_CLASSES, VEHICLE_LABELS, type VehicleClass, type Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { uploadVehiclePhoto } from '@/lib/uploads';
+import { pickImage } from '@/lib/imagePicker';
 import { useLocale } from '@/lib/locale';
 
 const L: Record<Language, Record<string, string>> = {
@@ -25,6 +25,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: 'Add photo (optional)',
     addVehicleBtn: 'Add vehicle',
     back: 'Back',
+    takePhoto: 'Take photo', choosePhoto: 'Choose from library', cancel: 'Cancel', cameraDenied: 'Camera permission is required.',
   },
   km: {
     enterPlate: 'បញ្ចូល​លេខ​ស្លាក',
@@ -41,6 +42,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: 'បន្ថែម​រូបភាព (ជម្រើស)',
     addVehicleBtn: 'បន្ថែម​យានយន្ត',
     back: 'ថយក្រោយ',
+    takePhoto: 'ថតរូប', choosePhoto: 'ជ្រើសពីបណ្ណាល័យ', cancel: 'បោះបង់', cameraDenied: 'ត្រូវការការអនុញ្ញាតកាមេរ៉ា។',
   },
   zh: {
     enterPlate: '请输入车牌号',
@@ -57,6 +59,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: '添加照片（可选）',
     addVehicleBtn: '添加车辆',
     back: '返回',
+    takePhoto: '拍照', choosePhoto: '从相册选择', cancel: '取消', cameraDenied: '需要相机权限。',
   },
 };
 
@@ -88,8 +91,8 @@ export default function VehiclesScreen() {
   useEffect(() => { load(); }, [load]);
 
   async function pickPhoto() {
-    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
-    if (!res.canceled) setPhoto(res.assets[0].uri);
+    const uri = await pickImage({ addPhoto: t.addPhoto, takePhoto: t.takePhoto, choosePhoto: t.choosePhoto, cancel: t.cancel, cameraDenied: t.cameraDenied });
+    if (uri) setPhoto(uri);
   }
 
   async function add() {

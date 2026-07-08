@@ -1,12 +1,12 @@
 // Host — create a listing (Vehicle or Place). Goes live immediately.
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, Alert, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { ListingType, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { uploadListingPhoto } from '@/lib/uploads';
+import { pickImage } from '@/lib/imagePicker';
 import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
@@ -34,6 +34,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: 'Add photo',
     publishListing: 'Publish listing',
     cancel: 'Cancel',
+    takePhoto: 'Take photo', choosePhoto: 'Choose from library', cameraDenied: 'Camera permission is required.',
   },
   km: {
     addTitleRate: 'បញ្ចូល​ចំណងជើង​និង​តម្លៃ',
@@ -59,6 +60,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: 'បន្ថែមរូបភាព',
     publishListing: 'បង្ហោះបញ្ជី',
     cancel: 'បោះបង់',
+    takePhoto: 'ថតរូប', choosePhoto: 'ជ្រើសពីបណ្ណាល័យ', cameraDenied: 'ត្រូវការការអនុញ្ញាតកាមេរ៉ា។',
   },
   zh: {
     addTitleRate: '请输入标题和价格',
@@ -84,6 +86,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhoto: '添加照片',
     publishListing: '发布房源',
     cancel: '取消',
+    takePhoto: '拍照', choosePhoto: '从相册选择', cameraDenied: '需要相机权限。',
   },
 };
 
@@ -113,8 +116,8 @@ export default function NewListing() {
   const isPlace = type === 'place';
 
   async function pickPhoto() {
-    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
-    if (!res.canceled) setPhoto(res.assets[0].uri);
+    const uri = await pickImage({ addPhoto: t.addPhoto, takePhoto: t.takePhoto, choosePhoto: t.choosePhoto, cancel: t.cancel, cameraDenied: t.cameraDenied });
+    if (uri) setPhoto(uri);
   }
 
   async function create() {

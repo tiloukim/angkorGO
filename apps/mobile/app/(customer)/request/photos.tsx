@@ -2,12 +2,12 @@
 // On submit: create_service_request RPC → upload images → dispatch → status screen.
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { ServiceCategory, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { uploadRequestImages, MAX_REQUEST_IMAGES } from '@/lib/uploads';
+import { pickImages } from '@/lib/imagePicker';
 import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
@@ -17,6 +17,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhotos: 'Add photos',
     optionalHelp: 'Optional — help the provider understand the problem. Up to',
     requestHelp: 'Request help',
+    addPhoto: 'Add photo', takePhoto: 'Take photo', choosePhoto: 'Choose from library', cancel: 'Cancel', cameraDenied: 'Camera permission is required.',
   },
   km: {
     requestFailed: 'ស្នើ​បរាជ័យ',
@@ -24,6 +25,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhotos: 'បន្ថែមរូបភាព',
     optionalHelp: 'ស្រេចចិត្ត — ជួយឱ្យអ្នកផ្តល់សេវាយល់ពីបញ្ហា។ រហូតដល់',
     requestHelp: 'ស្នើសុំជំនួយ',
+    addPhoto: 'បន្ថែមរូបភាព', takePhoto: 'ថតរូប', choosePhoto: 'ជ្រើសពីបណ្ណាល័យ', cancel: 'បោះបង់', cameraDenied: 'ត្រូវការការអនុញ្ញាតកាមេរ៉ា។',
   },
   zh: {
     requestFailed: '请求失败',
@@ -31,6 +33,7 @@ const L: Record<Language, Record<string, string>> = {
     addPhotos: '添加照片',
     optionalHelp: '可选 — 帮助服务人员了解问题。最多',
     requestHelp: '请求帮助',
+    addPhoto: '添加照片', takePhoto: '拍照', choosePhoto: '从相册选择', cancel: '取消', cameraDenied: '需要相机权限。',
   },
 };
 
@@ -46,13 +49,11 @@ export default function PhotosScreen() {
 
   async function pick() {
     if (uris.length >= MAX_REQUEST_IMAGES) return;
-    const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsMultipleSelection: true,
-      selectionLimit: MAX_REQUEST_IMAGES - uris.length,
-      quality: 0.6,
-    });
-    if (!res.canceled) setUris((prev) => [...prev, ...res.assets.map((a) => a.uri)].slice(0, MAX_REQUEST_IMAGES));
+    const picked = await pickImages(
+      { addPhoto: t.addPhoto, takePhoto: t.takePhoto, choosePhoto: t.choosePhoto, cancel: t.cancel, cameraDenied: t.cameraDenied },
+      MAX_REQUEST_IMAGES - uris.length,
+    );
+    if (picked.length) setUris((prev) => [...prev, ...picked].slice(0, MAX_REQUEST_IMAGES));
   }
 
   async function submit() {
