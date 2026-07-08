@@ -100,7 +100,13 @@ export function PaymentSheet({ payment }: { payment: Payment }) {
       <View style={styles.sheet}>
         <Text style={styles.title}>{t.paymentReceived}</Text>
         <Text style={styles.sub}>{t.releaseHint}</Text>
-        <Pressable style={styles.primary} onPress={() => supabase.rpc('release_payment', { p_payment_id: payment.id })}>
+        <Pressable style={styles.primary} disabled={busy} onPress={async () => {
+          setBusy(true);
+          const { error } = await supabase.rpc('release_payment', { p_payment_id: payment.id });
+          setBusy(false);
+          if (error) Alert.alert(t.paymentError, error.message);
+          // Realtime flips the sheet to Paid ✓ on success.
+        }}>
           <Text style={styles.primaryText}>{t.confirmRelease}</Text>
         </Pressable>
       </View>
