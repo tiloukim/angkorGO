@@ -25,6 +25,7 @@ const L: Record<Language, Record<string, string>> = {
     upload: 'Upload',
     uploaded: 'Uploaded ✓',
     submitForReview: 'Submit for review',
+    addPhoto: 'Add photo', takePhoto: 'Take photo', choosePhoto: 'Choose from library', cancel: 'Cancel', cameraDenied: 'Camera permission is required.',
   },
   km: {
     uploadFailed: 'ការ​ផ្ទុក​ឡើង​បរាជ័យ',
@@ -41,6 +42,7 @@ const L: Record<Language, Record<string, string>> = {
     upload: 'ផ្ទុកឡើង',
     uploaded: 'បាន​ផ្ទុក​ឡើង ✓',
     submitForReview: 'ដាក់​ស្នើ​ដើម្បី​ត្រួតពិនិត្យ',
+    addPhoto: 'បន្ថែមរូបភាព', takePhoto: 'ថតរូប', choosePhoto: 'ជ្រើសពីបណ្ណាល័យ', cancel: 'បោះបង់', cameraDenied: 'ត្រូវការការអនុញ្ញាតកាមេរ៉ា។',
   },
   zh: {
     uploadFailed: '上传失败',
@@ -57,6 +59,7 @@ const L: Record<Language, Record<string, string>> = {
     upload: '上传',
     uploaded: '已上传 ✓',
     submitForReview: '提交审核',
+    addPhoto: '添加照片', takePhoto: '拍照', choosePhoto: '从相册选择', cancel: '取消', cameraDenied: '需要相机权限。',
   },
 };
 
@@ -91,16 +94,34 @@ export default function OnboardingScreen() {
     });
   }
 
-  async function pickDoc(type: string) {
+  async function uploadFrom(type: string, useCamera: boolean) {
     if (!providerId) return;
-    const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
-    if (res.canceled) return;
+    let uri: string | null = null;
+    if (useCamera) {
+      const perm = await ImagePicker.requestCameraPermissionsAsync();
+      if (!perm.granted) return Alert.alert(t.cameraDenied);
+      const res = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.6 });
+      if (!res.canceled) uri = res.assets[0].uri;
+    } else {
+      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.6 });
+      if (!res.canceled) uri = res.assets[0].uri;
+    }
+    if (!uri) return;
     try {
-      await uploadProviderDocument(providerId, type as any, res.assets[0].uri);
+      await uploadProviderDocument(providerId, type as any, uri);
       setUploaded((u) => ({ ...u, [type]: true }));
     } catch (e: any) {
       Alert.alert(t.uploadFailed, e.message);
     }
+  }
+
+  function pickDoc(type: string) {
+    if (!providerId) return;
+    Alert.alert(t.addPhoto, undefined, [
+      { text: t.takePhoto, onPress: () => uploadFrom(type, true) },
+      { text: t.choosePhoto, onPress: () => uploadFrom(type, false) },
+      { text: t.cancel, style: 'cancel' },
+    ]);
   }
 
   async function submit() {
