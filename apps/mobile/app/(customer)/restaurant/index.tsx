@@ -6,6 +6,7 @@ import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { getCurrentCoords, coordsToAddress } from '@/lib/location';
+import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
   en: {
@@ -144,6 +145,7 @@ export default function Restaurant() {
   if (!rest) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+        <BackButton variant="light" style={{ marginBottom: 16 }} />
         <Text style={styles.h1}>{t.openRestaurant}</Text>
         <TextInput style={styles.input} placeholder={t.restaurantName} placeholderTextColor="#9AA0A6" value={name} onChangeText={setName} />
         <TextInput style={styles.input} placeholder={t.cuisine} placeholderTextColor="#9AA0A6" value={cuisine} onChangeText={setCuisine} />
@@ -155,6 +157,7 @@ export default function Restaurant() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      <BackButton variant="light" style={{ marginBottom: 16 }} />
       <View style={styles.headerRow}>
         <Text style={styles.h1}>{rest.name}</Text>
         <View style={styles.openWrap}><Text style={styles.openLabel}>{rest.is_open ? t.open : t.closed}</Text><Switch value={rest.is_open} onValueChange={toggleOpen} /></View>

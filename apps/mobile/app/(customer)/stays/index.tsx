@@ -7,6 +7,7 @@ import { theme } from '@/lib/theme';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
 import { LocationLangBar } from '@/components/LocationLangBar';
+import { BackButton } from '@/components/BackButton';
 
 interface Listing {
   id: string; title: string; price_per_unit: number; photos: string[]; address: string | null; attributes: Record<string, any>;
@@ -33,6 +34,7 @@ export default function Stays() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <BackButton variant="onDark" style={{ marginBottom: 10 }} />
         <LocationLangBar />
       </View>
       <View style={styles.content}>

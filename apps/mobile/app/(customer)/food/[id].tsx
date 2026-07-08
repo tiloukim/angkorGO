@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { getCurrentCoords, coordsToAddress } from '@/lib/location';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
+import { BackButton } from '@/components/BackButton';
 
 interface Item { id: string; name: string; description: string | null; price: number; category: string | null }
 
@@ -79,6 +80,8 @@ export default function RestaurantMenu() {
         ))}
         {items.length === 0 && <Text style={styles.empty}>{t.empty}</Text>}
       </ScrollView>
+
+      <BackButton variant="float" />
 
       {count > 0 && (
         <View style={styles.checkout}>

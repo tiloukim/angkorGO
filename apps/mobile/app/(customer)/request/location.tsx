@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { categoryLabel, type ServiceCategory, type Language } from '@angkorgo/shared';
 import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { useLocale } from '@/lib/locale';
+import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
   en: {
@@ -72,6 +73,8 @@ export default function LocationScreen() {
           onDragEnd={(e) => onDragEnd({ lat: e.nativeEvent.coordinate.latitude, lng: e.nativeEvent.coordinate.longitude })}
         />
       </MapView>
+
+      <BackButton variant="float" />
 
       <View style={styles.sheet}>
         <Text style={styles.category}>{categoryLabel(lang, category)}</Text>

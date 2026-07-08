@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
+import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
   en: {
@@ -76,6 +77,7 @@ export default function HostDashboard() {
 
   return (
     <View style={styles.container}>
+      <BackButton variant="light" style={{ marginBottom: 16 }} />
       <View style={styles.headerRow}>
         <Text style={styles.h1}>{t.host}</Text>
         <Pressable style={styles.addBtn} onPress={() => router.push('/(customer)/host/new')}>

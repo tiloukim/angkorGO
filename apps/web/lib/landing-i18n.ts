@@ -17,6 +17,16 @@ export type LandingCopy = {
   service: { cta: string };
   desc: Record<string, string>;
   w: Record<string, string>;
+  plan: {
+    title: string; sub: string;
+    cards: { key: string; title: string; concept: string; bullets: string[] }[];
+  };
+  overview: {
+    eyebrow: string; heading: string; body: string;
+    smart: { title: string; body: string }[];
+    availableOn: string; web: string;
+  };
+  mission: { eyebrow: string; body: string; s1: string; s2: string; s3: string };
   how: { title: string; steps: { title: string; body: string }[] };
   deal: { week: string; title: string; sub: string; cta: string; badge: string };
   promos: { title: string; sub: string; cta: string };
@@ -57,6 +67,34 @@ export const COPY: Record<Language, LandingCopy> = {
       invite: 'Invite friends and both of you earn rewards.',
     },
     w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons' },
+    plan: {
+      title: 'Five services. One app.',
+      sub: 'Everything you need to move, eat, rent, repair and stay — all across Cambodia.',
+      cards: [
+        { key: 'taxi', title: 'Taxi & Ride', concept: 'Grab / Uber concept', bullets: ['Book rides instantly', 'Real-time tracking', 'Cash, card or wallet', 'Ratings & reviews'] },
+        { key: 'rental', title: 'Vehicle Rental', concept: 'Turo concept', bullets: ['Rent cars or vans', 'Daily / weekly / monthly', 'Secure booking & payment', 'Owner dashboard'] },
+        { key: 'repair', title: 'Mobile Auto Repair', concept: 'Mechanic to you', bullets: ['Request a mechanic', 'Real-time tracking', 'Service at your location', 'Transparent pricing'] },
+        { key: 'food', title: 'Food Delivery', concept: 'Foodpanda concept', bullets: ['Restaurant & food orders', 'Real-time delivery', 'Track your rider', 'Multiple payment'] },
+        { key: 'stay', title: 'Stay & Places', concept: 'Airbnb concept', bullets: ['Short-term stays', 'Homes, apartments, villas', 'Secure booking', 'Host management'] },
+      ],
+    },
+    overview: {
+      eyebrow: 'Platform overview',
+      heading: 'One app, many services',
+      body: 'AngkorGo brings together all your daily needs into one platform to make life and travel easier in Cambodia.',
+      smart: [
+        { title: 'Real-time tracking', body: 'Live location & map' },
+        { title: 'Secure payment', body: 'Multiple payment methods' },
+        { title: '24/7 support', body: 'Help when you need it' },
+        { title: 'Multi-language', body: 'English · Khmer · Chinese' },
+      ],
+      availableOn: 'Available on iOS & Android', web: 'Also on web',
+    },
+    mission: {
+      eyebrow: 'Our mission',
+      body: 'To empower Cambodia with one trusted platform that connects people, services and opportunities in one Go.',
+      s1: 'One app.', s2: 'All services.', s3: 'Everywhere in Cambodia.',
+    },
     how: {
       title: 'How AngkorGo works',
       steps: [
@@ -109,6 +147,34 @@ export const COPY: Record<Language, LandingCopy> = {
       invite: 'អញ្ជើញមិត្តភក្តិ ហើយអ្នកទាំងពីរទទួលបានរង្វាន់។',
     },
     w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង' },
+    plan: {
+      title: 'សេវាកម្មប្រាំ។ កម្មវិធីតែមួយ។',
+      sub: 'អ្វីៗគ្រប់យ៉ាងដែលអ្នកត្រូវការ ដើម្បីធ្វើដំណើរ ញ៉ាំ ជួល ជួសជុល និងស្នាក់នៅ — ទូទាំងកម្ពុជា។',
+      cards: [
+        { key: 'taxi', title: 'តាក់ស៊ី & ការជិះ', concept: 'គំនិត Grab / Uber', bullets: ['កក់ការជិះភ្លាមៗ', 'តាមដានតាមពេលវេលាជាក់ស្តែង', 'សាច់ប្រាក់ កាត ឬកាបូប', 'ការវាយតម្លៃ & មតិ'] },
+        { key: 'rental', title: 'ការជួលយានយន្ត', concept: 'គំនិត Turo', bullets: ['ជួលឡាន ឬរថយន្តដឹក', 'ថ្ងៃ / សប្តាហ៍ / ខែ', 'ការកក់ & ការបង់ប្រាក់សុវត្ថិភាព', 'ផ្ទាំងគ្រប់គ្រងម្ចាស់'] },
+        { key: 'repair', title: 'ការជួសជុលរថយន្តចល័ត', concept: 'ជាងមកដល់អ្នក', bullets: ['ស្នើសុំជាងម៉ាស៊ីន', 'តាមដានតាមពេលវេលាជាក់ស្តែង', 'សេវានៅទីតាំងរបស់អ្នក', 'តម្លៃច្បាស់លាស់'] },
+        { key: 'food', title: 'ការដឹកអាហារ', concept: 'គំនិត Foodpanda', bullets: ['កម្ម៉ង់ភោជនីយដ្ឋាន & អាហារ', 'ការដឹកតាមពេលវេលាជាក់ស្តែង', 'តាមដានអ្នកដឹករបស់អ្នក', 'ការបង់ប្រាក់ច្រើនប្រភេទ'] },
+        { key: 'stay', title: 'ការស្នាក់នៅ & កន្លែង', concept: 'គំនិត Airbnb', bullets: ['ការស្នាក់នៅរយៈពេលខ្លី', 'ផ្ទះ អាផាតមិន វីឡា', 'ការកក់សុវត្ថិភាព', 'ការគ្រប់គ្រងម្ចាស់ផ្ទះ'] },
+      ],
+    },
+    overview: {
+      eyebrow: 'ទិដ្ឋភាពទូទៅនៃវេទិកា',
+      heading: 'កម្មវិធីតែមួយ សេវាកម្មច្រើន',
+      body: 'AngkorGo ប្រមូលផ្តុំតម្រូវការប្រចាំថ្ងៃរបស់អ្នកទាំងអស់ ចូលក្នុងវេទិកាតែមួយ ដើម្បីធ្វើឱ្យជីវិត និងការធ្វើដំណើរកាន់តែងាយស្រួលនៅកម្ពុជា។',
+      smart: [
+        { title: 'តាមដានតាមពេលវេលាជាក់ស្តែង', body: 'ទីតាំង & ផែនទីផ្ទាល់' },
+        { title: 'ការបង់ប្រាក់សុវត្ថិភាព', body: 'វិធីបង់ប្រាក់ច្រើនប្រភេទ' },
+        { title: 'ជំនួយ 24/7', body: 'ជំនួយពេលអ្នកត្រូវការ' },
+        { title: 'ច្រើនភាសា', body: 'អង់គ្លេស · ខ្មែរ · ចិន' },
+      ],
+      availableOn: 'មាននៅលើ iOS & Android', web: 'ក៏មាននៅលើគេហទំព័រ',
+    },
+    mission: {
+      eyebrow: 'បេសកកម្មរបស់យើង',
+      body: 'ផ្តល់អំណាចដល់កម្ពុជាជាមួយវេទិកាដែលអាចទុកចិត្តបានតែមួយ ដែលភ្ជាប់មនុស្ស សេវាកម្ម និងឱកាសក្នុង Go តែមួយ។',
+      s1: 'កម្មវិធីតែមួយ។', s2: 'សេវាកម្មទាំងអស់។', s3: 'គ្រប់ទីកន្លែងក្នុងកម្ពុជា។',
+    },
     how: {
       title: 'របៀប AngkorGo ដំណើរការ',
       steps: [
@@ -161,6 +227,34 @@ export const COPY: Record<Language, LandingCopy> = {
       invite: '邀请好友，双方均可获得奖励。',
     },
     w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券' },
+    plan: {
+      title: '五项服务。一个应用。',
+      sub: '出行、用餐、租车、维修和住宿所需的一切 — 覆盖柬埔寨全境。',
+      cards: [
+        { key: 'taxi', title: '打车出行', concept: 'Grab / Uber 模式', bullets: ['即时预约行程', '实时追踪', '现金、银行卡或钱包', '评分与评价'] },
+        { key: 'rental', title: '车辆租赁', concept: 'Turo 模式', bullets: ['租用汽车或货车', '按日 / 周 / 月', '安全预订与支付', '车主管理面板'] },
+        { key: 'repair', title: '上门汽车维修', concept: '技师上门', bullets: ['预约技师', '实时追踪', '上门服务', '价格透明'] },
+        { key: 'food', title: '外卖配送', concept: 'Foodpanda 模式', bullets: ['餐厅与美食订购', '实时配送', '追踪骑手', '多种支付方式'] },
+        { key: 'stay', title: '住宿与房源', concept: 'Airbnb 模式', bullets: ['短租住宿', '住宅、公寓、别墅', '安全预订', '房东管理'] },
+      ],
+    },
+    overview: {
+      eyebrow: '平台概览',
+      heading: '一个应用，多种服务',
+      body: 'AngkorGo 将您所有的日常需求整合到一个平台，让柬埔寨的生活与出行更轻松。',
+      smart: [
+        { title: '实时追踪', body: '实时位置与地图' },
+        { title: '安全支付', body: '多种支付方式' },
+        { title: '全天候支持', body: '随时为您提供帮助' },
+        { title: '多语言', body: '英语 · 高棉语 · 中文' },
+      ],
+      availableOn: '支持 iOS 与 Android', web: '同时支持网页版',
+    },
+    mission: {
+      eyebrow: '我们的使命',
+      body: '以一个值得信赖的平台赋能柬埔寨，一站连接人、服务与机遇。',
+      s1: '一个应用。', s2: '所有服务。', s3: '遍及柬埔寨。',
+    },
     how: {
       title: 'AngkorGo 如何运作',
       steps: [

@@ -3,6 +3,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { PAYMENT_METHODS, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
+import { BackButton } from '@/components/BackButton';
 import { useLocale } from '@/lib/locale';
 
 const METHOD_ICON: Record<string, string> = {
@@ -45,6 +46,7 @@ export default function WalletScreen() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: TAB_BAR_SPACE + 24 }} showsVerticalScrollIndicator={false}>
+        <BackButton variant="light" style={{ marginTop: 56, marginHorizontal: 16, marginBottom: 4 }} />
         <Text style={styles.h1}>{t.title}</Text>
 
         {/* Balance card */}
@@ -85,7 +87,7 @@ export default function WalletScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.bg },
-  h1: { color: theme.ink, fontSize: 24, fontWeight: '800', marginTop: 64, marginHorizontal: 16, marginBottom: 16 },
+  h1: { color: theme.ink, fontSize: 24, fontWeight: '800', marginTop: 12, marginHorizontal: 16, marginBottom: 16 },
 
   balanceCard: { backgroundColor: theme.green, borderRadius: 20, padding: 22, marginHorizontal: 16 },
   balanceLabel: { color: '#DDF3E6', fontSize: 13, fontWeight: '600' },

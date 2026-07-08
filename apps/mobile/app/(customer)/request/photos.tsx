@@ -8,6 +8,7 @@ import type { ServiceCategory, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { uploadRequestImages, MAX_REQUEST_IMAGES } from '@/lib/uploads';
+import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
   en: {
@@ -84,6 +85,7 @@ export default function PhotosScreen() {
 
   return (
     <View style={styles.container}>
+      <BackButton variant="light" style={{ marginBottom: 16 }} />
       <Text style={styles.title}>{t.addPhotos}</Text>
       <Text style={styles.sub}>{t.optionalHelp} {MAX_REQUEST_IMAGES}.</Text>
 

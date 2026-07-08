@@ -92,6 +92,10 @@ export default function RideSelect() {
         {route && <Polyline coordinates={route.points.map((c) => ({ latitude: c.lat, longitude: c.lng }))} strokeColor="#00B14F" strokeWidth={4} />}
       </MapView>
 
+      <Pressable style={styles.backFloat} onPress={() => router.back()} hitSlop={12}>
+        <Text style={styles.backArrow}>‹</Text>
+      </Pressable>
+
       <View style={styles.sheet}>
         <Text style={styles.route}>{distance} km · ~{duration} min · {p.daddr}</Text>
 
@@ -134,6 +138,8 @@ function haversine(a: { lat: number; lng: number }, b: { lat: number; lng: numbe
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F6F7' },
+  backFloat: { position: 'absolute', top: 56, left: 20, width: 42, height: 42, borderRadius: 21, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 4 },
+  backArrow: { color: '#1C1C1C', fontSize: 28, fontWeight: '800', lineHeight: 30, marginTop: -3 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F5F6F7' },
   loading: { color: '#7A7A7A', marginTop: 12 },
   map: { flex: 1 },

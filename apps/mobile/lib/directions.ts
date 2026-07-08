@@ -1,4 +1,5 @@
-// Google Directions — fetch a driving route polyline + live ETA between two points.
+// Google Routes API (v2) — fetch a driving route polyline + live ETA between two
+// points. Replaces the legacy Directions API (blocked for new GCP projects).
 import type { Coords } from './location';
 
 const KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -12,22 +13,32 @@ export interface Route {
 
 export async function fetchRoute(origin: Coords, dest: Coords): Promise<Route | null> {
   if (!KEY) return null;
-  const url =
-    `https://maps.googleapis.com/maps/api/directions/json` +
-    `?origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}` +
-    `&mode=driving&key=${KEY}`;
-
   try {
-    const res = await fetch(url);
+    const res = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Goog-Api-Key': KEY,
+        'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline',
+      },
+      body: JSON.stringify({
+        origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
+        destination: { location: { latLng: { latitude: dest.lat, longitude: dest.lng } } },
+        travelMode: 'DRIVE',
+        polylineEncoding: 'ENCODED_POLYLINE',
+      }),
+    });
     const json = await res.json();
     const route = json.routes?.[0];
-    const leg = route?.legs?.[0];
-    if (!route || !leg) return null;
+    const encoded = route?.polyline?.encodedPolyline;
+    if (!route || !encoded) return null;
+    // duration comes back as a string like "567s".
+    const seconds = parseInt(String(route.duration ?? '0'), 10) || 0;
     return {
-      points: decodePolyline(route.overview_polyline.points),
-      polyline: route.overview_polyline.points,
-      etaMinutes: Math.max(1, Math.round(leg.duration.value / 60)),
-      distanceKm: Math.round((leg.distance.value / 1000) * 10) / 10,
+      points: decodePolyline(encoded),
+      polyline: encoded,
+      etaMinutes: Math.max(1, Math.round(seconds / 60)),
+      distanceKm: Math.round((route.distanceMeters / 1000) * 10) / 10,
     };
   } catch {
     return null;

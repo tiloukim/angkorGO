@@ -38,6 +38,17 @@ const GROUPS: { titleKey: string; hero: string; tile: string; items: GItem[] }[]
   },
 ];
 
+// Master-plan service cards — color + icon per vertical (copy from COPY[lang].plan).
+const PLAN = [
+  { key: 'taxi',   icon: '🚕', color: '#0B2A4A', soft: '#EAF1F9' },
+  { key: 'rental', icon: '🚐', color: '#1D6FF2', soft: '#E7F0FE' },
+  { key: 'repair', icon: '🔧', color: '#FF6D00', soft: '#FFF0E4' },
+  { key: 'food',   icon: '🍜', color: '#16A34A', soft: '#E7F6ED' },
+  { key: 'stay',   icon: '🏠', color: '#7C3AED', soft: '#F1EBFD' },
+] as const;
+
+const SMART_ICONS = ['📍', '💳', '🎧', '🌐'] as const;
+
 const SERVICES = [
   { icon: '🛺', key: 'ride', tile: '#E4F7EC' },
   { icon: '🍜', key: 'food', tile: '#FFEEE0' },
@@ -261,6 +272,79 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Master plan — five colored service cards */}
+      <section className="bg-white pb-8">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-10 text-center">
+            <h2 className="text-4xl font-extrabold tracking-tight">{t.plan.title}</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-lg text-black/55">{t.plan.sub}</p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {PLAN.map((p, i) => {
+              const c = t.plan.cards[i];
+              return (
+                <div key={p.key} className="flex flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm transition hover:shadow-lg">
+                  <div className="px-5 py-4 text-white" style={{ background: p.color }}>
+                    <p className="text-lg font-extrabold leading-tight">{c.title}</p>
+                    <p className="text-xs font-medium text-white/75">{c.concept}</p>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5">
+                    <ul className="flex-1 space-y-2.5">
+                      {c.bullets.map((b) => (
+                        <li key={b} className="flex items-start gap-2 text-sm text-black/70">
+                          <span className="mt-0.5 shrink-0" style={{ color: p.color }}>✓</span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-5 grid h-14 w-14 place-items-center self-center rounded-2xl text-2xl" style={{ background: p.soft }}>
+                      {p.icon}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Platform overview — one app, many services */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid items-center gap-12 md:grid-cols-3">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wider text-grab">{t.overview.eyebrow}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight">{t.overview.heading}</h2>
+              <p className="mt-4 text-black/60">{t.overview.body}</p>
+              <div className="mt-8 space-y-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-black/40">{t.overview.availableOn}</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-2 rounded-xl bg-grab-dark px-4 py-2.5 text-sm font-bold text-white"> App Store</span>
+                  <span className="inline-flex items-center gap-2 rounded-xl bg-grab px-4 py-2.5 text-sm font-bold text-white">▸ Google Play</span>
+                </div>
+                <p className="pt-1 text-sm text-black/50">🖥️ {t.overview.web} · <span className="font-semibold text-grab-dark">www.angkorgo.app</span></p>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <PhoneMockup t={t} />
+            </div>
+
+            <div className="grid gap-4">
+              {t.overview.smart.map((s, i) => (
+                <div key={s.title} className="flex items-start gap-4 rounded-2xl border border-black/5 bg-[#F5F6F7] p-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">{SMART_ICONS[i]}</span>
+                  <div>
+                    <p className="font-bold tracking-tight">{s.title}</p>
+                    <p className="text-sm text-black/55">{s.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works — green band */}
       <section id="how" className="bg-grab-soft py-20">
         <div className="mx-auto max-w-6xl px-6">
@@ -331,6 +415,24 @@ export default function Landing() {
               <p className="flex items-center gap-2"><span className="text-gold">●</span> {t.prov.b1}</p>
               <p className="flex items-center gap-2"><span className="text-gold">●</span> {t.prov.b2}</p>
               <p className="flex items-center gap-2"><span className="text-gold">●</span> {t.prov.b3}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission banner — navy + orange split */}
+      <section className="bg-white pb-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid overflow-hidden rounded-3xl shadow-lg md:grid-cols-2">
+            <div className="bg-grab-dark p-8 text-white md:p-10">
+              <p className="text-sm font-bold uppercase tracking-wider text-gold">{t.mission.eyebrow}</p>
+              <p className="mt-3 text-lg leading-relaxed text-white/85">{t.mission.body}</p>
+            </div>
+            <div className="relative flex items-center overflow-hidden p-8 text-white md:p-10" style={{ backgroundImage: 'linear-gradient(120deg,#FF6D00,#FFA100)' }}>
+              <AngkorWat className="pointer-events-none absolute -bottom-4 right-0 w-64 text-white/15" />
+              <p className="relative text-4xl font-black leading-tight tracking-tight md:text-5xl">
+                {t.mission.s1}<br />{t.mission.s2}<br />{t.mission.s3}
+              </p>
             </div>
           </div>
         </div>

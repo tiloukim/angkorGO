@@ -8,6 +8,7 @@ import Svg, { G, Path, Circle, Text as SvgText } from 'react-native-svg';
 import { theme } from '@/lib/theme';
 import { useLocale } from '@/lib/locale';
 import { type Language } from '@angkorgo/shared';
+import { BackButton } from '@/components/BackButton';
 
 type Prize = { key: string; color: string; text: string };
 
@@ -158,9 +159,7 @@ export default function SpinScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Text style={styles.back}>←</Text>
-        </Pressable>
+        <BackButton variant="onDark" />
         <Text style={styles.title}>{t.title}</Text>
         <View style={{ width: 24 }} />
       </View>

@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
+import { BackButton } from '@/components/BackButton';
 
 interface Listing {
   id: string; title: string; description: string | null; price_per_unit: number;
@@ -71,6 +72,7 @@ export default function StayDetail() {
   if (!l) return <View style={styles.container} />;
 
   return (
+    <View style={{ flex: 1 }}>
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 48 }}>
       {l.photos?.[0] && <Image source={{ uri: l.photos[0] }} style={styles.photo} />}
       <Text style={styles.title}>{l.title}</Text>
@@ -105,6 +107,8 @@ export default function StayDetail() {
         <Text style={styles.backText}>{t.back}</Text>
       </Pressable>
     </ScrollView>
+    <BackButton variant="float" />
+    </View>
   );
 }
 

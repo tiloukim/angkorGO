@@ -5,6 +5,7 @@ import { theme } from '@/lib/theme';
 import { TabBar, TAB_BAR_SPACE } from '@/components/TabBar';
 import { useLocale } from '@/lib/locale';
 import { type Language } from '@angkorgo/shared';
+import { BackButton } from '@/components/BackButton';
 
 type Seg = 'rides' | 'food' | 'stays';
 const SEGMENTS: { key: Seg; icon: string }[] = [
@@ -46,6 +47,7 @@ export default function ActivityScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <BackButton variant="light" style={{ marginBottom: 12 }} />
         <Text style={styles.h1}>{t.title}</Text>
       </View>
 

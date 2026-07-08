@@ -7,6 +7,7 @@ import { theme } from '@/lib/theme';
 import { LocationLangBar } from '@/components/LocationLangBar';
 import { useLocale } from '@/lib/locale';
 import type { Language } from '@angkorgo/shared';
+import { BackButton } from '@/components/BackButton';
 
 interface Restaurant { id: string; name: string; cuisine: string | null; photo_url: string | null; rating: number; is_open: boolean }
 
@@ -31,6 +32,7 @@ export default function Food() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <BackButton variant="onDark" style={{ marginBottom: 10 }} />
         <LocationLangBar />
       </View>
       <View style={styles.content}>

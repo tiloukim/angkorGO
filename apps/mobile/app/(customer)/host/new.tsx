@@ -7,6 +7,7 @@ import type { ListingType, Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
 import { useLocale } from '@/lib/locale';
 import { uploadListingPhoto } from '@/lib/uploads';
+import { BackButton } from '@/components/BackButton';
 
 const L: Record<Language, Record<string, string>> = {
   en: {
@@ -145,6 +146,7 @@ export default function NewListing() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 48 }}>
+      <BackButton variant="light" style={{ marginBottom: 16 }} />
       <Text style={styles.h1}>{t.newListing}</Text>
 
       <View style={styles.toggle}>

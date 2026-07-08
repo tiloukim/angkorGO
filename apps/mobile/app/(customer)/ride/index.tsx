@@ -56,6 +56,9 @@ export default function RideHome() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Pressable style={styles.backBtn} onPress={() => router.back()} hitSlop={12}>
+          <Text style={styles.backArrow}>‹</Text>
+        </Pressable>
         <LocationLangBar />
       </View>
       <View style={styles.content}>
@@ -103,6 +106,8 @@ export default function RideHome() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F6F7' },
   header: { backgroundColor: theme.greenDark, paddingTop: 60, paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 20, borderBottomRightRadius: 20 },
+  backBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.18)', alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  backArrow: { color: '#fff', fontSize: 26, fontWeight: '800', lineHeight: 28, marginTop: -2 },
   content: { flex: 1, padding: 24, paddingTop: 20 },
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   pickup: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
