@@ -4,6 +4,7 @@ import { View, Text, TextInput, Pressable, StyleSheet, Platform, Alert } from 'r
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/auth';
 import { useLocale } from '@/lib/locale';
+import { IS_DRIVER_APP } from '@/lib/variant';
 import type { Language } from '@angkorgo/shared';
 
 const L: Record<Language, Record<string, string>> = {
@@ -12,6 +13,7 @@ const L: Record<Language, Record<string, string>> = {
     couldNotSendCode: 'Could not send code',
     signInFailed: 'Sign in failed',
     tagline: 'Help is on the way.',
+    driverTagline: 'Drive & earn on your schedule.',
     emailPlaceholder: 'Email address',
     continueWithEmail: 'Continue with email',
     or: 'or',
@@ -24,6 +26,7 @@ const L: Record<Language, Record<string, string>> = {
     couldNotSendCode: 'មិន​អាច​ផ្ញើ​កូដ',
     signInFailed: 'ចូល​បរាជ័យ',
     tagline: 'ជំនួយ​កំពុង​មក​ដល់។',
+    driverTagline: 'បើកបរ និងរកចំណូលតាមពេលវេលារបស់អ្នក។',
     emailPlaceholder: 'អាសយដ្ឋាន​អ៊ីមែល',
     continueWithEmail: 'បន្ត​ដោយ​អ៊ីមែល',
     or: 'ឬ',
@@ -36,6 +39,7 @@ const L: Record<Language, Record<string, string>> = {
     couldNotSendCode: '无法发送验证码',
     signInFailed: '登录失败',
     tagline: '救援即将到达。',
+    driverTagline: '按你的时间开车赚钱。',
     emailPlaceholder: '电子邮箱地址',
     continueWithEmail: '使用邮箱继续',
     or: '或',
@@ -74,8 +78,8 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.brand}>AngkorGo</Text>
-      <Text style={styles.tagline}>{t.tagline}</Text>
+      <Text style={styles.brand}>{IS_DRIVER_APP ? 'AngkorGo Driver' : 'AngkorGo'}</Text>
+      <Text style={styles.tagline}>{IS_DRIVER_APP ? t.driverTagline : t.tagline}</Text>
 
       <TextInput
         style={styles.input}

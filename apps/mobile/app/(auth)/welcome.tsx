@@ -6,13 +6,14 @@ import { LANGUAGES, type Language } from '@angkorgo/shared';
 import { theme } from '@/lib/theme';
 import { TukiTukTuk } from '@/components/TukiTukTuk';
 import { useLocale } from '@/lib/locale';
+import { IS_DRIVER_APP } from '@/lib/variant';
 
 const FLAGS: Record<Language, string> = { en: '🇬🇧', km: '🇰🇭', zh: '🇨🇳' };
 
 const L: Record<Language, Record<string, string>> = {
-  en: { tagline: "Cambodia's everyday super-app", chooseLanguage: 'Choose language', confirm: 'Confirm' },
-  km: { tagline: 'កម្មវិធីរួមប្រចាំថ្ងៃរបស់កម្ពុជា', chooseLanguage: 'ជ្រើសរើសភាសា', confirm: 'បញ្ជាក់' },
-  zh: { tagline: '柬埔寨的日常超级应用', chooseLanguage: '选择语言', confirm: '确认' },
+  en: { tagline: "Cambodia's everyday super-app", driverTagline: 'Drive & earn on your schedule', chooseLanguage: 'Choose language', confirm: 'Confirm' },
+  km: { tagline: 'កម្មវិធីរួមប្រចាំថ្ងៃរបស់កម្ពុជា', driverTagline: 'បើកបរ និងរកចំណូលតាមពេលវេលារបស់អ្នក', chooseLanguage: 'ជ្រើសរើសភាសា', confirm: 'បញ្ជាក់' },
+  zh: { tagline: '柬埔寨的日常超级应用', driverTagline: '按你的时间开车赚钱', chooseLanguage: '选择语言', confirm: '确认' },
 };
 
 export default function WelcomeScreen() {
@@ -25,8 +26,8 @@ export default function WelcomeScreen() {
       {/* Branded hero */}
       <View style={styles.hero}>
         <TukiTukTuk width={300} />
-        <Text style={styles.brand}>AngkorGo</Text>
-        <Text style={styles.tagline}>{t.tagline}</Text>
+        <Text style={styles.brand}>{IS_DRIVER_APP ? 'AngkorGo Driver' : 'AngkorGo'}</Text>
+        <Text style={styles.tagline}>{IS_DRIVER_APP ? t.driverTagline : t.tagline}</Text>
       </View>
 
       {/* Language sheet */}
