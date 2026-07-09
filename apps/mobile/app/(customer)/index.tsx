@@ -131,7 +131,7 @@ export default function HomeScreen() {
       hero: '🎉',
       tile: tileColors.pink,
       items: [
-        { label: t.snaeh, icon: '💘', go: () => Linking.openURL('snaeh://').catch(() => Linking.openURL('https://snaeh.com')) },
+        { label: t.snaeh, icon: '💘', go: () => Linking.openURL('https://snaeh.com') },
         { label: t.movies, icon: '🎬', go: () => Alert.alert(t.comingSoon, t.comingSoonMsg) },
       ],
     },
