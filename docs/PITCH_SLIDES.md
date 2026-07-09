@@ -89,12 +89,15 @@ English / ខ្មែរ / 中文
 
 ### A young, mobile-first nation going cashless fast.
 
-- ⟨~17M⟩ people, rapidly urbanizing
-- Smartphone & mobile-internet penetration climbing every year
-- **KHQR / Bakong** digital payments adopted at national scale
+- **~17.8M people**, median age just **26** — digital-native and urbanizing
+- **10.8M internet users** (61% penetration) · **25.3M mobile connections** (143% of population; 91% on 3G/4G/5G)
+- **12.9M social-media users** (72%) — fast, low-cost customer acquisition
+- Cashless at national scale: Cambodia's **Bakong** moved **330% of GDP** in 2024 (608M transactions); **KHQR** registrations up **36% YoY**
 - Super-app whitespace: no localized, all-in-one incumbent
 
-[Speaker note] "The rails — smartphones and instant QR payments — are already laid. We ride them." *(Insert current, sourced figures.)*
+[Speaker note] "The rails are already laid — nearly everyone has a phone, most are online, and QR payments already exceed three times GDP. We plug straight in."
+
+*Sources: DataReportal — Digital 2025 Cambodia (Jan 2025); National Bank of Cambodia 2024 (Bakong/KHQR).*
 
 ---
 

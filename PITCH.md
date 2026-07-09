@@ -9,6 +9,8 @@
 
 Cambodia has a young, fast-urbanizing, mobile-first population and rapid adoption of **KHQR / Bakong** digital payments — but everyday services are still fragmented across cash, phone calls, and single-purpose apps. Foreign super-apps aren't deeply localized (language, local payments, local trust). **AngkorGo is a built-for-Cambodia super-app**: every daily need in one trilingual place, paid the way Cambodians actually pay.
 
+**The numbers behind it:** ~17.8M people (median age just 26) · 10.8M internet users (61% penetration) · 25.3M mobile connections (143% of population, 91% broadband) · 12.9M on social media (72%). And the payment rails are already national: Cambodia's **Bakong** moved **330% of GDP** in 2024 (608M transactions), with **KHQR** registrations up **36% year-on-year**. *(Sources: DataReportal — Digital 2025 Cambodia; National Bank of Cambodia 2024.)*
+
 ## What it is — 6 services in one app
 
 | | Service | What it does | Model |
