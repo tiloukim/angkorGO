@@ -70,7 +70,7 @@ export default function AirportTransfer() {
 
   const [route, setRoute] = useState<Route | null>(null);
   const [fares, setFares] = useState<Fare[]>([]);
-  const [cls, setCls] = useState<VehicleClass>('moto');
+  const [cls, setCls] = useState<VehicleClass>('car');
   const [method, setMethod] = useState<'cash' | 'khqr'>('cash');
   const [surge, setSurge] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -106,7 +106,8 @@ export default function AirportTransfer() {
       const s = Math.max(1, Number(cfg?.value ?? 1));
       const { data } = await supabase.rpc('estimate_all_fares', { p_distance_km: distance, p_duration_min: duration, p_surge: s });
       if (!alive) return;
-      setRoute(r); setSurge(s); setFares((data ?? []) as Fare[]); setLoading(false);
+      // Airport transfers are car-only — filter out moto/tuktuk.
+      setRoute(r); setSurge(s); setFares(((data ?? []) as Fare[]).filter((f) => f.class === 'car')); setLoading(false);
     })();
     return () => { alive = false; };
   }, [other, dir, airport]);
