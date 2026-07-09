@@ -13,36 +13,43 @@ export interface Route {
 
 export async function fetchRoute(origin: Coords, dest: Coords): Promise<Route | null> {
   if (!KEY) return null;
-  try {
-    const res = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': KEY,
-        'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline',
-      },
-      body: JSON.stringify({
-        origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
-        destination: { location: { latLng: { latitude: dest.lat, longitude: dest.lng } } },
-        travelMode: 'DRIVE',
-        polylineEncoding: 'ENCODED_POLYLINE',
-      }),
-    });
-    const json = await res.json();
-    const route = json.routes?.[0];
-    const encoded = route?.polyline?.encodedPolyline;
-    if (!route || !encoded) return null;
-    // duration comes back as a string like "567s".
-    const seconds = parseInt(String(route.duration ?? '0'), 10) || 0;
-    return {
-      points: decodePolyline(encoded),
-      polyline: encoded,
-      etaMinutes: Math.max(1, Math.round(seconds / 60)),
-      distanceKm: Math.round((route.distanceMeters / 1000) * 10) / 10,
-    };
-  } catch {
-    return null;
+  // Retry once on transient failure — we want the real road distance for fares,
+  // not the straight-line fallback the callers use when this returns null.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': KEY,
+          'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline',
+        },
+        body: JSON.stringify({
+          origin: { location: { latLng: { latitude: origin.lat, longitude: origin.lng } } },
+          destination: { location: { latLng: { latitude: dest.lat, longitude: dest.lng } } },
+          travelMode: 'DRIVE',
+          polylineEncoding: 'ENCODED_POLYLINE',
+        }),
+      });
+      const json = await res.json();
+      const route = json.routes?.[0];
+      // Use the road route as long as a distance came back; the polyline is only
+      // needed to draw the map, so don't discard the distance if it's missing.
+      if (route && route.distanceMeters != null) {
+        const encoded: string = route.polyline?.encodedPolyline ?? '';
+        const seconds = parseInt(String(route.duration ?? '0'), 10) || 0; // "567s"
+        return {
+          points: encoded ? decodePolyline(encoded) : [],
+          polyline: encoded,
+          etaMinutes: Math.max(1, Math.round(seconds / 60)),
+          distanceKm: Math.round((route.distanceMeters / 1000) * 10) / 10,
+        };
+      }
+    } catch {
+      // fall through to retry
+    }
   }
+  return null;
 }
 
 // Google's encoded-polyline algorithm.
