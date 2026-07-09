@@ -51,6 +51,18 @@ export async function setVehicleVerified(vehicleId: string, verified: boolean) {
   revalidatePath('/vehicles');
 }
 
+export async function acknowledgeAlert(alertId: string) {
+  const supabase = await createClient();
+  await supabase.rpc('set_emergency_status', { p_alert: alertId, p_status: 'acknowledged' });
+  revalidatePath('/alerts');
+}
+
+export async function resolveAlert(alertId: string) {
+  const supabase = await createClient();
+  await supabase.rpc('set_emergency_status', { p_alert: alertId, p_status: 'resolved' });
+  revalidatePath('/alerts');
+}
+
 export async function updateFareConfig(formData: FormData) {
   const supabase = await createClient();
   const cls = String(formData.get('class'));

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 const NAV = [
   { href: '/dashboard', label: 'Overview' },
+  { href: '/alerts', label: '🚨 Active Alerts' },
   { href: '/providers', label: 'Provider Approvals' },
   { href: '/vehicles', label: 'Vehicle Approvals' },
   { href: '/rides', label: 'Ride Operations' },
