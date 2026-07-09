@@ -58,9 +58,9 @@ const TO_PICKUP: TripStatus[] = ['matched', 'driver_arriving', 'driver_arrived']
 interface Driver { driver_name: string | null; rating: number; vehicle_class: VehicleClass; plate_number: string; color: string | null }
 
 const L: Record<Language, Record<string, string>> = {
-  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver', cancelRide: 'Cancel ride?', keepWaiting: 'Keep waiting', rateDriver: 'Rate your driver' },
-  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក', cancelRide: 'បោះបង់​ដំណើរ?', keepWaiting: 'រង់ចាំ​បន្ត', rateDriver: 'វាយតម្លៃអ្នកបើកបររបស់អ្នក' },
-  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待', rateDriver: '评价您的司机' },
+  en: { cancel: 'Cancel', backHome: 'Back to home', yourDriver: 'Your driver', cancelRide: 'Cancel ride?', keepWaiting: 'Keep waiting', rateDriver: 'Rate your driver', scheduledTitle: 'Pickup scheduled', scheduledSub: 'Your driver will be dispatched around {time}', flightLabel: 'Flight' },
+  km: { cancel: 'បោះបង់', backHome: 'ត្រឡប់ទៅទំព័រដើម', yourDriver: 'អ្នកបើកបររបស់អ្នក', cancelRide: 'បោះបង់​ដំណើរ?', keepWaiting: 'រង់ចាំ​បន្ត', rateDriver: 'វាយតម្លៃអ្នកបើកបររបស់អ្នក', scheduledTitle: 'បានកំណត់ពេលទទួល', scheduledSub: 'អ្នកបើកបរនឹងចេញដំណើរប្រហែល {time}', flightLabel: 'ជើងហោះហើរ' },
+  zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待', rateDriver: '评价您的司机', scheduledTitle: '接机已安排', scheduledSub: '司机将在约 {time} 出发', flightLabel: '航班' },
 };
 
 export default function RideStatus() {
@@ -74,6 +74,8 @@ export default function RideStatus() {
   const [destAddr, setDestAddr] = useState('');
   const [fare, setFare] = useState<number | null>(null);
   const [driver, setDriver] = useState<Driver | null>(null);
+  const [scheduledFor, setScheduledFor] = useState<string | null>(null);
+  const [flightNumber, setFlightNumber] = useState<string | null>(null);
 
   const tracking = TO_PICKUP.includes(status) || status === 'in_progress';
   const driverCoords = useProviderLocation(tracking ? driverId : null);
@@ -87,6 +89,8 @@ export default function RideStatus() {
     setDriverId(r.driver_id);
     setFare(r.est_fare);
     setDestAddr(r.dropoff_address ?? '');
+    setScheduledFor(r.scheduled_for ?? null);
+    setFlightNumber(r.flight_number ?? null);
     if (r.pickup_lat != null) setPickup({ lat: r.pickup_lat, lng: r.pickup_lng });
     if (r.dropoff_lat != null) setDropoff({ lat: r.dropoff_lat, lng: r.dropoff_lng });
     if (r.driver_id && !driver) {
@@ -114,9 +118,34 @@ export default function RideStatus() {
   }
 
   const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY[lang].searching ?? COPY.en.searching!;
-  const searching = status === 'searching' || status === 'requested';
+  const isScheduled = status === 'requested' && scheduledFor != null && new Date(scheduledFor).getTime() > Date.now();
+  const searching = (status === 'searching' || status === 'requested') && !isScheduled;
   const terminal = status === 'completed' || status === 'cancelled' || status === 'expired' || status === 'no_drivers';
   const target = status === 'in_progress' ? dropoff : pickup;
+  const fmtTime = (iso: string) => { try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch { return ''; } };
+
+  // Scheduled pickup — waiting for the dispatch time (e.g. flight arrival).
+  if (isScheduled) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.center}>
+          <Text style={styles.scheduledIcon}>🛬</Text>
+          <Text style={styles.title}>{L[lang].scheduledTitle}</Text>
+          <Text style={styles.sub}>{L[lang].scheduledSub.replace('{time}', fmtTime(scheduledFor!))}</Text>
+          {flightNumber ? <Text style={styles.flightLine}>{L[lang].flightLabel} {flightNumber}</Text> : null}
+        </View>
+        <Pressable style={styles.cancel} onPress={() => Alert.alert(L[lang].cancelRide, '', [
+          { text: L[lang].keepWaiting, style: 'cancel' },
+          { text: L[lang].cancel, style: 'destructive', onPress: cancel },
+        ])}>
+          <Text style={styles.cancelText}>{L[lang].cancel}</Text>
+        </Pressable>
+        <Pressable style={styles.primary} onPress={() => router.replace('/(customer)')}>
+          <Text style={styles.primaryText}>{L[lang].backHome}</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   // Live tracking layout.
   if (tracking && target) {
@@ -188,6 +217,8 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', textAlign: 'center' },
   sub: { color: '#7A7A7A', fontSize: 15, textAlign: 'center', marginTop: 8 },
+  scheduledIcon: { fontSize: 52, textAlign: 'center', marginBottom: 12 },
+  flightLine: { color: '#00B14F', fontSize: 14, fontWeight: '700', textAlign: 'center', marginTop: 10 },
   cancel: { padding: 16, alignItems: 'center' },
   cancelText: { color: '#E5484D', fontWeight: '600' },
   primary: { backgroundColor: '#00B14F', borderRadius: 12, padding: 16, alignItems: 'center' },

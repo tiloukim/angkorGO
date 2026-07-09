@@ -34,6 +34,7 @@ const L: Record<Language, Record<string, string>> = {
     cash: 'Cash', khqr: 'KHQR', couldNotRequestRide: 'Could not request ride',
     checkFlight: 'Check flight', flightNotFound: 'Flight not found — check the number', flightErr: "Couldn't check flight",
     arrives: 'Arrives', departs: 'Departs', term: 'Terminal',
+    schedulePickup: 'Schedule pickup for arrival', dispatchAround: 'Driver dispatched around {time}', schedule: 'Schedule pickup',
   },
   km: {
     title: 'ការធ្វើដំណើរទៅព្រលានយន្តហោះ', selectAirport: 'ជ្រើសរើសព្រលានយន្តហោះ', toAirport: 'ទៅព្រលានយន្តហោះ', fromAirport: 'ពីព្រលានយន្តហោះ',
@@ -42,6 +43,7 @@ const L: Record<Language, Record<string, string>> = {
     cash: 'សាច់ប្រាក់', khqr: 'KHQR', couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ',
     checkFlight: 'ពិនិត្យជើងហោះហើរ', flightNotFound: 'រកមិនឃើញ — ពិនិត្យលេខ', flightErr: 'មិនអាចពិនិត្យបាន',
     arrives: 'មកដល់', departs: 'ចេញដំណើរ', term: 'អាគារ',
+    schedulePickup: 'កំណត់ពេលទទួលពេលមកដល់', dispatchAround: 'អ្នកបើកបរនឹងចេញដំណើរប្រហែល {time}', schedule: 'កំណត់ពេលទទួល',
   },
   zh: {
     title: '机场接送', selectAirport: '选择机场', toAirport: '前往机场', fromAirport: '从机场出发',
@@ -50,6 +52,7 @@ const L: Record<Language, Record<string, string>> = {
     cash: '现金', khqr: 'KHQR', couldNotRequestRide: '无法叫车',
     checkFlight: '查询航班', flightNotFound: '未找到航班 — 请检查航班号', flightErr: '无法查询航班',
     arrives: '到达', departs: '出发', term: '航站楼',
+    schedulePickup: '按到达时间安排接机', dispatchAround: '司机将在约 {time} 出发', schedule: '安排接机',
   },
 };
 
@@ -75,6 +78,7 @@ export default function AirportTransfer() {
   const [flight, setFlight] = useState('');
   const [flightInfo, setFlightInfo] = useState<any>(null);
   const [flightChecking, setFlightChecking] = useState(false);
+  const [schedule, setSchedule] = useState(false);
 
   const [route, setRoute] = useState<Route | null>(null);
   const [fares, setFares] = useState<Fare[]>([]);
@@ -150,6 +154,24 @@ export default function AirportTransfer() {
 
   // AeroDataBox local time comes as "YYYY-MM-DD HH:mm±ZZ" → show HH:mm.
   const hhmm = (s?: string | null) => (s && s.length >= 16 ? s.slice(11, 16) : '');
+  const addMin = (hm: string, add: number) => {
+    const [h, m] = hm.split(':').map(Number);
+    let total = ((h * 60 + m + add) % 1440 + 1440) % 1440;
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  };
+
+  // Scheduled pickup — for "from airport" with a found flight, dispatch the
+  // driver ~25 min after the (estimated) arrival for deplane/immigration/baggage.
+  const BUFFER_MIN = 25;
+  const arrivalStr: string | null = flightInfo?.arrival?.estimated || flightInfo?.arrival?.scheduled || null;
+  const scheduledFor = arrivalStr
+    ? new Date(new Date(String(arrivalStr).replace(' ', 'T')).getTime() + BUFFER_MIN * 60000)
+    : null;
+  const canSchedule =
+    dir === 'from' && !!flightInfo?.found && !!flightInfo?.arrival &&
+    scheduledFor != null && !isNaN(scheduledFor.getTime()) && scheduledFor.getTime() > Date.now();
+  const willSchedule = schedule && canSchedule;
+  const dispatchLabel = arrivalStr ? addMin(hhmm(arrivalStr), BUFFER_MIN) : '';
 
   async function request() {
     if (!selected || !pickup || !dropoff) return;
@@ -162,9 +184,11 @@ export default function AirportTransfer() {
       p_dropoff_lng: dropoff.lng, p_dropoff_lat: dropoff.lat, p_dropoff_address: daddr,
       p_est_distance_km: distance, p_est_duration_min: duration, p_est_fare: selected.fare,
       p_surge: surge, p_payment_method: method, p_polyline: route?.polyline ?? null,
+      ...(willSchedule ? { p_scheduled_for: scheduledFor!.toISOString(), p_flight_number: flight.trim() } : {}),
     });
     if (error || !tripId) { setBusy(false); return Alert.alert(t.couldNotRequestRide, error?.message ?? ''); }
-    await supabase.rpc('dispatch_trip', { p_trip_id: tripId });
+    // Scheduled trips wait for the cron to dispatch near arrival; don't dispatch now.
+    if (!willSchedule) await supabase.rpc('dispatch_trip', { p_trip_id: tripId });
     router.replace({ pathname: '/(customer)/ride/[id]', params: { id: tripId as string } });
   }
 
@@ -250,6 +274,18 @@ export default function AirportTransfer() {
           </View>
         )}
 
+        {canSchedule && (
+          <Pressable style={styles.schedRow} onPress={() => setSchedule((s) => !s)}>
+            <View style={[styles.checkbox, schedule && styles.checkboxOn]}>
+              {schedule ? <Text style={styles.checkboxTick}>✓</Text> : null}
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.schedTitle}>{t.schedulePickup}</Text>
+              {schedule ? <Text style={styles.schedSub}>{t.dispatchAround.replace('{time}', dispatchLabel)}</Text> : null}
+            </View>
+          </Pressable>
+        )}
+
         {loading ? (
           <View style={{ alignItems: 'center', marginTop: 28 }}>
             <ActivityIndicator color="#00B14F" />
@@ -278,7 +314,7 @@ export default function AirportTransfer() {
 
             <Pressable style={[styles.primary, (busy || !selected) && { opacity: 0.6 }]} onPress={request} disabled={busy || !selected}>
               {busy ? <ActivityIndicator color="#fff" /> : (
-                <Text style={styles.primaryText}>{t.request}{selected ? ` · $${selected.fare.toFixed(2)}` : ''}</Text>
+                <Text style={styles.primaryText}>{willSchedule ? t.schedule : t.request}{selected ? ` · $${selected.fare.toFixed(2)}` : ''}</Text>
               )}
             </Pressable>
           </>
@@ -317,6 +353,12 @@ const styles = StyleSheet.create({
   flightLine: { color: '#1C1C1C', fontSize: 13, marginTop: 6 },
   flightLineDim: { color: '#7A7A7A', fontSize: 13, marginTop: 3 },
   flightErr: { color: '#E5484D', fontSize: 13, fontWeight: '600' },
+  schedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginTop: 12, borderWidth: 1, borderColor: '#ECECEC' },
+  checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: '#CBD2D9', alignItems: 'center', justifyContent: 'center' },
+  checkboxOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
+  checkboxTick: { color: '#fff', fontSize: 13, fontWeight: '900', lineHeight: 15 },
+  schedTitle: { color: '#1C1C1C', fontSize: 14, fontWeight: '700' },
+  schedSub: { color: '#00B14F', fontSize: 12.5, marginTop: 2, fontWeight: '600' },
   pred: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#ECECEC' },
   predPrimary: { color: '#1C1C1C', fontSize: 16, fontWeight: '600' },
   predSecondary: { color: '#9AA0A6', fontSize: 13, marginTop: 2 },
