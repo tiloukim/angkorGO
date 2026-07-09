@@ -1,7 +1,7 @@
 // Express — send a parcel. Pickup (GPS) + recipient dropoff (Places search) +
 // package details → server prices it → place_parcel + dispatch_parcel → track.
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, ActivityIndicator, Alert, FlatList, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
 import type { Language } from '@angkorgo/shared';
 import { supabase } from '@/lib/supabase';
@@ -98,6 +98,7 @@ export default function ExpressSend() {
     setDestAddr(`${p.primary}, ${p.secondary}`);
     setQuery(`${p.primary}, ${p.secondary}`);
     setPreds([]);
+    Keyboard.dismiss();
     if (pickup) {
       const r = await fetchRoute(pickup, c);
       setDistanceKm(r?.distanceKm ?? haversine(pickup, c));
@@ -136,7 +137,7 @@ export default function ExpressSend() {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ padding: 24, paddingTop: 72, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
+      <ScrollView style={styles.container} contentContainerStyle={{ padding: 24, paddingTop: 72, paddingBottom: 48 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <Text style={styles.h1}>{t.title}</Text>
 
         <Text style={styles.label}>{t.pickup}</Text>

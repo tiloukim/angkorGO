@@ -1,6 +1,6 @@
 // Ride — Step 1: set pickup (GPS) and search a destination.
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, FlatList, ActivityIndicator, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { placeAutocomplete, placeCoords, type Prediction } from '@/lib/places';
@@ -40,6 +40,7 @@ export default function RideHome() {
 
   async function choose(p: Prediction) {
     if (!pickup) return;
+    Keyboard.dismiss();
     setBusy(true);
     const dest = await placeCoords(p.place_id);
     setBusy(false);
@@ -84,6 +85,7 @@ export default function RideHome() {
         data={preds}
         keyExtractor={(p) => p.place_id}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         renderItem={({ item }) => (
           <Pressable style={styles.pred} onPress={() => choose(item)}>
             <Text style={styles.predPrimary}>{item.primary}</Text>

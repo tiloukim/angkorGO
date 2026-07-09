@@ -2,7 +2,7 @@
 // To/From toggle + optional flight number, then reuses the ride fare + create_trip
 // + dispatch flow (lands on the shared ride tracking screen).
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Alert, Keyboard } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getCurrentCoords, coordsToAddress, type Coords } from '@/lib/location';
 import { placeAutocomplete, placeCoords, type Prediction } from '@/lib/places';
@@ -132,6 +132,7 @@ export default function AirportTransfer() {
     setOther(c);
     setOtherAddr(`${p.primary}${p.secondary ? `, ${p.secondary}` : ''}`);
     setQuery(''); setPreds([]);
+    Keyboard.dismiss();
   }
 
   const selected = fares.find((f) => f.class === cls);
@@ -144,6 +145,7 @@ export default function AirportTransfer() {
 
   async function checkFlight() {
     if (!flight.trim() || flightChecking) return;
+    Keyboard.dismiss();
     setFlightChecking(true);
     setFlightInfo(null);
     const { data, error } = await supabase.functions.invoke('flight-status', { body: { flight_number: flight.trim() } });
@@ -201,7 +203,7 @@ export default function AirportTransfer() {
         <Text style={styles.headerTitle}>{t.title}</Text>
       </View>
 
-      <ScrollView style={styles.content} contentContainerStyle={{ padding: 24, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+      <ScrollView style={styles.content} contentContainerStyle={{ padding: 24, paddingBottom: 40 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
         <Text style={styles.pickerLabel}>{t.selectAirport}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginBottom: 18 }}>
           {AIRPORTS.map((a) => {
