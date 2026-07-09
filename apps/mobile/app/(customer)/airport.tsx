@@ -17,7 +17,7 @@ import { useLocale } from '@/lib/locale';
 // Siem Reap–Angkor (SAI). Battambang (BBM) serves limited domestic flights.
 type Airport = { code: string; city: string; name: string; lat: number; lng: number };
 const AIRPORTS: Airport[] = [
-  { code: 'KTI', city: 'Phnom Penh',    name: "Techo Int'l (KTI)",            lat: 11.236,  lng: 104.536 },
+  { code: 'KTI', city: 'Phnom Penh',    name: "Techo Int'l (KTI)",            lat: 11.360,  lng: 104.921 },
   { code: 'SAI', city: 'Siem Reap',     name: "Siem Reap–Angkor Int'l (SAI)", lat: 13.375,  lng: 104.221 },
   { code: 'KOS', city: 'Sihanoukville', name: "Sihanouk Int'l (KOS)",         lat: 10.579,  lng: 103.637 },
   { code: 'BBM', city: 'Battambang',    name: 'Battambang (BBM)',             lat: 13.0956, lng: 103.224 },
