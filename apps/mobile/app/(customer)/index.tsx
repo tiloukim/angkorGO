@@ -1,7 +1,7 @@
 // Customer super-app home — Grab-inspired.
 // Green header + search, colorful service grid, gold promo banner, and the
 // roadside-help categories. Tapping a service starts its flow.
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet, Alert, Linking } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
   SERVICE_CATEGORIES,
@@ -20,7 +20,8 @@ const L: Record<Language, Record<string, string>> = {
   en: {
     hi: 'Hi there',
     searchPlaceholder: 'What do you need today?',
-    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay',
+    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay', catFun: 'Entertainment',
+    snaeh: 'Snaeh', movies: 'Movies', comingSoon: 'Coming soon', comingSoonMsg: 'Movies are coming soon to AngkorGo.',
     ride: 'Ride', rent: 'Rent', airport: 'Airport', repair: 'Repair', schedule: 'Schedule', spin: 'Spin',
     food: 'Food', stay: 'Stay', express: 'Express', mart: 'Mart', grocery: 'Grocery', host: 'Host', rewards: 'Rewards',
     topUp: 'Top up', coupons: 'Coupons', invite: 'Invite',
@@ -37,7 +38,8 @@ const L: Record<Language, Record<string, string>> = {
   km: {
     hi: 'សួស្តី',
     searchPlaceholder: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?',
-    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ',
+    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ', catFun: 'កម្សាន្ត',
+    snaeh: 'ស្នេហ៍', movies: 'ភាពយន្ត', comingSoon: 'នឹងមកដល់ឆាប់ៗ', comingSoonMsg: 'ភាពយន្តនឹងមកដល់ AngkorGo ឆាប់ៗនេះ។',
     ride: 'ជិះ', rent: 'ជួល', airport: 'ព្រលានយន្តហោះ', repair: 'ជួសជុល', schedule: 'កំណត់ពេល', spin: 'បង្វិល',
     food: 'អាហារ', stay: 'ស្នាក់នៅ', express: 'ដឹកកញ្ចប់', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', host: 'ម្ចាស់ផ្ទះ', rewards: 'រង្វាន់',
     topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ',
@@ -54,7 +56,8 @@ const L: Record<Language, Record<string, string>> = {
   zh: {
     hi: '你好',
     searchPlaceholder: '今天需要什么？',
-    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿',
+    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿', catFun: '娱乐',
+    snaeh: 'Snaeh', movies: '电影', comingSoon: '即将推出', comingSoonMsg: '电影功能即将登陆 AngkorGo。',
     ride: '打车', rent: '租车', airport: '机场', repair: '维修', schedule: '预约', spin: '转盘',
     food: '美食', stay: '住宿', express: '快递', mart: '商城', grocery: '生鲜', host: '房东', rewards: '奖励',
     topUp: '充值', coupons: '优惠券', invite: '邀请',
@@ -121,6 +124,15 @@ export default function HomeScreen() {
       items: [
         { label: t.stay, icon: '🏠', go: () => router.push('/(customer)/stays') },
         { label: t.host, icon: '🔑', go: () => router.push('/(customer)/host') },
+      ],
+    },
+    {
+      title: t.catFun,
+      hero: '🎉',
+      tile: tileColors.pink,
+      items: [
+        { label: t.snaeh, icon: '💘', go: () => Linking.openURL('https://snaeh.com') },
+        { label: t.movies, icon: '🎬', go: () => Alert.alert(t.comingSoon, t.comingSoonMsg) },
       ],
     },
   ];
