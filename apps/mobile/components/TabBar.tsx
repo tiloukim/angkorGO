@@ -1,6 +1,6 @@
 // Grab-style bottom tab bar for the customer main screens.
 // Renders on Home / Activity / Wallet / Account (not on deep booking flows),
-// with a raised green center action to start a ride.
+// with a raised red center action for Emergency SOS (always one tap away).
 import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { type Language } from '@angkorgo/shared';
@@ -13,9 +13,9 @@ export type TabKey = 'home' | 'activity' | 'wallet' | 'account';
 export const TAB_BAR_SPACE = 96;
 
 const L: Record<Language, Record<string, string>> = {
-  en: { home: 'Home', activity: 'Activity', ride: 'Ride', wallet: 'Wallet', account: 'Account' },
-  km: { home: 'ទំព័រដើម', activity: 'សកម្មភាព', ride: 'ដំណើរ', wallet: 'កាបូប', account: 'គណនី' },
-  zh: { home: '首页', activity: '活动', ride: '行程', wallet: '钱包', account: '账户' },
+  en: { home: 'Home', activity: 'Activity', ride: 'Ride', wallet: 'Wallet', account: 'Account', sos: 'SOS' },
+  km: { home: 'ទំព័រដើម', activity: 'សកម្មភាព', ride: 'ដំណើរ', wallet: 'កាបូប', account: 'គណនី', sos: 'អាសន្ន' },
+  zh: { home: '首页', activity: '活动', ride: '行程', wallet: '钱包', account: '账户', sos: '紧急' },
 };
 
 const TABS: { key: TabKey; icon: string; href: string }[] = [
@@ -50,12 +50,12 @@ export function TabBar({ active }: { active: TabKey }) {
         ))}
       </View>
 
-      {/* Center action — start a ride */}
-      <Pressable style={styles.centerWrap} onPress={() => router.push('/(customer)/ride' as never)} hitSlop={8}>
-        <View style={styles.center}>
-          <Text style={styles.centerIcon}>🛺</Text>
+      {/* Center action — Emergency SOS (always reachable) */}
+      <Pressable style={styles.centerWrap} onPress={() => router.push('/(customer)/sos' as never)} hitSlop={8}>
+        <View style={[styles.center, styles.centerSos]}>
+          <Text style={styles.centerIcon}>🚨</Text>
         </View>
-        <Text style={styles.centerLabel}>{t.ride}</Text>
+        <Text style={[styles.centerLabel, styles.centerLabelSos]}>{t.sos}</Text>
       </Pressable>
 
       <View style={styles.side}>
@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: theme.card,
   },
+  centerSos: { backgroundColor: '#E5484D' },
   centerIcon: { fontSize: 26 },
   centerLabel: { fontSize: 11, fontWeight: '700', color: theme.green },
+  centerLabelSos: { color: '#E5484D' },
 });
