@@ -32,18 +32,24 @@ const L: Record<Language, Record<string, string>> = {
     yourLocation: 'Your location', locating: 'Locating…', changeLocation: 'Search a different address',
     flight: 'Flight number (optional)', gettingPrices: 'Getting prices…', request: 'Request',
     cash: 'Cash', khqr: 'KHQR', couldNotRequestRide: 'Could not request ride',
+    checkFlight: 'Check flight', flightNotFound: 'Flight not found — check the number', flightErr: "Couldn't check flight",
+    arrives: 'Arrives', departs: 'Departs', term: 'Terminal',
   },
   km: {
     title: 'ការធ្វើដំណើរទៅព្រលានយន្តហោះ', selectAirport: 'ជ្រើសរើសព្រលានយន្តហោះ', toAirport: 'ទៅព្រលានយន្តហោះ', fromAirport: 'ពីព្រលានយន្តហោះ',
     yourLocation: 'ទីតាំងរបស់អ្នក', locating: 'កំពុងកំណត់ទីតាំង…', changeLocation: 'ស្វែងរកអាសយដ្ឋានផ្សេង',
     flight: 'លេខជើងហោះហើរ (ស្រេចចិត្ត)', gettingPrices: 'កំពុងទាញយកតម្លៃ…', request: 'ស្នើ',
     cash: 'សាច់ប្រាក់', khqr: 'KHQR', couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ',
+    checkFlight: 'ពិនិត្យជើងហោះហើរ', flightNotFound: 'រកមិនឃើញ — ពិនិត្យលេខ', flightErr: 'មិនអាចពិនិត្យបាន',
+    arrives: 'មកដល់', departs: 'ចេញដំណើរ', term: 'អាគារ',
   },
   zh: {
     title: '机场接送', selectAirport: '选择机场', toAirport: '前往机场', fromAirport: '从机场出发',
     yourLocation: '您的位置', locating: '正在定位…', changeLocation: '搜索其他地址',
     flight: '航班号（可选）', gettingPrices: '正在获取价格…', request: '叫车',
     cash: '现金', khqr: 'KHQR', couldNotRequestRide: '无法叫车',
+    checkFlight: '查询航班', flightNotFound: '未找到航班 — 请检查航班号', flightErr: '无法查询航班',
+    arrives: '到达', departs: '出发', term: '航站楼',
   },
 };
 
@@ -67,6 +73,8 @@ export default function AirportTransfer() {
   const [preds, setPreds] = useState<Prediction[]>([]);
   const [searching, setSearching] = useState(false);
   const [flight, setFlight] = useState('');
+  const [flightInfo, setFlightInfo] = useState<any>(null);
+  const [flightChecking, setFlightChecking] = useState(false);
 
   const [route, setRoute] = useState<Route | null>(null);
   const [fares, setFares] = useState<Fare[]>([]);
@@ -129,6 +137,19 @@ export default function AirportTransfer() {
   const duration = route?.etaMinutes ?? Math.max(3, Math.round((distance / 25) * 60));
   const airportLabel = airport.name + (flight.trim() ? ` · Flight ${flight.trim()}` : '');
   const destLabel = dir === 'to' ? airportLabel : otherAddr;
+
+  async function checkFlight() {
+    if (!flight.trim() || flightChecking) return;
+    setFlightChecking(true);
+    setFlightInfo(null);
+    const { data, error } = await supabase.functions.invoke('flight-status', { body: { flight_number: flight.trim() } });
+    setFlightChecking(false);
+    if (error || (data as any)?.error) { setFlightInfo({ error: (data as any)?.error ?? t.flightErr }); return; }
+    setFlightInfo(data);
+  }
+
+  // AeroDataBox local time comes as "YYYY-MM-DD HH:mm±ZZ" → show HH:mm.
+  const hhmm = (s?: string | null) => (s && s.length >= 16 ? s.slice(11, 16) : '');
 
   async function request() {
     if (!selected || !pickup || !dropoff) return;
@@ -193,10 +214,41 @@ export default function AirportTransfer() {
           </Pressable>
         ))}
 
-        <TextInput
-          style={[styles.input, { marginTop: 12 }]} placeholder={t.flight} placeholderTextColor="#9AA0A6"
-          value={flight} onChangeText={setFlight} autoCapitalize="characters"
-        />
+        <View style={styles.flightRow}>
+          <TextInput
+            style={[styles.input, { flex: 1, marginTop: 0 }]} placeholder={t.flight} placeholderTextColor="#9AA0A6"
+            value={flight} onChangeText={(v) => { setFlight(v); setFlightInfo(null); }} autoCapitalize="characters"
+          />
+          <Pressable style={[styles.checkBtn, (!flight.trim() || flightChecking) && { opacity: 0.5 }]}
+            onPress={checkFlight} disabled={!flight.trim() || flightChecking}>
+            {flightChecking ? <ActivityIndicator color="#00B14F" /> : <Text style={styles.checkBtnText}>{t.checkFlight}</Text>}
+          </Pressable>
+        </View>
+
+        {flightInfo && (
+          <View style={styles.flightCard}>
+            {flightInfo.error ? (
+              <Text style={styles.flightErr}>{flightInfo.error}</Text>
+            ) : flightInfo.found === false ? (
+              <Text style={styles.flightErr}>{t.flightNotFound}</Text>
+            ) : (
+              <>
+                <Text style={styles.flightHead}>✈️ {flightInfo.number}{flightInfo.status ? ` · ${flightInfo.status}` : ''}</Text>
+                {flightInfo.arrival && (
+                  <Text style={styles.flightLine}>
+                    {t.arrives} {hhmm(flightInfo.arrival.estimated || flightInfo.arrival.scheduled)} · {flightInfo.arrival.airport}
+                    {flightInfo.arrival.terminal ? ` · ${t.term} ${flightInfo.arrival.terminal}` : ''}
+                  </Text>
+                )}
+                {flightInfo.departure && (
+                  <Text style={styles.flightLineDim}>
+                    {t.departs} {hhmm(flightInfo.departure.estimated || flightInfo.departure.scheduled)} · {flightInfo.departure.airport}
+                  </Text>
+                )}
+              </>
+            )}
+          </View>
+        )}
 
         {loading ? (
           <View style={{ alignItems: 'center', marginTop: 28 }}>
@@ -257,6 +309,14 @@ const styles = StyleSheet.create({
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#00B14F' },
   pointText: { color: '#1C1C1C', flex: 1, fontSize: 15 },
   input: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, color: '#1C1C1C', fontSize: 15, borderWidth: 1, borderColor: '#ECECEC', marginTop: 8 },
+  flightRow: { flexDirection: 'row', gap: 8, marginTop: 12, alignItems: 'center' },
+  checkBtn: { backgroundColor: '#E4F7EC', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, alignItems: 'center', justifyContent: 'center', minWidth: 92 },
+  checkBtnText: { color: '#00B14F', fontWeight: '800', fontSize: 13 },
+  flightCard: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginTop: 10, borderWidth: 1, borderColor: '#ECECEC' },
+  flightHead: { color: '#1C1C1C', fontSize: 15, fontWeight: '800' },
+  flightLine: { color: '#1C1C1C', fontSize: 13, marginTop: 6 },
+  flightLineDim: { color: '#7A7A7A', fontSize: 13, marginTop: 3 },
+  flightErr: { color: '#E5484D', fontSize: 13, fontWeight: '600' },
   pred: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#ECECEC' },
   predPrimary: { color: '#1C1C1C', fontSize: 16, fontWeight: '600' },
   predSecondary: { color: '#9AA0A6', fontSize: 13, marginTop: 2 },
