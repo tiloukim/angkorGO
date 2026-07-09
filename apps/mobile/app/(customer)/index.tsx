@@ -125,7 +125,7 @@ export default function HomeScreen() {
       tile: tileColors.lavender,
       items: [
         { label: t.stay, icon: '🏠', go: () => router.push('/(customer)/stays') },
-        { label: t.airport, icon: '✈️', go: () => router.push('/(customer)/ride') },
+        { label: t.airport, icon: '✈️', go: () => router.push('/(customer)/airport') },
         { label: t.bus, icon: '🚌', go: () => Alert.alert(t.comingSoon, t.soonBody) },
         { label: t.tours, icon: '🗺️', go: () => Alert.alert(t.comingSoon, t.soonBody) },
         { label: t.host, icon: '🔑', go: () => router.push('/(customer)/host') },

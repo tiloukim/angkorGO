@@ -6,6 +6,7 @@ export default function CustomerLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="membership" />
       <Stack.Screen name="sos" />
+      <Stack.Screen name="airport" />
       <Stack.Screen name="activity" />
       <Stack.Screen name="wallet" />
       <Stack.Screen name="spin" />
