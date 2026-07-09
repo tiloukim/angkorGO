@@ -141,6 +141,16 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
+        {/* Emergency SOS — membership safety feature */}
+        <Pressable style={styles.sosBanner} onPress={() => router.push('/(customer)/sos')}>
+          <Text style={styles.sosBannerIcon}>🚨</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.sosBannerTitle}>{t.sosTitle}</Text>
+            <Text style={styles.sosBannerSub}>{t.sosSub}</Text>
+          </View>
+          <Text style={styles.sosBannerChevron}>›</Text>
+        </Pressable>
+
         {/* Grouped category cards */}
         {groups.map((g) => (
           <View key={g.title} style={styles.groupCard}>
