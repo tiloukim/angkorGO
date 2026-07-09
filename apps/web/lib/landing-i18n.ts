@@ -27,6 +27,7 @@ export type LandingCopy = {
     availableOn: string; web: string;
   };
   mission: { eyebrow: string; body: string; s1: string; s2: string; s3: string };
+  sos: { eyebrow: string; heading: string; body: string; b1: string; b2: string; b3: string; disclaimer: string };
   how: { title: string; steps: { title: string; body: string }[] };
   deal: { week: string; title: string; sub: string; cta: string; badge: string };
   promos: { title: string; sub: string; cta: string };
@@ -40,7 +41,7 @@ export const COPY: Record<Language, LandingCopy> = {
     hero: {
       badge: "Meet Tuki · Cambodia's super-app",
       title1: 'One app.', title2: 'Every way to go.',
-      sub: 'Rides, food, rentals, stays & roadside repair — matched nearby and paid with one wallet.',
+      sub: 'Rides, food, rentals, stays, repair & parcel express — plus an Emergency SOS. One app, one wallet.',
       tagline: 'Help is on the way', ios: 'Download for iOS', android: 'Get it on Android',
     },
     mockup: { hi: 'Hi there 👋', search: 'What do you need today?', firstRide: 'First ride free', welcome: 'Welcome to AngkorGo' },
@@ -65,17 +66,19 @@ export const COPY: Record<Language, LandingCopy> = {
       more: 'New services are on the way — stay tuned.',
       topUp: 'Add funds to your AngkorGo wallet in seconds.',
       invite: 'Invite friends and both of you earn rewards.',
+      express: 'Send a parcel across town — nearest courier, live tracking, proof-of-delivery.',
     },
-    w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons' },
+    w: { ride: 'Ride', food: 'Food', rent: 'Rent', stay: 'Stay', repair: 'Repair', rewards: 'Rewards', wallet: 'Wallet', more: 'More', airport: 'Airport', schedule: 'Schedule', spin: 'Spin', mart: 'Mart', grocery: 'Grocery', coupons: 'Coupons', express: 'Express' },
     plan: {
-      title: 'Five services. One app.',
-      sub: 'Everything you need to move, eat, rent, repair and stay — all across Cambodia.',
+      title: 'Six services. One app.',
+      sub: 'Move, eat, rent, repair, stay and send parcels — all across Cambodia.',
       cards: [
         { key: 'taxi', title: 'Taxi & Ride', concept: 'Grab / Uber concept', bullets: ['Book rides instantly', 'Real-time tracking', 'Cash, card or wallet', 'Ratings & reviews'] },
         { key: 'rental', title: 'Vehicle Rental', concept: 'Turo concept', bullets: ['Rent cars or vans', 'Daily / weekly / monthly', 'Secure booking & payment', 'Owner dashboard'] },
         { key: 'repair', title: 'Mobile Auto Repair', concept: 'Mechanic to you', bullets: ['Request a mechanic', 'Real-time tracking', 'Service at your location', 'Transparent pricing'] },
         { key: 'food', title: 'Food Delivery', concept: 'Foodpanda concept', bullets: ['Restaurant & food orders', 'Real-time delivery', 'Track your rider', 'Multiple payment'] },
         { key: 'stay', title: 'Stay & Places', concept: 'Airbnb concept', bullets: ['Short-term stays', 'Homes, apartments, villas', 'Secure booking', 'Host management'] },
+        { key: 'express', title: 'Parcel Express', concept: 'Grab Express concept', bullets: ['Send a parcel A→B', 'Nearest courier dispatched', 'Real-time tracking', '4-digit proof-of-delivery'] },
       ],
     },
     overview: {
@@ -94,6 +97,15 @@ export const COPY: Record<Language, LandingCopy> = {
       eyebrow: 'Our mission',
       body: 'To empower Cambodia with one trusted platform that connects people, services and opportunities in one Go.',
       s1: 'One app.', s2: 'All services.', s3: 'Everywhere in Cambodia.',
+    },
+    sos: {
+      eyebrow: 'Safety · Members',
+      heading: 'Emergency SOS — help is one tap away',
+      body: 'AngkorGo members get a one-press SOS that alerts the nearest police station and tracks the response in real time.',
+      b1: 'Alerts the nearest police station',
+      b2: 'Real-time response tracking',
+      b3: 'Membership from $2 / month',
+      disclaimer: 'Not a substitute for emergency services — for immediate danger call 117 (Police).',
     },
     how: {
       title: 'How AngkorGo works',
@@ -120,7 +132,7 @@ export const COPY: Record<Language, LandingCopy> = {
     hero: {
       badge: 'ស្គាល់ Tuki · កម្មវិធីរួមរបស់កម្ពុជា',
       title1: 'កម្មវិធីតែមួយ។', title2: 'គ្រប់មធ្យោបាយធ្វើដំណើរ។',
-      sub: 'ការជិះ អាហារ ការជួល ការស្នាក់នៅ និងការជួសជុលតាមផ្លូវ — ផ្គូផ្គងនៅជិត និងបង់ប្រាក់ដោយកាបូបតែមួយ។',
+      sub: 'ការជិះ អាហារ ការជួល ការស្នាក់នៅ ការជួសជុល និងការដឹកកញ្ចប់ — បូករួមប៊ូតុងអាសន្ន SOS។ កម្មវិធីតែមួយ កាបូបតែមួយ។',
       tagline: 'ជំនួយកំពុងតែមកដល់', ios: 'ទាញយកសម្រាប់ iOS', android: 'ទាញយកសម្រាប់ Android',
     },
     mockup: { hi: 'សួស្តី 👋', search: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?', firstRide: 'ជិះលើកដំបូងឥតគិតថ្លៃ', welcome: 'សូមស្វាគមន៍មកកាន់ AngkorGo' },
@@ -145,17 +157,19 @@ export const COPY: Record<Language, LandingCopy> = {
       more: 'សេវាកម្មថ្មីៗកំពុងមកដល់ — សូមរង់ចាំ។',
       topUp: 'បញ្ចូលទឹកប្រាក់ទៅកាបូប AngkorGo ក្នុងរយៈពេលពីរបីវិនាទី។',
       invite: 'អញ្ជើញមិត្តភក្តិ ហើយអ្នកទាំងពីរទទួលបានរង្វាន់។',
+      express: 'ផ្ញើកញ្ចប់ឆ្លងកាត់ទីក្រុង — អ្នកដឹកនៅជិតបំផុត តាមដានផ្ទាល់ ភស្តុតាងនៃការដឹកជញ្ជូន។',
     },
-    w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង' },
+    w: { ride: 'ជិះ', food: 'អាហារ', rent: 'ជួល', stay: 'ស្នាក់នៅ', repair: 'ជួសជុល', rewards: 'រង្វាន់', wallet: 'កាបូប', more: 'ច្រើនទៀត', airport: 'ព្រលានយន្តហោះ', schedule: 'កំណត់ពេល', spin: 'បង្វិល', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', coupons: 'គូប៉ុង', express: 'ដឹកកញ្ចប់' },
     plan: {
-      title: 'សេវាកម្មប្រាំ។ កម្មវិធីតែមួយ។',
-      sub: 'អ្វីៗគ្រប់យ៉ាងដែលអ្នកត្រូវការ ដើម្បីធ្វើដំណើរ ញ៉ាំ ជួល ជួសជុល និងស្នាក់នៅ — ទូទាំងកម្ពុជា។',
+      title: 'សេវាកម្មប្រាំមួយ។ កម្មវិធីតែមួយ។',
+      sub: 'ធ្វើដំណើរ ញ៉ាំ ជួល ជួសជុល ស្នាក់នៅ និងផ្ញើកញ្ចប់ — ទូទាំងកម្ពុជា។',
       cards: [
         { key: 'taxi', title: 'តាក់ស៊ី & ការជិះ', concept: 'គំនិត Grab / Uber', bullets: ['កក់ការជិះភ្លាមៗ', 'តាមដានតាមពេលវេលាជាក់ស្តែង', 'សាច់ប្រាក់ កាត ឬកាបូប', 'ការវាយតម្លៃ & មតិ'] },
         { key: 'rental', title: 'ការជួលយានយន្ត', concept: 'គំនិត Turo', bullets: ['ជួលឡាន ឬរថយន្តដឹក', 'ថ្ងៃ / សប្តាហ៍ / ខែ', 'ការកក់ & ការបង់ប្រាក់សុវត្ថិភាព', 'ផ្ទាំងគ្រប់គ្រងម្ចាស់'] },
         { key: 'repair', title: 'ការជួសជុលរថយន្តចល័ត', concept: 'ជាងមកដល់អ្នក', bullets: ['ស្នើសុំជាងម៉ាស៊ីន', 'តាមដានតាមពេលវេលាជាក់ស្តែង', 'សេវានៅទីតាំងរបស់អ្នក', 'តម្លៃច្បាស់លាស់'] },
         { key: 'food', title: 'ការដឹកអាហារ', concept: 'គំនិត Foodpanda', bullets: ['កម្ម៉ង់ភោជនីយដ្ឋាន & អាហារ', 'ការដឹកតាមពេលវេលាជាក់ស្តែង', 'តាមដានអ្នកដឹករបស់អ្នក', 'ការបង់ប្រាក់ច្រើនប្រភេទ'] },
         { key: 'stay', title: 'ការស្នាក់នៅ & កន្លែង', concept: 'គំនិត Airbnb', bullets: ['ការស្នាក់នៅរយៈពេលខ្លី', 'ផ្ទះ អាផាតមិន វីឡា', 'ការកក់សុវត្ថិភាព', 'ការគ្រប់គ្រងម្ចាស់ផ្ទះ'] },
+        { key: 'express', title: 'ការដឹកកញ្ចប់', concept: 'គំនិត Grab Express', bullets: ['ផ្ញើកញ្ចប់ A→B', 'អ្នកដឹកនៅជិតបំផុត', 'តាមដានតាមពេលវេលាជាក់ស្តែង', 'លេខកូដបញ្ជាក់ការដឹក ៤ ខ្ទង់'] },
       ],
     },
     overview: {
@@ -174,6 +188,15 @@ export const COPY: Record<Language, LandingCopy> = {
       eyebrow: 'បេសកកម្មរបស់យើង',
       body: 'ផ្តល់អំណាចដល់កម្ពុជាជាមួយវេទិកាដែលអាចទុកចិត្តបានតែមួយ ដែលភ្ជាប់មនុស្ស សេវាកម្ម និងឱកាសក្នុង Go តែមួយ។',
       s1: 'កម្មវិធីតែមួយ។', s2: 'សេវាកម្មទាំងអស់។', s3: 'គ្រប់ទីកន្លែងក្នុងកម្ពុជា។',
+    },
+    sos: {
+      eyebrow: 'សុវត្ថិភាព · សមាជិក',
+      heading: 'អាសន្ន SOS — ជំនួយ​ត្រឹម​ចុច​តែ​ម្តង',
+      body: 'សមាជិក AngkorGo ទទួលបានប៊ូតុង SOS ចុចម្តង ដែលជូនដំណឹងទៅស្ថានីយ៍នគរបាលនៅជិតបំផុត និងតាមដានការឆ្លើយតបភ្លាមៗ។',
+      b1: 'ជូនដំណឹងទៅស្ថានីយ៍នគរបាលនៅជិតបំផុត',
+      b2: 'តាមដានការឆ្លើយតបផ្ទាល់',
+      b3: 'សមាជិកភាពចាប់ពី $2 / ខែ',
+      disclaimer: 'មិនជំនួសសេវាអាសន្នទេ — សម្រាប់គ្រោះថ្នាក់បន្ទាន់ សូមទូរស័ព្ទ 117 (នគរបាល)។',
     },
     how: {
       title: 'របៀប AngkorGo ដំណើរការ',
@@ -200,7 +223,7 @@ export const COPY: Record<Language, LandingCopy> = {
     hero: {
       badge: '认识 Tuki · 柬埔寨超级应用',
       title1: '一个应用。', title2: '畅行每一程。',
-      sub: '打车、美食、租车、住宿和道路维修 — 就近匹配，一个钱包支付。',
+      sub: '打车、美食、租车、住宿、维修和寄件 — 外加紧急 SOS。一个应用，一个钱包。',
       tagline: '帮助即将到达', ios: 'iOS 版下载', android: 'Android 版下载',
     },
     mockup: { hi: '你好 👋', search: '今天需要什么？', firstRide: '首程免费', welcome: '欢迎使用 AngkorGo' },
@@ -225,17 +248,19 @@ export const COPY: Record<Language, LandingCopy> = {
       more: '更多服务即将推出 — 敬请期待。',
       topUp: '几秒钟为您的 AngkorGo 钱包充值。',
       invite: '邀请好友，双方均可获得奖励。',
+      express: '同城寄件 — 就近调度骑手、实时追踪、送达验证码。',
     },
-    w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券' },
+    w: { ride: '打车', food: '美食', rent: '租车', stay: '住宿', repair: '维修', rewards: '奖励', wallet: '钱包', more: '更多', airport: '机场', schedule: '预约', spin: '转盘', mart: '商城', grocery: '生鲜', coupons: '优惠券', express: '快递' },
     plan: {
-      title: '五项服务。一个应用。',
-      sub: '出行、用餐、租车、维修和住宿所需的一切 — 覆盖柬埔寨全境。',
+      title: '六项服务。一个应用。',
+      sub: '出行、用餐、租车、维修、住宿和寄送包裹 — 覆盖柬埔寨全境。',
       cards: [
         { key: 'taxi', title: '打车出行', concept: 'Grab / Uber 模式', bullets: ['即时预约行程', '实时追踪', '现金、银行卡或钱包', '评分与评价'] },
         { key: 'rental', title: '车辆租赁', concept: 'Turo 模式', bullets: ['租用汽车或货车', '按日 / 周 / 月', '安全预订与支付', '车主管理面板'] },
         { key: 'repair', title: '上门汽车维修', concept: '技师上门', bullets: ['预约技师', '实时追踪', '上门服务', '价格透明'] },
         { key: 'food', title: '外卖配送', concept: 'Foodpanda 模式', bullets: ['餐厅与美食订购', '实时配送', '追踪骑手', '多种支付方式'] },
         { key: 'stay', title: '住宿与房源', concept: 'Airbnb 模式', bullets: ['短租住宿', '住宅、公寓、别墅', '安全预订', '房东管理'] },
+        { key: 'express', title: '包裹快递', concept: 'Grab Express 模式', bullets: ['同城寄件 A→B', '就近调度骑手', '实时追踪', '4 位送达验证码'] },
       ],
     },
     overview: {
@@ -254,6 +279,15 @@ export const COPY: Record<Language, LandingCopy> = {
       eyebrow: '我们的使命',
       body: '以一个值得信赖的平台赋能柬埔寨，一站连接人、服务与机遇。',
       s1: '一个应用。', s2: '所有服务。', s3: '遍及柬埔寨。',
+    },
+    sos: {
+      eyebrow: '安全 · 会员',
+      heading: '紧急 SOS — 一键呼救',
+      body: 'AngkorGo 会员享有一键 SOS，自动提醒最近的警察局并实时追踪救援进度。',
+      b1: '提醒最近的警察局',
+      b2: '实时追踪救援',
+      b3: '会员每月 $2 起',
+      disclaimer: '不能替代紧急服务 — 遇到危险请直接拨打 117（警察）。',
     },
     how: {
       title: 'AngkorGo 如何运作',

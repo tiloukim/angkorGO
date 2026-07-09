@@ -32,8 +32,8 @@ const GROUPS: { titleKey: string; hero: string; tile: string; items: GItem[] }[]
   {
     titleKey: 'orderShop', hero: '🍜', tile: '#FFEEE0',
     items: [
-      { icon: '🍜', key: 'food', href: '/food' }, { icon: '🏠', key: 'stay', href: '/stays' }, { icon: '🛒', key: 'mart' },
-      { icon: '🥬', key: 'grocery' }, { icon: '🎟️', key: 'coupons' }, { icon: '🎁', key: 'rewards' },
+      { icon: '🍜', key: 'food', href: '/food' }, { icon: '🏠', key: 'stay', href: '/stays' }, { icon: '📦', key: 'express' },
+      { icon: '🛒', key: 'mart' }, { icon: '🥬', key: 'grocery' }, { icon: '🎁', key: 'rewards' },
     ],
   },
 ];
@@ -45,6 +45,7 @@ const PLAN = [
   { key: 'repair', icon: '🔧', color: '#FF6D00', soft: '#FFF0E4' },
   { key: 'food',   icon: '🍜', color: '#16A34A', soft: '#E7F6ED' },
   { key: 'stay',   icon: '🏠', color: '#7C3AED', soft: '#F1EBFD' },
+  { key: 'express', icon: '📦', color: '#0EA5A9', soft: '#E6F7F7' },
 ] as const;
 
 const SMART_ICONS = ['📍', '💳', '🎧', '🌐'] as const;
@@ -304,6 +305,32 @@ export default function Landing() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Emergency SOS — membership safety highlight */}
+      <section className="bg-white pb-8 pt-4">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="relative overflow-hidden rounded-3xl bg-[#1C0F10] p-8 text-white md:p-12">
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-danger/20 px-3 py-1.5 text-sm font-bold text-[#FF9B95]">
+                  🚨 {t.sos.eyebrow}
+                </span>
+                <h2 className="mt-4 text-3xl font-extrabold tracking-tight md:text-4xl">{t.sos.heading}</h2>
+                <p className="mt-3 max-w-md text-white/70">{t.sos.body}</p>
+                <p className="mt-5 text-xs leading-relaxed text-white/45">{t.sos.disclaimer}</p>
+              </div>
+              <div className="space-y-3">
+                {[t.sos.b1, t.sos.b2, t.sos.b3].map((b) => (
+                  <div key={b} className="flex items-center gap-3 rounded-2xl bg-white/5 p-4">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-danger text-sm font-black">✓</span>
+                    <span className="font-semibold">{b}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
