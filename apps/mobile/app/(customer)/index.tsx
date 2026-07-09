@@ -20,7 +20,7 @@ const L: Record<Language, Record<string, string>> = {
   en: {
     hi: 'Hi there',
     searchPlaceholder: 'What do you need today?',
-    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay', catFun: 'Entertainment',
+    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay & Travel', catFun: 'Entertainment',
     snaeh: 'Snaeh', movies: 'Movies', comingSoon: 'Coming soon', comingSoonMsg: 'Movies are coming soon to AngkorGo.',
     ride: 'Ride', rent: 'Rent', airport: 'Airport', repair: 'Repair', schedule: 'Schedule', spin: 'Spin',
     food: 'Food', stay: 'Stay', express: 'Express', mart: 'Mart', grocery: 'Grocery', host: 'Host', rewards: 'Rewards',
@@ -38,7 +38,7 @@ const L: Record<Language, Record<string, string>> = {
   km: {
     hi: 'សួស្តី',
     searchPlaceholder: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?',
-    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ', catFun: 'កម្សាន្ត',
+    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ & ធ្វើដំណើរ', catFun: 'កម្សាន្ត',
     snaeh: 'ស្នេហ៍', movies: 'ភាពយន្ត', comingSoon: 'នឹងមកដល់ឆាប់ៗ', comingSoonMsg: 'ភាពយន្តនឹងមកដល់ AngkorGo ឆាប់ៗនេះ។',
     ride: 'ជិះ', rent: 'ជួល', airport: 'ព្រលានយន្តហោះ', repair: 'ជួសជុល', schedule: 'កំណត់ពេល', spin: 'បង្វិល',
     food: 'អាហារ', stay: 'ស្នាក់នៅ', express: 'ដឹកកញ្ចប់', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', host: 'ម្ចាស់ផ្ទះ', rewards: 'រង្វាន់',
@@ -56,7 +56,7 @@ const L: Record<Language, Record<string, string>> = {
   zh: {
     hi: '你好',
     searchPlaceholder: '今天需要什么？',
-    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿', catFun: '娱乐',
+    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿与旅行', catFun: '娱乐',
     snaeh: 'Snaeh', movies: '电影', comingSoon: '即将推出', comingSoonMsg: '电影功能即将登陆 AngkorGo。',
     ride: '打车', rent: '租车', airport: '机场', repair: '维修', schedule: '预约', spin: '转盘',
     food: '美食', stay: '住宿', express: '快递', mart: '商城', grocery: '生鲜', host: '房东', rewards: '奖励',
