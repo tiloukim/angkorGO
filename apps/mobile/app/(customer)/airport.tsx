@@ -12,28 +12,35 @@ import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
 import { useLocale } from '@/lib/locale';
 
-// Techo International Airport (KTI) — Cambodia's main airport since Sept 2025,
-// replacing the closed Phnom Penh International Airport (PNH). Kandal Province.
-const AIRPORT = { lat: 11.236, lng: 104.536, name: "Techo Int'l Airport (KTI)" };
+// Cambodia's operating commercial airports (2025). The old Phnom Penh (PNH) and
+// Siem Reap (REP) airports have closed — replaced by Techo (KTI) and
+// Siem Reap–Angkor (SAI). Battambang (BBM) serves limited domestic flights.
+type Airport = { code: string; city: string; name: string; lat: number; lng: number };
+const AIRPORTS: Airport[] = [
+  { code: 'KTI', city: 'Phnom Penh',    name: "Techo Int'l (KTI)",            lat: 11.236,  lng: 104.536 },
+  { code: 'SAI', city: 'Siem Reap',     name: "Siem Reap–Angkor Int'l (SAI)", lat: 13.375,  lng: 104.221 },
+  { code: 'KOS', city: 'Sihanoukville', name: "Sihanouk Int'l (KOS)",         lat: 10.579,  lng: 103.637 },
+  { code: 'BBM', city: 'Battambang',    name: 'Battambang (BBM)',             lat: 13.0956, lng: 103.224 },
+];
 
 type Fare = { class: VehicleClass; fare: number; currency: string };
 const METHODS = [{ key: 'cash', labelKey: 'cash' }, { key: 'khqr', labelKey: 'khqr' }] as const;
 
 const L: Record<Language, Record<string, string>> = {
   en: {
-    title: 'Airport transfer', toAirport: 'To airport', fromAirport: 'From airport',
+    title: 'Airport transfer', selectAirport: 'Select airport', toAirport: 'To airport', fromAirport: 'From airport',
     yourLocation: 'Your location', locating: 'Locating…', changeLocation: 'Search a different address',
     flight: 'Flight number (optional)', gettingPrices: 'Getting prices…', request: 'Request',
     cash: 'Cash', khqr: 'KHQR', couldNotRequestRide: 'Could not request ride',
   },
   km: {
-    title: 'ការធ្វើដំណើរទៅព្រលានយន្តហោះ', toAirport: 'ទៅព្រលានយន្តហោះ', fromAirport: 'ពីព្រលានយន្តហោះ',
+    title: 'ការធ្វើដំណើរទៅព្រលានយន្តហោះ', selectAirport: 'ជ្រើសរើសព្រលានយន្តហោះ', toAirport: 'ទៅព្រលានយន្តហោះ', fromAirport: 'ពីព្រលានយន្តហោះ',
     yourLocation: 'ទីតាំងរបស់អ្នក', locating: 'កំពុងកំណត់ទីតាំង…', changeLocation: 'ស្វែងរកអាសយដ្ឋានផ្សេង',
     flight: 'លេខជើងហោះហើរ (ស្រេចចិត្ត)', gettingPrices: 'កំពុងទាញយកតម្លៃ…', request: 'ស្នើ',
     cash: 'សាច់ប្រាក់', khqr: 'KHQR', couldNotRequestRide: 'មិន​អាច​ស្នើ​ដំណើរ',
   },
   zh: {
-    title: '机场接送', toAirport: '前往机场', fromAirport: '从机场出发',
+    title: '机场接送', selectAirport: '选择机场', toAirport: '前往机场', fromAirport: '从机场出发',
     yourLocation: '您的位置', locating: '正在定位…', changeLocation: '搜索其他地址',
     flight: '航班号（可选）', gettingPrices: '正在获取价格…', request: '叫车',
     cash: '现金', khqr: 'KHQR', couldNotRequestRide: '无法叫车',
@@ -52,6 +59,7 @@ export default function AirportTransfer() {
   const { lang } = useLocale();
   const t = L[lang] ?? L.en;
 
+  const [airport, setAirport] = useState<Airport>(AIRPORTS[0]);
   const [dir, setDir] = useState<'to' | 'from'>('to');
   const [other, setOther] = useState<Coords | null>(null);
   const [otherAddr, setOtherAddr] = useState(t.locating);
@@ -89,8 +97,8 @@ export default function AirportTransfer() {
     let alive = true;
     (async () => {
       setLoading(true);
-      const pickup = dir === 'to' ? other : AIRPORT;
-      const dropoff = dir === 'to' ? AIRPORT : other;
+      const pickup = dir === 'to' ? other : airport;
+      const dropoff = dir === 'to' ? airport : other;
       const r = await fetchRoute(pickup, dropoff);
       const distance = r?.distanceKm ?? haversine(pickup, dropoff);
       const duration = r?.etaMinutes ?? Math.max(3, Math.round((distance / 25) * 60));
@@ -101,7 +109,7 @@ export default function AirportTransfer() {
       setRoute(r); setSurge(s); setFares((data ?? []) as Fare[]); setLoading(false);
     })();
     return () => { alive = false; };
-  }, [other, dir]);
+  }, [other, dir, airport]);
 
   async function chooseOther(p: Prediction) {
     setSearching(true);
@@ -114,11 +122,11 @@ export default function AirportTransfer() {
   }
 
   const selected = fares.find((f) => f.class === cls);
-  const pickup = other ? (dir === 'to' ? other : AIRPORT) : null;
-  const dropoff = other ? (dir === 'to' ? AIRPORT : other) : null;
+  const pickup = other ? (dir === 'to' ? other : airport) : null;
+  const dropoff = other ? (dir === 'to' ? airport : other) : null;
   const distance = route?.distanceKm ?? (pickup && dropoff ? haversine(pickup, dropoff) : 0);
   const duration = route?.etaMinutes ?? Math.max(3, Math.round((distance / 25) * 60));
-  const airportLabel = AIRPORT.name + (flight.trim() ? ` · Flight ${flight.trim()}` : '');
+  const airportLabel = airport.name + (flight.trim() ? ` · Flight ${flight.trim()}` : '');
   const destLabel = dir === 'to' ? airportLabel : otherAddr;
 
   async function request() {
@@ -148,6 +156,19 @@ export default function AirportTransfer() {
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={{ padding: 24, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+        <Text style={styles.pickerLabel}>{t.selectAirport}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }} style={{ marginBottom: 18 }}>
+          {AIRPORTS.map((a) => {
+            const on = airport.code === a.code;
+            return (
+              <Pressable key={a.code} style={[styles.airChip, on && styles.airChipOn]} onPress={() => setAirport(a)}>
+                <Text style={[styles.airChipCity, on && { color: '#fff' }]}>{a.city}</Text>
+                <Text style={[styles.airChipCode, on && { color: 'rgba(255,255,255,0.85)' }]}>{a.code}</Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+
         <View style={styles.toggle}>
           {(['to', 'from'] as const).map((d) => (
             <Pressable key={d} style={[styles.dirBtn, dir === d && styles.dirOn]} onPress={() => setDir(d)}>
@@ -156,7 +177,7 @@ export default function AirportTransfer() {
           ))}
         </View>
 
-        <View style={styles.pointRow}><Text style={styles.plane}>✈️</Text><Text style={styles.pointText} numberOfLines={1}>{AIRPORT.name}</Text></View>
+        <View style={styles.pointRow}><Text style={styles.plane}>✈️</Text><Text style={styles.pointText} numberOfLines={1}>{airport.name}</Text></View>
         <View style={styles.pointRow}><View style={styles.dot} /><Text style={styles.pointText} numberOfLines={1}>{otherAddr}</Text></View>
 
         <TextInput
@@ -221,6 +242,11 @@ const styles = StyleSheet.create({
   backArrow: { color: '#fff', fontSize: 26, fontWeight: '800', lineHeight: 28, marginTop: -2 },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: '800' },
   content: { flex: 1 },
+  pickerLabel: { color: '#1C1C1C', fontSize: 15, fontWeight: '700', marginBottom: 10 },
+  airChip: { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 16, borderWidth: 1, borderColor: '#ECECEC', alignItems: 'center' },
+  airChipOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
+  airChipCity: { color: '#1C1C1C', fontSize: 14, fontWeight: '700' },
+  airChipCode: { color: '#9AA0A6', fontSize: 11, fontWeight: '700', marginTop: 1 },
   toggle: { flexDirection: 'row', gap: 10, marginBottom: 20 },
   dirBtn: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: '#ECECEC' },
   dirOn: { backgroundColor: '#00B14F', borderColor: '#00B14F' },
