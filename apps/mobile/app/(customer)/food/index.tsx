@@ -1,6 +1,6 @@
 // Food — browse open restaurants.
 import { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
@@ -22,11 +22,12 @@ export default function Food() {
   const { lang } = useLocale();
   const t = L[lang] ?? L.en;
   const [rows, setRows] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.from('restaurants').select('id, name, cuisine, photo_url, rating, is_open')
       .eq('status', 'active').order('rating', { ascending: false })
-      .then(({ data }) => setRows((data ?? []) as Restaurant[]));
+      .then(({ data }) => { setRows((data ?? []) as Restaurant[]); setLoading(false); });
   }, []);
 
   return (
@@ -40,7 +41,8 @@ export default function Food() {
       <FlatList
         data={rows}
         keyExtractor={(r) => r.id}
-        ListEmptyComponent={<Text style={styles.empty}>{t.empty}</Text>}
+        initialNumToRender={6}
+        ListEmptyComponent={loading ? <ActivityIndicator color="#00B14F" style={{ marginTop: 32 }} /> : <Text style={styles.empty}>{t.empty}</Text>}
         renderItem={({ item }) => (
           <Pressable style={[styles.card, !item.is_open && { opacity: 0.5 }]} disabled={!item.is_open}
             onPress={() => router.push({ pathname: '/(customer)/food/[id]', params: { id: item.id } })}>
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   empty: { color: '#9AA0A6', marginTop: 20 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: '#ECECEC', overflow: 'hidden' },
-  photo: { width: '100%', height: 150 },
+  photo: { width: '100%', height: 150, backgroundColor: '#ECECEC' },
   photoEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#ECECEC' },
   photoEmptyText: { fontSize: 44 },
   body: { padding: 16 },

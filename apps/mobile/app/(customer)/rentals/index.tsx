@@ -1,6 +1,6 @@
 // Vehicle Rental — browse active vehicle listings.
 import { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { theme } from '@/lib/theme';
@@ -25,11 +25,12 @@ export default function Rentals() {
   const { lang } = useLocale();
   const t = L[lang] ?? L.en;
   const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.from('listings').select('id, title, price_per_unit, currency, photos, address, attributes')
       .eq('type', 'vehicle').eq('status', 'active').order('created_at', { ascending: false })
-      .then(({ data }) => setListings((data ?? []) as Listing[]));
+      .then(({ data }) => { setListings((data ?? []) as Listing[]); setLoading(false); });
   }, []);
 
   return (
@@ -43,7 +44,8 @@ export default function Rentals() {
       <FlatList
         data={listings}
         keyExtractor={(l) => l.id}
-        ListEmptyComponent={<Text style={styles.empty}>{t.empty}</Text>}
+        initialNumToRender={6}
+        ListEmptyComponent={loading ? <ActivityIndicator color="#00B14F" style={{ marginTop: 32 }} /> : <Text style={styles.empty}>{t.empty}</Text>}
         renderItem={({ item }) => (
           <Pressable style={styles.card} onPress={() => router.push({ pathname: '/(customer)/rentals/[id]', params: { id: item.id } })}>
             {item.photos?.[0]
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
   h1: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', marginBottom: 16 },
   empty: { color: '#9AA0A6', marginTop: 20 },
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginBottom: 14, borderWidth: 1, borderColor: '#ECECEC', overflow: 'hidden' },
-  photo: { width: '100%', height: 160 },
+  photo: { width: '100%', height: 160, backgroundColor: '#ECECEC' },
   photoEmpty: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#ECECEC' },
   photoEmptyText: { fontSize: 44 },
   cardBody: { padding: 16 },

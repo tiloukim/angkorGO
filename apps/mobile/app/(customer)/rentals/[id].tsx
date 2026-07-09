@@ -117,7 +117,7 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F6F7' },
-  photo: { width: '100%', height: 220 },
+  photo: { width: '100%', height: 220, backgroundColor: '#ECECEC' },
   title: { color: '#1C1C1C', fontSize: 24, fontWeight: '800', paddingHorizontal: 24, marginTop: 20 },
   addr: { color: '#7A7A7A', paddingHorizontal: 24, marginTop: 4 },
   price: { color: '#00B14F', fontSize: 20, fontWeight: '800', paddingHorizontal: 24, marginTop: 10 },

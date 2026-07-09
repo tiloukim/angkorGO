@@ -1,7 +1,7 @@
 // Activity tab — recent rides, food orders and bookings (Grab-style segmented
 // view). Each item reopens its live status screen. RLS scopes rows to the user.
 import { useCallback, useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { theme } from '@/lib/theme';
 import { supabase } from '@/lib/supabase';
@@ -146,51 +146,53 @@ export default function ActivityScreen() {
     );
   }
 
-  const rows = (() => {
+  const listData: any[] = loading ? [] : seg === 'rides' ? rides : seg === 'food' ? orders : bookings;
+
+  function renderRow({ item }: { item: any }) {
     if (seg === 'rides') {
-      return rides.map((r) => (
-        <View key={r.id} style={{ marginBottom: 12 }}>
+      return (
+        <View style={{ marginBottom: 12 }}>
           <Card
             icon="🛺"
-            title={`${r.class.charAt(0).toUpperCase()}${r.class.slice(1)}`}
-            subtitle={r.dropoff_address || ''}
-            amount={`$${Number(r.final_fare ?? r.est_fare ?? 0).toFixed(2)}`}
-            date={fmtDate(r.requested_at)}
-            onPress={() => router.push({ pathname: '/(customer)/ride/[id]', params: { id: r.id } })}
+            title={`${item.class.charAt(0).toUpperCase()}${item.class.slice(1)}`}
+            subtitle={item.dropoff_address || ''}
+            amount={`$${Number(item.final_fare ?? item.est_fare ?? 0).toFixed(2)}`}
+            date={fmtDate(item.requested_at)}
+            onPress={() => router.push({ pathname: '/(customer)/ride/[id]', params: { id: item.id } })}
           />
-          <View style={styles.pillRow}>{statusPill(r.status)}</View>
+          <View style={styles.pillRow}>{statusPill(item.status)}</View>
         </View>
-      ));
+      );
     }
     if (seg === 'food') {
-      return orders.map((o) => (
-        <View key={o.id} style={{ marginBottom: 12 }}>
+      return (
+        <View style={{ marginBottom: 12 }}>
           <Card
             icon="🍜"
-            title={o.restaurant?.name || 'Restaurant'}
+            title={item.restaurant?.name || 'Restaurant'}
             subtitle=""
-            amount={`$${Number(o.total).toFixed(2)}`}
-            date={fmtDate(o.placed_at)}
-            onPress={() => router.push({ pathname: '/(customer)/food/order/[id]', params: { id: o.id } })}
+            amount={`$${Number(item.total).toFixed(2)}`}
+            date={fmtDate(item.placed_at)}
+            onPress={() => router.push({ pathname: '/(customer)/food/order/[id]', params: { id: item.id } })}
           />
-          <View style={styles.pillRow}>{statusPill(o.status)}</View>
+          <View style={styles.pillRow}>{statusPill(item.status)}</View>
         </View>
-      ));
+      );
     }
-    return bookings.map((b) => (
-      <View key={b.id} style={{ marginBottom: 12 }}>
+    return (
+      <View style={{ marginBottom: 12 }}>
         <Card
-          icon={b.listing?.type === 'vehicle' ? '🚗' : '🏠'}
-          title={b.listing?.title || 'Booking'}
-          subtitle={`${b.start_date} → ${b.end_date}`}
-          amount={`$${Number(b.total_amount).toFixed(2)}`}
-          date={fmtDate(b.start_date)}
-          onPress={() => router.push({ pathname: '/(customer)/booking/[id]', params: { id: b.id } })}
+          icon={item.listing?.type === 'vehicle' ? '🚗' : '🏠'}
+          title={item.listing?.title || 'Booking'}
+          subtitle={`${item.start_date} → ${item.end_date}`}
+          amount={`$${Number(item.total_amount).toFixed(2)}`}
+          date={fmtDate(item.start_date)}
+          onPress={() => router.push({ pathname: '/(customer)/booking/[id]', params: { id: item.id } })}
         />
-        <View style={styles.pillRow}>{statusPill(b.status)}</View>
+        <View style={styles.pillRow}>{statusPill(item.status)}</View>
       </View>
-    ));
-  })();
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -210,18 +212,24 @@ export default function ActivityScreen() {
         })}
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: TAB_BAR_SPACE + 24 }} showsVerticalScrollIndicator={false}>
-        {loading ? (
-          <ActivityIndicator color={theme.green} style={{ marginTop: 60 }} />
-        ) : rows.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>{current.icon}</Text>
-            <Text style={styles.emptyText}>{t[`${current.key}Empty`]}</Text>
-          </View>
-        ) : (
-          rows
-        )}
-      </ScrollView>
+      <FlatList
+        data={listData}
+        keyExtractor={(item) => item.id}
+        renderItem={renderRow}
+        initialNumToRender={8}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: TAB_BAR_SPACE + 24, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator color={theme.green} style={{ marginTop: 60 }} />
+          ) : (
+            <View style={styles.empty}>
+              <Text style={styles.emptyIcon}>{current.icon}</Text>
+              <Text style={styles.emptyText}>{t[`${current.key}Empty`]}</Text>
+            </View>
+          )
+        }
+      />
 
       <TabBar active="activity" />
     </View>
