@@ -32,6 +32,8 @@ const L: Record<Language, Record<string, string>> = {
     promo2Title: 'Free', promo2Sub: 'repair callout',
     promo3Title: '$0', promo3Sub: 'delivery fees',
     roadsideHelp: 'Roadside help',
+    sosTitle: 'Emergency SOS',
+    sosSub: 'Members · alert the nearest police station',
   },
   km: {
     hi: 'សួស្តី',
@@ -48,6 +50,8 @@ const L: Record<Language, Record<string, string>> = {
     promo2Title: 'ឥតគិតថ្លៃ', promo2Sub: 'ហៅជួសជុល',
     promo3Title: '$0', promo3Sub: 'ថ្លៃដឹកជញ្ជូន',
     roadsideHelp: 'ជំនួយតាមផ្លូវ',
+    sosTitle: 'អាសន្ន SOS',
+    sosSub: 'សមាជិក · ជូនដំណឹងដល់ស្ថានីយ៍ប៉ូលិសនៅជិតបំផុត',
   },
   zh: {
     hi: '你好',
@@ -64,6 +68,8 @@ const L: Record<Language, Record<string, string>> = {
     promo2Title: '免费', promo2Sub: '维修上门',
     promo3Title: '$0', promo3Sub: '配送费',
     roadsideHelp: '道路救援',
+    sosTitle: '紧急 SOS',
+    sosSub: '会员 · 提醒最近的警察局',
   },
 };
 
@@ -134,6 +140,16 @@ export default function HomeScreen() {
             <Text style={styles.searchText}>{t.searchPlaceholder}</Text>
           </Pressable>
         </View>
+
+        {/* Emergency SOS — membership safety feature */}
+        <Pressable style={styles.sosBanner} onPress={() => router.push('/(customer)/sos')}>
+          <Text style={styles.sosBannerIcon}>🚨</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.sosBannerTitle}>{t.sosTitle}</Text>
+            <Text style={styles.sosBannerSub}>{t.sosSub}</Text>
+          </View>
+          <Text style={styles.sosBannerChevron}>›</Text>
+        </Pressable>
 
         {/* Grouped category cards */}
         {groups.map((g) => (
@@ -239,6 +255,12 @@ const styles = StyleSheet.create({
   },
   searchIcon: { fontSize: 15 },
   searchText: { color: theme.muted, fontSize: 15 },
+
+  sosBanner: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FDECEA', borderRadius: 16, marginHorizontal: 16, marginTop: 16, padding: 16, borderWidth: 1, borderColor: '#F5C6C2' },
+  sosBannerIcon: { fontSize: 26 },
+  sosBannerTitle: { color: '#B71C1C', fontSize: 16, fontWeight: '900' },
+  sosBannerSub: { color: '#7A2E2A', fontSize: 12.5, marginTop: 2 },
+  sosBannerChevron: { color: '#B71C1C', fontSize: 26, fontWeight: '800' },
 
   groupCard: { backgroundColor: theme.card, borderRadius: 20, marginHorizontal: 16, marginTop: 16, padding: 16, borderWidth: 1, borderColor: theme.border },
   groupTitle: { color: theme.ink, fontSize: 17, fontWeight: '800', marginBottom: 12 },
