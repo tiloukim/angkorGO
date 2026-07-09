@@ -20,8 +20,7 @@ const L: Record<Language, Record<string, string>> = {
   en: {
     hi: 'Hi there',
     searchPlaceholder: 'What do you need today?',
-    getAround: 'Get around',
-    orderShop: 'Order & shop',
+    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay',
     ride: 'Ride', rent: 'Rent', airport: 'Airport', repair: 'Repair', schedule: 'Schedule', spin: 'Spin',
     food: 'Food', stay: 'Stay', express: 'Express', mart: 'Mart', grocery: 'Grocery', host: 'Host', rewards: 'Rewards',
     topUp: 'Top up', coupons: 'Coupons', invite: 'Invite',
@@ -38,8 +37,7 @@ const L: Record<Language, Record<string, string>> = {
   km: {
     hi: 'សួស្តី',
     searchPlaceholder: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?',
-    getAround: 'ធ្វើដំណើរ',
-    orderShop: 'កម្ម៉ង់ & ទិញ',
+    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ',
     ride: 'ជិះ', rent: 'ជួល', airport: 'ព្រលានយន្តហោះ', repair: 'ជួសជុល', schedule: 'កំណត់ពេល', spin: 'បង្វិល',
     food: 'អាហារ', stay: 'ស្នាក់នៅ', express: 'ដឹកកញ្ចប់', mart: 'ផ្សារ', grocery: 'គ្រឿងទេស', host: 'ម្ចាស់ផ្ទះ', rewards: 'រង្វាន់',
     topUp: 'បញ្ចូលទឹកប្រាក់', coupons: 'គូប៉ុង', invite: 'អញ្ជើញ',
@@ -56,8 +54,7 @@ const L: Record<Language, Record<string, string>> = {
   zh: {
     hi: '你好',
     searchPlaceholder: '今天需要什么？',
-    getAround: '出行',
-    orderShop: '订购 & 购物',
+    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿',
     ride: '打车', rent: '租车', airport: '机场', repair: '维修', schedule: '预约', spin: '转盘',
     food: '美食', stay: '住宿', express: '快递', mart: '商城', grocery: '生鲜', host: '房东', rewards: '奖励',
     topUp: '充值', coupons: '优惠券', invite: '邀请',
@@ -86,7 +83,7 @@ export default function HomeScreen() {
   type Item = { label: string; icon: string; go: () => void };
   const groups: { title: string; hero: string; tile: string; items: Item[] }[] = [
     {
-      title: t.getAround,
+      title: t.catRides,
       hero: '🛺',
       tile: tileColors.green,
       items: [
@@ -95,21 +92,35 @@ export default function HomeScreen() {
         { label: t.airport, icon: '✈️', go: () => router.push('/(customer)/ride') },
         { label: t.repair, icon: '🔧', go: () => onSelect('emergency_repair') },
         { label: t.schedule, icon: '🗓️', go: () => router.push('/(customer)/ride') },
-        { label: t.spin, icon: '🎡', go: () => router.push('/(customer)/spin') },
       ],
     },
     {
-      title: t.orderShop,
+      title: t.catFoods,
       hero: '🍜',
       tile: tileColors.peach,
       items: [
         { label: t.food, icon: '🍜', go: () => router.push('/(customer)/food') },
-        { label: t.stay, icon: '🏠', go: () => router.push('/(customer)/stays') },
-        { label: t.express, icon: '📦', go: () => router.push('/(customer)/express') },
-        { label: t.mart, icon: '🛒', go: () => router.push('/(customer)/food') },
         { label: t.grocery, icon: '🥬', go: () => router.push('/(customer)/food') },
-        { label: t.host, icon: '🔑', go: () => router.push('/(customer)/host') },
+        { label: t.mart, icon: '🛒', go: () => router.push('/(customer)/food') },
+      ],
+    },
+    {
+      title: t.catShopping,
+      hero: '🛍️',
+      tile: tileColors.gold,
+      items: [
+        { label: t.express, icon: '📦', go: () => router.push('/(customer)/express') },
         { label: t.rewards, icon: '🎁', go: () => router.push('/(customer)/wallet') },
+        { label: t.spin, icon: '🎡', go: () => router.push('/(customer)/spin') },
+      ],
+    },
+    {
+      title: t.catStay,
+      hero: '🏠',
+      tile: tileColors.lavender,
+      items: [
+        { label: t.stay, icon: '🏠', go: () => router.push('/(customer)/stays') },
+        { label: t.host, icon: '🔑', go: () => router.push('/(customer)/host') },
       ],
     },
   ];
