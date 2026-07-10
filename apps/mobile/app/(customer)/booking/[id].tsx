@@ -47,12 +47,13 @@ export default function BookingStatus() {
   const { lang } = useLocale();
   const [status, setStatus] = useState<BookingStatus>('requested');
   const [total, setTotal] = useState<number | null>(null);
+  const [listingType, setListingType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const payment = useBookingPayment(id);
 
   async function load() {
-    const { data } = await supabase.from('bookings').select('status, total_amount').eq('id', id).single();
-    if (data) { setStatus(data.status as BookingStatus); setTotal(Number(data.total_amount)); }
+    const { data } = await supabase.from('bookings').select('status, total_amount, listing:listings(type)').eq('id', id).single();
+    if (data) { setStatus(data.status as BookingStatus); setTotal(Number(data.total_amount)); setListingType((data as any).listing?.type ?? null); }
     setLoading(false);
   }
 
@@ -72,6 +73,14 @@ export default function BookingStatus() {
   const paid = payment?.status === 'released';
   const canCancel = (status === 'requested' || status === 'confirmed') && !paid;
 
+  // Sub-brand: AngkorGo Stay (places) / AngkorGo Rental (vehicles).
+  const bookBrand = listingType === 'vehicle' ? 'Rental' : listingType === 'place' ? 'Stay' : null;
+  let subText = paid ? L[lang].paid : copy.sub;
+  if (bookBrand) {
+    if (paid) subText = `${subText} · AngkorGo ${bookBrand}`;
+    else if (status === 'completed') subText = copy.sub.replace('AngkorGo', `AngkorGo ${bookBrand}`);
+  }
+
   function confirmCancel() {
     Alert.alert(L[lang].cancelBookingQ, '', [
       { text: L[lang].keepBooking, style: 'cancel' },
@@ -86,7 +95,7 @@ export default function BookingStatus() {
     <View style={styles.container}>
       <View style={styles.center}>
         <Text style={styles.title}>{copy.title}</Text>
-        <Text style={[styles.sub, paid && styles.paid]}>{paid ? L[lang].paid : copy.sub}</Text>
+        <Text style={[styles.sub, paid && styles.paid]}>{subText}</Text>
         {total != null && <Text style={styles.total}>${total.toFixed(2)}</Text>}
       </View>
 

@@ -21,7 +21,7 @@ const COPY: Record<Language, Partial<Record<ParcelStatus, { title: string; sub: 
     courier_assigned: { title: 'Courier assigned', sub: 'Heading to the pickup' },
     picked_up:        { title: 'Parcel picked up', sub: 'On the way to the recipient' },
     delivering:       { title: 'Out for delivery', sub: 'Almost there' },
-    delivered:        { title: 'Delivered', sub: 'Your parcel has arrived 📦' },
+    delivered:        { title: 'Delivered', sub: 'Your parcel has arrived — thanks for using AngkorGo Express 📦' },
     cancelled:        { title: 'Cancelled', sub: 'This parcel was cancelled' },
   },
   km: {
@@ -30,7 +30,7 @@ const COPY: Record<Language, Partial<Record<ParcelStatus, { title: string; sub: 
     courier_assigned: { title: 'បានចាត់អ្នកដឹក', sub: 'កំពុងទៅកន្លែងទទួល' },
     picked_up:        { title: 'បានយកកញ្ចប់', sub: 'កំពុងធ្វើដំណើរទៅអ្នកទទួល' },
     delivering:       { title: 'កំពុងដឹកជញ្ជូន', sub: 'ជិតដល់ហើយ' },
-    delivered:        { title: 'បានដឹកជញ្ជូន', sub: 'កញ្ចប់របស់អ្នកបានមកដល់ 📦' },
+    delivered:        { title: 'បានដឹកជញ្ជូន', sub: 'កញ្ចប់របស់អ្នកបានមកដល់ — អរគុណដែលបានប្រើ AngkorGo Express 📦' },
     cancelled:        { title: 'បានលុបចោល', sub: 'កញ្ចប់នេះត្រូវបានលុបចោល' },
   },
   zh: {
@@ -39,7 +39,7 @@ const COPY: Record<Language, Partial<Record<ParcelStatus, { title: string; sub: 
     courier_assigned: { title: '已分配快递员', sub: '正前往取件点' },
     picked_up:        { title: '已取件', sub: '正在送往收件人' },
     delivering:       { title: '正在派送', sub: '快到了' },
-    delivered:        { title: '已送达', sub: '您的包裹已送达 📦' },
+    delivered:        { title: '已送达', sub: '您的包裹已送达 — 感谢您使用 AngkorGo Express 📦' },
     cancelled:        { title: '已取消', sub: '此包裹已取消' },
   },
 };

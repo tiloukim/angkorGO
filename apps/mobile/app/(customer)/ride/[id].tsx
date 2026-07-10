@@ -63,6 +63,9 @@ const L: Record<Language, Record<string, string>> = {
   zh: { cancel: '取消', backHome: '返回首页', yourDriver: '您的司机', cancelRide: '取消行程？', keepWaiting: '继续等待', rateDriver: '评价您的司机', scheduledTitle: '接机已安排', scheduledSub: '司机将在约 {time} 出发', flightLabel: '航班' },
 };
 
+// Sub-brand appended on completion, by vehicle class.
+const RIDE_BRAND: Record<string, string> = { car: 'Taxi', tuktuk: 'TukTuk', moto: 'Moto' };
+
 export default function RideStatus() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -76,6 +79,7 @@ export default function RideStatus() {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [scheduledFor, setScheduledFor] = useState<string | null>(null);
   const [flightNumber, setFlightNumber] = useState<string | null>(null);
+  const [cls, setCls] = useState<VehicleClass | null>(null);
 
   const tracking = TO_PICKUP.includes(status) || status === 'in_progress';
   const driverCoords = useProviderLocation(tracking ? driverId : null);
@@ -91,6 +95,7 @@ export default function RideStatus() {
     setDestAddr(r.dropoff_address ?? '');
     setScheduledFor(r.scheduled_for ?? null);
     setFlightNumber(r.flight_number ?? null);
+    setCls(r.class ?? null);
     if (r.pickup_lat != null) setPickup({ lat: r.pickup_lat, lng: r.pickup_lng });
     if (r.dropoff_lat != null) setDropoff({ lat: r.dropoff_lat, lng: r.dropoff_lng });
     if (r.driver_id && !driver) {
@@ -118,6 +123,8 @@ export default function RideStatus() {
   }
 
   const copy = COPY[lang][status] ?? COPY.en[status] ?? COPY[lang].searching ?? COPY.en.searching!;
+  // On completion, append the ride sub-brand (AngkorGo Taxi / TukTuk / Moto).
+  const brandedSub = status === 'completed' && cls && RIDE_BRAND[cls] ? `${copy.sub} ${RIDE_BRAND[cls]}` : copy.sub;
   const isScheduled = status === 'requested' && scheduledFor != null && new Date(scheduledFor).getTime() > Date.now();
   const searching = (status === 'searching' || status === 'requested') && !isScheduled;
   const terminal = status === 'completed' || status === 'cancelled' || status === 'expired' || status === 'no_drivers';
@@ -185,7 +192,7 @@ export default function RideStatus() {
       <View style={styles.center}>
         {searching && <ActivityIndicator size="large" color="#00B14F" style={{ marginBottom: 24 }} />}
         <Text style={styles.title}>{copy.title}</Text>
-        <Text style={styles.sub}>{copy.sub}</Text>
+        <Text style={styles.sub}>{brandedSub}</Text>
       </View>
       {searching && (
         <Pressable style={styles.cancel} onPress={() => Alert.alert(L[lang].cancelRide, '', [

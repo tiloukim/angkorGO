@@ -19,7 +19,7 @@ const COPY: Record<Language, Partial<Record<OrderStatus, { title: string; sub: s
     courier_assigned: { title: 'Courier assigned', sub: 'Heading to the restaurant' },
     picked_up:        { title: 'Picked up', sub: 'Your food is on the way' },
     delivering:       { title: 'Out for delivery', sub: 'Almost there' },
-    delivered:        { title: 'Delivered', sub: 'Enjoy your meal! 🍜' },
+    delivered:        { title: 'Delivered', sub: 'Enjoy your meal — thanks for ordering with AngkorGo Foods 🍜' },
     cancelled:        { title: 'Cancelled', sub: 'This order was cancelled' },
   },
   km: {
@@ -29,7 +29,7 @@ const COPY: Record<Language, Partial<Record<OrderStatus, { title: string; sub: s
     courier_assigned: { title: 'បានចាត់អ្នកដឹកជញ្ជូន', sub: 'កំពុងទៅភោជនីយដ្ឋាន' },
     picked_up:        { title: 'បានយកម្ហូប', sub: 'ម្ហូបរបស់អ្នកកំពុងធ្វើដំណើរ' },
     delivering:       { title: 'កំពុងដឹកជញ្ជូន', sub: 'ជិតដល់ហើយ' },
-    delivered:        { title: 'បានដឹកជញ្ជូន', sub: 'សូមរីករាយនឹងអាហារ! 🍜' },
+    delivered:        { title: 'បានដឹកជញ្ជូន', sub: 'សូមរីករាយនឹងអាហារ — អរគុណដែលបានកម្ម៉ង់ជាមួយ AngkorGo Foods 🍜' },
     cancelled:        { title: 'បានលុបចោល', sub: 'ការបញ្ជាទិញនេះត្រូវបានលុបចោល' },
   },
   zh: {
@@ -39,7 +39,7 @@ const COPY: Record<Language, Partial<Record<OrderStatus, { title: string; sub: s
     courier_assigned: { title: '已安排配送员', sub: '正前往餐厅' },
     picked_up:        { title: '已取餐', sub: '您的餐点正在配送中' },
     delivering:       { title: '正在配送', sub: '快到了' },
-    delivered:        { title: '已送达', sub: '祝您用餐愉快！🍜' },
+    delivered:        { title: '已送达', sub: '祝您用餐愉快 — 感谢您选择 AngkorGo Foods 🍜' },
     cancelled:        { title: '已取消', sub: '此订单已取消' },
   },
 };
