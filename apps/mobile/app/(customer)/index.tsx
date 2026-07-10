@@ -105,8 +105,6 @@ export default function HomeScreen() {
       tile: tileColors.peach,
       items: [
         { label: t.food, icon: '🍜', go: () => router.push('/(customer)/food') },
-        { label: t.grocery, icon: '🥬', go: () => router.push('/(customer)/food') },
-        { label: t.mart, icon: '🛒', go: () => router.push('/(customer)/food') },
       ],
     },
     {
@@ -115,6 +113,8 @@ export default function HomeScreen() {
       tile: tileColors.blue,
       items: [
         { label: t.express, icon: '📦', go: () => router.push('/(customer)/express') },
+        { label: t.grocery, icon: '🥬', go: () => router.push('/(customer)/food') },
+        { label: t.mart, icon: '🛒', go: () => router.push('/(customer)/food') },
       ],
     },
     {
