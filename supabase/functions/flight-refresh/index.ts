@@ -44,6 +44,8 @@ Deno.serve(async () => {
       const a = list[0]?.arrival;
       // Prefer the most up-to-date arrival estimate available.
       const arrivalStr = a?.revisedTime?.utc ?? a?.predictedTime?.utc ?? a?.runwayTime?.utc ?? a?.scheduledTime?.utc;
+      // Airport-local arrival (with tz offset) for the rider-facing notification.
+      const arrivalLocalStr = a?.revisedTime?.local ?? a?.predictedTime?.local ?? a?.runwayTime?.local ?? a?.scheduledTime?.local ?? null;
       if (!arrivalStr) continue;
 
       const arrivalMs = new Date(String(arrivalStr).replace(' ', 'T')).getTime();
@@ -59,11 +61,13 @@ Deno.serve(async () => {
           .eq('status', 'requested');   // don't touch it if it already dispatched
         if (!error) {
           updated++;
-          const hhmm = newSched.toISOString().slice(11, 16);
+          // Show the dispatch time in the airport's local zone (that's where the
+          // pickup is), derived from the flight's local arrival + buffer.
+          const hhmm = arrivalLocalStr ? localHHmm(arrivalLocalStr, BUFFER_MIN) : newSched.toISOString().slice(11, 16);
           await supabase.rpc('notify_user', {
             p_user_id: t.rider_id,
             p_title: 'Airport pickup rescheduled',
-            p_body: `Flight ${num} updated — your driver will now be dispatched around ${hhmm} UTC`,
+            p_body: `Flight ${num} updated — your driver will now be dispatched around ${hhmm}`,
             p_type: 'trip_rescheduled',
             p_data: { trip_id: t.id },
           }).catch(() => {});
@@ -74,6 +78,16 @@ Deno.serve(async () => {
   return json({ checked, updated });
 });
 
+// HH:mm in the airport's local zone. `localStr` is like "2026-07-10 08:40+07:00"
+// (or "…Z"); returns the wall-clock time of (that instant + addMin) at that offset.
+function localHHmm(localStr: string, addMin: number): string {
+  const utcMs = new Date(localStr.replace(' ', 'T')).getTime();
+  const m = localStr.match(/([+-])(\d{2}):?(\d{2})$/);
+  const offMin = m ? (m[1] === '-' ? -1 : 1) * (parseInt(m[2]) * 60 + parseInt(m[3])) : 0;
+  return new Date(utcMs + (addMin + offMin) * 60000).toISOString().slice(11, 16);
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 }
+
