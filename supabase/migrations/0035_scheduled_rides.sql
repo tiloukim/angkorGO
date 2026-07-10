@@ -40,7 +40,7 @@ begin
     est_distance_km, est_duration_min, est_fare, surge_multiplier, currency, payment_method,
     scheduled_for, flight_number
   ) values (
-    auth.uid(), p_class, case when v_scheduled then 'requested' else 'searching' end,
+    auth.uid(), p_class, (case when v_scheduled then 'requested' else 'searching' end)::trip_status,
     st_point(p_pickup_lng, p_pickup_lat)::geography, p_pickup_lat, p_pickup_lng, p_pickup_address,
     st_point(p_dropoff_lng, p_dropoff_lat)::geography, p_dropoff_lat, p_dropoff_lng, p_dropoff_address, p_polyline,
     p_est_distance_km, p_est_duration_min, p_est_fare, coalesce(p_surge, 1.0), 'USD', p_payment_method,
