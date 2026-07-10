@@ -20,7 +20,7 @@ const L: Record<Language, Record<string, string>> = {
   en: {
     hi: 'Hi there',
     searchPlaceholder: 'What do you need today?',
-    catRides: 'Rides', catFoods: 'Foods', catShopping: 'Shopping', catStay: 'Stay & Travel', catFun: 'Entertainment',
+    catRides: 'Rides', catFoods: 'Foods', catDelivery: 'Delivery', catShopping: 'Shopping', catStay: 'Stay & Travel', catFun: 'Entertainment',
     snaeh: 'Snaeh', movies: 'Movies', comingSoon: 'Coming soon', comingSoonMsg: 'Movies are coming soon to AngkorGo.',
     bus: 'Bus tickets', tours: 'Tours', soonBody: 'This feature is coming soon to AngkorGo.', flowers: 'Flowers Shop',
     ride: 'Ride', rent: 'Rent', airport: 'Airport', repair: 'Repair', schedule: 'Schedule', spin: 'Spin',
@@ -39,7 +39,7 @@ const L: Record<Language, Record<string, string>> = {
   km: {
     hi: 'សួស្តី',
     searchPlaceholder: 'តើអ្នកត្រូវការអ្វីថ្ងៃនេះ?',
-    catRides: 'ការជិះ', catFoods: 'អាហារ', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ & ធ្វើដំណើរ', catFun: 'កម្សាន្ត',
+    catRides: 'ការជិះ', catFoods: 'អាហារ', catDelivery: 'ដឹកជញ្ជូន', catShopping: 'ទិញទំនិញ', catStay: 'ស្នាក់នៅ & ធ្វើដំណើរ', catFun: 'កម្សាន្ត',
     snaeh: 'ស្នេហ៍', movies: 'ភាពយន្ត', comingSoon: 'នឹងមកដល់ឆាប់ៗ', comingSoonMsg: 'ភាពយន្តនឹងមកដល់ AngkorGo ឆាប់ៗនេះ។',
     bus: 'សំបុត្រឡានក្រុង', tours: 'ដំណើរកម្សាន្ត', soonBody: 'មុខងារនេះនឹងមកដល់ AngkorGo ឆាប់ៗនេះ។', flowers: 'ហាងផ្កា',
     ride: 'ជិះ', rent: 'ជួល', airport: 'ព្រលានយន្តហោះ', repair: 'ជួសជុល', schedule: 'កំណត់ពេល', spin: 'បង្វិល',
@@ -58,7 +58,7 @@ const L: Record<Language, Record<string, string>> = {
   zh: {
     hi: '你好',
     searchPlaceholder: '今天需要什么？',
-    catRides: '出行', catFoods: '美食', catShopping: '购物', catStay: '住宿与旅行', catFun: '娱乐',
+    catRides: '出行', catFoods: '美食', catDelivery: '配送', catShopping: '购物', catStay: '住宿与旅行', catFun: '娱乐',
     snaeh: 'Snaeh', movies: '电影', comingSoon: '即将推出', comingSoonMsg: '电影功能即将登陆 AngkorGo。',
     bus: '巴士车票', tours: '旅行团', soonBody: '此功能即将登陆 AngkorGo。', flowers: '花店',
     ride: '打车', rent: '租车', airport: '机场', repair: '维修', schedule: '预约', spin: '转盘',
@@ -110,11 +110,18 @@ export default function HomeScreen() {
       ],
     },
     {
+      title: t.catDelivery,
+      hero: '📦',
+      tile: tileColors.blue,
+      items: [
+        { label: t.express, icon: '📦', go: () => router.push('/(customer)/express') },
+      ],
+    },
+    {
       title: t.catShopping,
       hero: '🛍️',
       tile: tileColors.gold,
       items: [
-        { label: t.express, icon: '📦', go: () => router.push('/(customer)/express') },
         { label: t.flowers, icon: '🌸', go: () => Linking.openURL('https://cambodiafloral.com') },
         { label: t.rewards, icon: '🎁', go: () => router.push('/(customer)/wallet') },
         { label: t.spin, icon: '🎡', go: () => router.push('/(customer)/spin') },
